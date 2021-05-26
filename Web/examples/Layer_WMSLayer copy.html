@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>影像WMS服务</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #map2 { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+
+    var map = new PIE.Map({
+        type:1
+    });
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:2,
+        projection: 'EPSG:4326',
+        center:[107.971532,23.382439],
+       
+    });
+    var grid ;
+    map.on("load",function () {
+            /*var grid = new PIE.GridTileLayer({
+                projection: "EPSG:3857",
+                url: 'http://piecloud.piesat.cn/dataservices/google/service/v1/tile?map=GoogleImage&x={x}&y={y}&z={z}',
+                url: path.PIEGrid.GoogleTile1,
+                id:"ditu"
+
+            });
+            map.add(grid);*/
+            /*var isoLineLayer = new PIE.MetoStyle.IsoLineLayer({
+                    data :'./data/IsoLineData.json',
+                    id :"isoline",
+                    opacity:1.0
+                })
+            isoLineLayer.addEventListener("load", function () {
+                map.add(isoLineLayer)
+            })*/
+
+            /*var fy4 = new PIE.GridTileLayer({
+               //url:"http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NOMChannel01/20191021000000/jpg/{z}/{y}/{x}.png",
+               //url: path.PIEGrid.swapQuery,
+               //http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NatureColor_NoLit/20191107031500/jpg/0/0/0.png
+               //url: path.PIEGrid.swapQuery,
+               url:"http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NOMChannel12/20190813030000/jpg/{z}/{y}/{x}.png",
+               url: path.PIEGrid.swapQuery1,
+                region : [32.7 ,-72 , 176.7 , 72],
+                bounds:[3339584.723798167,-9608371.509933542,2.0037508342789E7,9608371.509933542],
+                opacity:0.5,
+            })*/
+
+            //openlayer的 加入
+     /*var resolutions = [0.3198294243070362 ,0.1599147121535181, 0.0799573560767591, 0.0399786780383795 , 0.0199893390191898 , 0.0099946695095949 , 0.0049973347547974 , 0.0024986673773987];
+     var tileGrid = new PIE.ol.tilegrid.TileGrid({
+                                extent:  [32.7 ,-72 , 176.7 , 72],
+                                resolutions:[0.32, 0.16 ,0.08 , 0.04, 0.02 , 0.01, 0.005 , 0.0025 ],
+                                tileSize: 450
+                            });
+             var GridTileLayer = new PIE.ol.layer.Tile({
+                source: new PIE.ol.source.XYZ({
+                    url: "http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NatureColor_NoLit/20191107031500/jpg/{z}/{y}/{x}.png",
+                    url: path.PIEGrid.swapQuery3,
+                    projection:"EPSG:4326",
+                    //tileSize:[256,256],
+                    //resolutions: resolutions ,
+                    tileGrid:tileGrid,
+                    tileUrlFunction:function(src,t,r){
+                        console.log(r)
+                           var pow = Math.pow(2 , src[0]);
+                            var y = -1- src[2]  ;
+                            var z = src[0];
+                            if(y < 0 ){
+                                y = y + pow;
+                            }else if(x > pow){
+                                y = y - pow;
+                            }
+
+                            var x = 0
+                            x = src[1]
+                            // 需要加入动画的图层产品  --首页
+                          //return "http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NatureColor_NoLit/20191107031500/jpg/"+z+"/"+y+"/"+x+".png"
+                           return  path.PIEGrid.swapQuery2,
+                    }
+                }),
+                extent: [32.7 ,-72 , 176.7 , 72],
+                zIndex: 0
+            });
+            GridTileLayer.id = "rsapp";
+            map.map.addLayer(GridTileLayer);*/
+            //map.add(fy4); 
+            /*testFillLayer = new PIE.MetoStyle.LineLayer({
+            data: "data/worldPolyGon.geojson",
+            color: "rgba(243, 236, 236, 1)",
+            id: "measure-Fill",
+            opacity: 1,
+            visible: true
+        });*/
+        //map.add(testFillLayer);
+        var arcgis = new PIE.WMSLayer({
+            //url:'http://211.154.196.250:8081/geoserver/wms',
+            url:path.PIEVector.geoserver,
+            version:"1.1.0",
+            layers:"WGS84Geoserver",
+            tileWidth:256,
+            tileHeight:256,
+            format:"image/png",
+            id:"wms-layer",
+            style:"",
+            projection:"EPSG:3857",
+
+        })
+       
+       map.add(arcgis);
+    
+     
+     
+    });
+
+  
+
+
+</script>
+<script src ="js/lib/MapTool.js"></script>
+</body>
+</html>

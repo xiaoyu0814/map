@@ -1,0 +1,13 @@
+syntax = "proto3";
+package windpole;
+
+message WindPole{
+    double X = 1;
+    double Y = 2;
+    int32 Value = 3;
+    double Angle =4;
+}
+
+message GeoWindPole{
+    repeated WindPole windPole =1;
+}

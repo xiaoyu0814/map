@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" style="width: 100%;height: 100%">
+<head>
+    <meta charset="UTF-8">
+    <title>面积量测</title>
+</head>
+<style type="text/css">
+    body {
+        font: 14px Verdana;
+        overflow: hidden;
+        padding: 0px;
+        margin: 0px;
+    }
+    .distance-container {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1;
+    }
+    .distance-container>* {
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        font-size: 11px;
+        line-height: 18px;
+        display: block;
+        margin: 0;
+        padding: 5px 10px;
+        border-radius: 3px;
+    }
+    .mapboxgl-canvas-container.mapboxgl-interactive,
+    .mapboxgl-ctrl-nav-compass {
+        cursor: -webkit-crosshair !important;
+        cursor: -moz-crosshair !important;
+        cursor: crosshair !important;
+    }
+    .mapboxgl-canvas-container.mapboxgl-interactive:active,
+    .mapboxgl-ctrl-nav-compass:active {
+        cursor: -webkit-crosshair !important;
+        cursor: -moz-crosshair !important;
+        cursor: crosshair !important;
+    }
+</style>
+<body style="width: 100%;height: 95%;margin: 0px;padding: 0px;">
+    <button style="position: fixed;z-index: 9" onclick="clearDrawInfo()">清除图层</button>
+    <div id="map" style="width: 100%;height: 95%"></div>
+    <div id="distance" style=" position: absolute; bottom: 10px;left: 10px;"></div>
+</body>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map;
+    var view;
+    var linePath = [];
+    var distanceContainer = document.getElementById("distance");
+    var graphicsLayer;
+    initMap();
+    //初始化底图
+    function initMap() {
+        map = new PIE.Map;
+        view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 1,
+            center: [110, 0]
+        });
+        map.on("load", function () {
+            var grid = new PIE.GridTileLayer({
+                //url: 'http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}',
+                url:path.PIEGrid.GFTile,
+                id: 'baseMap'
+            });
+            map.add(grid); //增加瓦片底图
+        })
+        drawElementAndArea();
+    }
+
+    //绘制并测量面积
+    function drawElementAndArea() {
+        //定义一个几何体图层
+        graphicsLayer = new PIE.GraphicsLayer({
+            graphics: [],
+        });
+
+        //将几何体图层添加到地图里
+        map.add(graphicsLayer);
+        map.on("click", function (e) {
+            newPoint = e.coordinate;
+            if (linePath.length == 2) {
+                linePath.unshift(linePath[linePath.length - 1])
+            }
+            if (linePath.length < 2) {
+                linePath.unshift(newPoint);
+            } else {
+                linePath.splice(1, 0, newPoint)
+            }
+            draw();
+        });
+    }
+
+    //在页面下方进行面积显示
+    function showAreaInfo(result) {
+        resultKM = result / 1000000
+        var value = document.createElement('pre');
+        /* pre 元素可定义预格式化的文本。被包围在 pre 元素中的文本通常会保留空格和换行符。而文本也会呈现为等宽字体。 */
+        distanceContainer.innerHTML = '';
+        /*清空pre元素的内容*/
+        value.innerHTML = 'Total Area: ' + resultKM + '平方公里';
+        /* .textContent设置文本内容,toLocaleString():把数组转换为本地字符串。*/
+        distanceContainer.appendChild(value);
+    }
+
+    //清除绘制信息
+    function clearDrawInfo() {
+        this.linePath = []; //清空数组
+        distanceContainer.innerHTML = '';
+        map.remove(graphicsLayer);
+        //!点图层（1），线图层（2），面图层（3），只有满足括号中的点时候，才可以进行相应的几何创建，否则type为undefined，图层将清理不掉
+    }
+
+    function draw() {
+        if (linePath.length > 0) { //有点先绘制点图层
+            if (map.getLayer("point_test")) {
+                map.getLayer("point_test").setSource(getPointData(linePath))
+            } else {
+                let _Points = new PIE.MetoStyle.PointLayer({
+                    data: getPointData(linePath),
+                    id: "point_test",
+                    color: "#ff0000",
+                });
+                graphicsLayer.add(_Points);
+            }
+        }
+        if (linePath.length > 1) { //多点进行连线，绘制连线图层
+            if (map.getLayer("line_test")) {
+                map.getLayer("line_test").setSource(getLineData(linePath))
+            } else {
+                let _Lines = new PIE.MetoStyle.LineLayer({
+                    data: getLineData(linePath),
+                    id: "line_test",
+                    color: "#000",
+                    width: 2
+                });
+                graphicsLayer.add(_Lines);
+            }
+        }
+        if (linePath.length > 2) {
+            if (map.getLayer("fill_test")) {
+                map.getLayer("fill_test").setSource(getFillData(linePath))
+            } else {
+                let _Fills = new PIE.MetoStyle.FillLayer({
+                    data: getFillData(linePath),
+                    id: "fill_test",
+                    color: "#00ff00",
+                    opacity: 0.5
+                });
+                graphicsLayer.add(_Fills);
+            }
+        }
+
+        var strPath = JSON.stringify(linePath);
+        var arrPath = JSON.parse(strPath);
+        var popPath = arrPath.pop();
+        var value = PIE.getArea(arrPath);
+        showAreaInfo(value);
+    }
+    //传入linePath，得到data
+    function getPointData(linePath) {
+        var pointdata = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+
+        for (var i = 0; i < linePath.length; i++) {
+            var dataset = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [linePath[i][0], linePath[i][1]]
+                },
+                "properties": {
+                    "index": i
+                }
+            };
+            pointdata.features.push(dataset);
+        }
+        return pointdata;
+    }
+
+    //传入linePath，得到dataLine
+    function getLineData(linePath) {
+        var dataLine = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        var dataLineset = {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": linePath
+            }
+        };
+        dataLine.features.push(dataLineset);
+        return dataLine;
+    }
+
+    //传入linePath，得到dataLine
+    function getFillData(linePath) {
+        var dataLine = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        var dataLineset = {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [linePath]
+            }
+        };
+        dataLine.features.push(dataLineset);
+        return dataLine;
+    }
+</script>
+</html>

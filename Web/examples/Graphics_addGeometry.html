@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>几何图形添加</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .btnstyle {
+            position: absolute;
+            left: 0;
+            margin: 15px 30px;
+            background: #000;
+            border-radius: 4px;
+            padding: 12px 15px;
+            cursor: pointer;
+            outline: none;
+            border: 1px solid;
+            box-shadow: 3px 3px 10px #000;
+            color: white;
+            z-index: 100;
+            width: 120px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<button class="btnstyle" style="top:10px" onclick="change(this)">点符号</button>
+<button class="btnstyle" style="top:70px" onclick="change(this)">线符号</button>
+<button class="btnstyle" style="top:130px" onclick="change(this)">面符号</button>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    //初始化底图
+    var map = new PIE.Map();
+    //设置视图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 0.1,
+        center: [0, 0]
+    });
+    // 定义面位置
+    var point = new PIE.Point(-10, -30);
+    var linedata = [
+        [10, 10],
+        [-10, 10]
+    ];
+    var line = new PIE.Line(linedata);
+    var polygonData = [
+        [
+            [20, 50],
+            [50, 50],
+            [50, 0],
+            [20, 0],
+        ]];
+        var Polygon = new PIE.Polygon(polygonData);
+        console.log(Polygon)
+        // 底图加载成功后对底图编辑
+        var pointGrap
+        var linelayer
+        var PolygonGrap
+        map.on("load", function () {
+            // 定义一个fill图层
+            var testFillLayer = new PIE.GridTileLayer({
+                //url: 'http://service.piesat.cn:10000/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}'
+                //url: path.PIEservice.GFImage,
+                //url :"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+                url: path.PIEGrid.GlobalDarkMap,
+                id:"darkmap"
+            });
+            // 将图层添加到底图里
+            map.add(testFillLayer);
+            // 定义一个绘制图层
+            pointGrap = new PIE.Graphics({
+                geometry: point, // 绘制类型
+                symbol: new PIE.MarketSymbol({
+                    color: "#000",
+                    size: 5
+                }), // 设置样式
+                id: "Point"
+            });
+            linelayer = new PIE.Graphics({
+                id: "line",
+                geometry: line,
+                symbol: new PIE.LineSymbol({
+                    color: "#090",
+                    width: 8
+                }),
+            });
+            //添加线图层到底图
+            PolygonGrap = new PIE.Graphics({
+                geometry: Polygon,
+                id: "Polygon",
+                symbol: new PIE.FillSymbol({
+                    color: "#ff4242"
+                })
+            });
+            // map.add(PolygonGrap);
+            // map.add(pointGrap); // 将定义的图层添加到底图上
+            // map.add(linelayer);
+            // 图层加载完毕后执行移动图层方法
+            // testFillLayer.addEventListener('load', function () {
+            //     // 移动图层（testFillLayer图层在后，PolygonGrap图层在前）
+            //     map.moveLayer(testFillLayer, PolygonGrap);
+            // })
+
+        });
+
+    function change(item) {
+        switch ($(item).index()) {
+            case 1:
+                if (map.getLayer("Point")) {
+                    $(item).css("background", "black")
+                    map.remove(pointGrap)
+                } else {
+                    $(item).css("background", "#007dff")
+                    map.add(pointGrap)
+                }
+                break;
+            case 2:
+                if (map.getLayer("line")) {
+                    $(item).css("background", "black")
+                    map.remove(linelayer)
+                } else {
+                    $(item).css("background", "#007dff")
+                    map.add(linelayer)
+                }
+                break;
+            case 3:
+                if (map.getLayer("Polygon")) {
+                    $(item).css("background", "black")
+                    map.remove(PolygonGrap)
+                } else {
+                    $(item).css("background", "#007dff")
+                    map.add(PolygonGrap)
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    </script>
+</body>
+</html>

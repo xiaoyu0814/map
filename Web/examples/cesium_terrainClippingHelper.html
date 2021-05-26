@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>地形挖掘</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+        #max {
+            margin-left: 33px;
+        }
+
+        #min {
+            margin-left: 33px;
+        }
+
+        #fill {
+            margin-left: 50px;
+        }
+
+        #cut {
+            margin-left: 50px;
+        }
+
+        #base {
+            margin-left: 18px;
+        }
+
+        #total {
+            margin-left: 50px;
+
+        }
+        #area {
+            margin-left: 50px;
+
+        }
+        #info {
+            background-color: cyan;
+            display: none;
+        }
+
+        #info div {
+            margin: 5px 5px;
+
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<div style="position: absolute; top: 40px; left: 270px;" id="info">
+    <div><label>最大高程</label><input type="text" id="max" disabled> <label>米</label></div>
+    <div> <label>最小高程</label><input type="text" id="min" disabled><label>米</label></div>
+    <div><label>填方量</label><input type="text" id="fill" disabled><label>立方米</label></div>
+    <div> <label>挖方量</label><input type="text" id="cut" disabled><label>立方米</label></div>
+    <div> <label>总体积</label><input type="text" id="total" disabled><label>立方米</label></div>
+    <div> <label>总面积</label><input type="text" id="area" disabled><label>平方米</label></div>
+    <div> <label>基准面高程</label><input type="number" id="base"><label>米</label></div>
+</div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/modules/cesium-plugins/VisiableAnalysis/turf.min.js"></script>
+<script src="js/modules/cesium-plugins/BackfillAnalysis.js"></script>
+<script src="js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({
+            type:3
+        }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map"
+    });
+    var grid = new PIE.GridTileLayer({
+        //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+        url:path.PIEGrid.GFTile,
+        id: 'tilelayer1'
+    });
+    map.add(grid);
+
+    var maxDom = document.getElementById("max");
+    var minDom = document.getElementById("min");
+    var fillDom = document.getElementById("fill");
+    var cutDom = document.getElementById("cut");
+    var totalDom = document.getElementById("total");
+    var areaDom = document.getElementById("area");
+    var baseDom = document.getElementById("base");
+
+    var infoDom = document.getElementById("info");
+
+    var backfillAnalysis = null;
+    map.on("load",function () {
+        //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+        backfillAnalysis=new BackfillAnalysisTool(map.map._cesiumViewer);
+        var terrainProvider = new Cesium.CesiumTerrainProvider({
+            url:  path.PIEterrain.test,
+            requestWaterMask: true,
+            maximumLevel: 13,
+            requestVertexNormals: true
+
+        })
+        map.map._cesiumViewer.terrainProvider=terrainProvider;
+        getToolButton();
+        map.map._cesiumViewer.scene.globe.depthTestAgainstTerrain = true;
+        //定位到目标地形
+        //设置初始位置
+        map.map._cesiumViewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(110.20, 34.55, 3000)
+        });
+
+
+        //增加监听事件
+        document.getElementById('btnAdd').addEventListener('click',function () {
+            backfillAnalysis.setEnable(true, callBack);
+            console.log(backfillAnalysis)
+        }, false);
+        document.getElementById('btn_Clear').addEventListener('click',function () {
+            backfillAnalysis.setEnable(false);
+            infoDom.style.display = "none";
+        }, false);
+    });
+    function getToolButton() {//增加测试按钮
+        var toolbar = document.getElementById('toolbar');
+        toolbar.innerHTML =
+            '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="btnAdd">填挖方分析</button>' +
+            '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="btn_Clear">清除分析</button>';
+        toolbar.setAttribute('style', 'background: rgba(42,42,42,0.9); border-radius: 5px;');
+    }
+
+    function callBack() {
+        infoDom.style.display = "block";
+        maxDom.value = backfillAnalysis.heightExtent.maxHeight;
+        minDom.value = backfillAnalysis.heightExtent.minHeight;
+        fillDom.value = backfillAnalysis.fillVolume;
+        cutDom.value = backfillAnalysis.cutVolume;
+        totalDom.value = backfillAnalysis.allVolume;
+        areaDom.value = backfillAnalysis.area;
+        baseDom.value = backfillAnalysis.averageHeight;
+        infoDom.onchange = function () {
+            var baseHe = document.getElementById("base").value;
+            backfillAnalysis.fillShape.polygon.extrudedHeight = new Cesium.CallbackProperty(function (e) {
+                return Number(baseHe)
+            }, false);
+            fillDom.value = Number(baseHe) * (backfillAnalysis.area);
+            cutDom.value = (backfillAnalysis.allVolume - fillDom.value);
+        }
+    }
+</script>
+</body>
+</html>

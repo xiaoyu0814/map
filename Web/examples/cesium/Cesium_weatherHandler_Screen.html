@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>line</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../../build/Cesium/Widgets/widgets.css" rel="stylesheet"/>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .measureCur {
+            cursor: url(./image/measure.cur), auto;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<div id="toolTip" style="z-index: 9999; position: absolute; top: 250px; left: 20px; width:45px"></div>
+<script src="../../build/Cesium/Cesium.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/weatherHelper_Screen.js"></script>
+<script>
+    Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        
+        var viewer = new Cesium.Viewer("map", {
+            maximumLevel: 18,
+            imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                url: "https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}"
+            }),
+            animation: false,
+            baseLayerPicker: false,
+            fullscreenButton: false,
+            geocoder: false,
+            homeButton: false,
+            infoBox: false,
+            selectionIndicator: false,
+            timeline: false,
+            sceneModePicker: false,
+            shouldAnimate : true,
+            navigationHelpButton: false,
+            contextOptions: {
+                //allowTextureFilterAnisotropic : true,
+                webgl: {
+                    alpha: false,
+                }
+            }
+        });
+
+    var PageInfo = {
+        weatherHelper: null,
+        getToolButton: function () {//增加测试按钮
+            var toolbar = document.getElementById('toolbar');
+            toolbar.innerHTML = '<div id="hud" style="color: white"></div>' +
+                '<select id="weatherType" style="float: left" class="cesium-button" onchange="PageInfo.getChange()">' +
+                '<option value="雪">雪</option>' +
+                '<option value="雨">雨</option>' +
+                '<option value="雨加雪">雨加雪</option></select></br></br>';
+            toolbar.setAttribute('style', 'background: rgba(42,42,42,0.9); border-radius: 5px;');
+        },
+        getChange: function () {//判断是否下雪/雨
+            var wType = document.getElementById("weatherType").value;
+            if (wType == "雪") {
+                if(PageInfo.weatherHelper.stage_rain!=null){
+                  viewer.scene.postProcessStages.remove(PageInfo.weatherHelper.stage_rain);
+                    PageInfo.weatherHelper.stage_rain=null;
+                }
+                if(PageInfo.weatherHelper.stage_snow==null){
+                    PageInfo.weatherHelper.getSnow();
+                }
+
+            } else if (wType == "雨") {
+                if(PageInfo.weatherHelper.stage_snow!=null){
+                    viewer.scene.postProcessStages.remove(PageInfo.weatherHelper.stage_snow);
+                    PageInfo.weatherHelper.stage_snow=null;
+                }
+                if(PageInfo.weatherHelper.stage_rain==null) {
+                    PageInfo.weatherHelper.getRain();
+                }
+            } else {
+                if(PageInfo.weatherHelper.stage_rain==null){
+                    PageInfo.weatherHelper.getRain();
+                }
+                if(PageInfo.weatherHelper.stage_snow==null){
+                    PageInfo.weatherHelper.getSnow();
+                }
+            }
+        }
+    }
+
+   // map.on("load", function () {
+        Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        viewer.terrainProvider = Cesium.createWorldTerrain();
+        var handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+        //获得面板框
+        PageInfo.getToolButton();
+        PageInfo.weatherHelper = new rainSnowFall_Screen({
+            viewer: viewer
+        });
+         PageInfo.boundRectangle = new Cesium.Rectangle(Cesium.Math.toRadians(114.3327), Cesium.Math.toRadians(34.3827), Cesium.Math.toRadians(122.7203), Cesium.Math.toRadians(38.3869));
+                var heading = Cesium.Math.toRadians(0.0);
+                var pitch = Cesium.Math.toRadians(-80);
+                var roll = Cesium.Math.toRadians(0);
+                var duration =3;
+                var fn = function () {
+                PageInfo.getChange();
+            };
+            PageInfo.weatherHelper.flyTo(PageInfo.boundRectangle, heading, pitch, roll, duration);
+        PageInfo.getChange();
+   // });
+
+</script>
+</body>
+</html>

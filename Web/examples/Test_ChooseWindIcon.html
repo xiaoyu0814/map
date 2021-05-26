@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>layer_geoJsonIconLayer</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            margin: 0;
+            padding: 0;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        .iconlist{
+            top: 0;
+            left: 0;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div class="iconlist">
+    <button onclick="icon1()">风1</button>
+    <button onclick="icon2()">风2</button>
+    <button onclick="icon3()">风3</button>
+    <button onclick="icon4()">风4</button>
+</div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/status.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script>
+    //初始化底图
+    var map = new PIE.Map();
+    // var _urla=window.location.href.substr(0,window.location.href.indexOf(window.location.hash));
+    // console.log(window.location.href);
+    // var _urlb=_urla.substr(0,_urla.lastIndexOf("/")) + "sprite/Weather";
+    // console.log(_urlb);
+
+    // var _url=window.location.href.substr(0,window.location.href.indexOf("/",7));
+
+    var _num=window.location.href.indexOf("//");
+    var _numb=window.location.href.indexOf("/",_num+2);
+    var _url=window.location.href.substr(0,_numb);
+    // console.log(_url);
+    // console.log(_num);
+    // console.log(_numb);
+    //设置视图
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:1,
+        sprite:_url + "/examples/sprite/Weather",
+        center:[110,0],
+
+    });
+
+    //底图加载成功后对底图编辑
+    map.on("load",function () {
+
+        var state = new Status(map);
+        document.body.appendChild(state.dom);
+        //定义一个fill图层
+        var testFillLayer = new PIE.MetoStyle.FillLayer({data:"data/worldPolyGon.geojson",color:"#ffffff",id:"measure-points"});
+        //将图层添加到底图里
+        map.add(testFillLayer);
+
+    });
+
+    var testWindLayer;
+    var iconjson;
+    var icontype={
+        "WindSpeed": "06",
+        "WindDirection": 274
+    };
+    var index=0;
+    var iconid="testIcon" + index;
+    function icon1() {
+        iconstype={
+            "WindSpeed": "06",
+            "WindDirection": 274}
+    }
+    function icon2() {
+        icontype={
+            "WindSpeed": "10",
+            "WindDirection": 150
+        }
+    }
+    function icon3() {
+        icontype={
+            "WindSpeed": "02",
+            "WindDirection": 200
+        }
+    }
+    function icon4() {
+        icontype={
+            "WindSpeed": "13",
+            "WindDirection": 300
+        }
+    }
+
+    map.on("click",function (e) {
+        newPoint = [e.lngLat.lng,e.lngLat.lat];
+        console.log(iconid)
+         iconjson =   {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": newPoint
+                    },
+                    "properties": icontype
+                },]
+        };
+        getWind()
+    });
+
+    function getWind() {
+        var a = map.getBounds();
+        var b = map.getZoom();
+        // console.log(a,b);
+        //定义一个
+        // testLineLayer = new PIE.MetoStyle.IconLayer({url:"http://10.1.6.106:8060/PIE-Web/showPrd/getDigitalWindVectorData?params=data:2018-12-04,hour:12,fcstHour:24,modelType:ECMWF_HR_C1D,feature:uw;vw,level:500&bounds=LngLatBounds(LngLat(33.62499999998607,%20-0.1675101714707381),%20LngLat(202.37500000004002,%2064.43846097971775))&zoom=3",
+        //     iconUrl:"WindSpeed",
+        //     rotate:"WindDirection",
+        //     imageName:"WIND",
+        //     id:"testIcon"
+        // });
+        testWindLayer = new PIE.MetoStyle.IconLayer({
+            data:iconjson,
+            iconUrl:"WindSpeed",
+            rotate:"WindDirection",
+            imageName:"WIND",
+            id:iconid
+        });
+        if(map.getLayer("testIcon")){
+            map.remove(map.getLayer("testIcon"));
+        }
+        console.log("dddd");
+        // map.add(testLineLayer);
+        map.add(testWindLayer);
+        index+=1;
+        iconid="testIcon" + index;
+    }
+
+</script>
+</body>
+</html>

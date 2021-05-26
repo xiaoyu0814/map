@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图形编辑</title>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/status.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        .btnstyle {
+            position: absolute;
+            left: 0;
+            margin: 15px 30px;
+            background: #007dff;
+            border-radius: 4px;
+            padding: 12px 15px;
+            cursor: pointer;
+            outline: none;
+            border: 1px solid;
+            box-shadow: 3px 3px 10px #000;
+            color: white;
+            z-index: 100;
+            width: 100px;
+        }
+    </style>
+    <link href="js/PIE.css" rel="stylesheet"/>
+</head>
+<body>
+<div id="map"></div>
+<script src="js/lib/dat.gui.min.js"></script>
+<script src="./js/show/path.js"></script>
+<script src="./data/beijingline.js"></script>
+<script>
+    //初始化底图
+    var map = new PIE.Map({
+        type: 1
+    });
+    //设置视图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 6,
+       
+        center: [116, 40]
+    });
+
+    //定义点位置
+    var point = new PIE.Point(116, 40);
+    //定义一组线的坐标
+    var linePath = beijinglinepath;
+    //定义线对象
+    var line = new PIE.Line(linePath);
+    //定义一组闭合的几何体坐标
+    var polygonPath = [beijinglinepath ];
+    //定义一个闭合的几何体对象
+    var polygon = new PIE.Polygon(polygonPath);
+    var controls = new function () { // dat.gui.js// 定义一个变量 给这个变量添加你需要的属性
+        this.PointSize = 5;
+        this.PointColor = "#66ccff";
+        this.PointOpacity = 1;
+        this.PointVisible = true;
+        this.LineWidth = 4;
+        this.LineColor = "#cc66ff";
+        this.LineOpacity = 1;
+        this.LineVisible = true;
+        this.PolygonColor = "#ff66cc";
+        this.PolygonOpacity = 1;
+        this.PolygonVisible = true;
+        this.Zoom = 4;
+        this.CenterLon = 0;
+        this.CenterLat = 0;
+    }
+
+    //定义一个几何体对象
+    var pointGrap = new PIE.Graphics({
+        geometry: point,
+        symbol: new PIE.MarketSymbol({
+            color: controls.PointColor,
+            size: controls.PointSize,
+           
+            opacity: controls.PointOpacity
+        })
+    });
+    var LineGrap = new PIE.Graphics({
+        geometry: line,
+        symbol: new PIE.LineSymbol({
+            color: controls.LineColor,
+            width: controls.LineWidth,
+            opacity: controls.LineOpacity
+        })
+    });
+    var polygonGrap = new PIE.Graphics({
+        geometry: polygon,
+        symbol: new PIE.FillSymbol({
+            color: controls.PolygonColor,
+            opacity: controls.PolygonOpacity
+        })
+    });
+
+    //定义一个几何体图层
+    var graphicsLayer = new PIE.GraphicsLayer({
+        graphics: [pointGrap, LineGrap],
+    });
+
+     var gui = new dat.GUI(); // 初始化GUI
+    map.on("load",function(){
+        var state = new Status(map);
+        document.body.appendChild(state.dom);
+         map.add(pointGrap);
+        map.add(LineGrap);
+        map.add(polygonGrap);
+       
+        // 点
+        var PointOpacity = gui.add(controls, 'PointOpacity', 0.1, 1).name("点的透明度"); // 设置变量范围值并绑定
+        PointOpacity.onChange(function (value) { // 你可以为每一项设置一个监听事件 onChange 或 onFinishChange
+
+            pointGrap.setOpacity(value);
+        })
+        gui.add(controls, 'PointVisible').name("点的显隐").onChange(function (value) {
+            console.log(1)
+            pointGrap.setVisible(value);
+        }); // 设置变量范围值并绑定 // 你可以为每一项设置一个监听事件 onChange 或 onFinishChange
+        gui.add(controls, 'PointSize', 1, 50).name("点的大小").onChange(function (value) {
+            pointGrap.setSize(value);
+        });
+        gui.addColor(controls, 'PointColor').name("点的颜色").onChange(function (value) {
+            pointGrap.setColor(value);
+        });
+        // 线
+        gui.add(controls, 'LineOpacity', 0.1, 1).name("线的透明度").onChange(function (value) {
+            LineGrap.setOpacity(value);
+        });
+        gui.add(controls, 'LineVisible').name("线的显隐").onChange(function (value) {
+            LineGrap.setVisible(value);
+        });
+        gui.add(controls, 'LineWidth', 1, 50).name("线的宽度").onChange(function (value) {
+            LineGrap.setWidth(value);
+        });
+        gui.addColor(controls, 'LineColor').name("线的颜色").onChange(function (value) {
+            LineGrap.setColor(value);
+        });
+        // 面
+        var PolygonOpacity = gui.add(controls, 'PolygonOpacity', 0.1, 1).name("面的透明度"); // 设置变量范围值并绑定
+        PolygonOpacity.onChange(function (value) {
+            polygonGrap.setOpacity(value);
+        })
+        gui.add(controls, 'PolygonVisible').name("面的显隐").onChange(function (value) {
+            polygonGrap.setVisible(value);
+        });
+        gui.addColor(controls, 'PolygonColor').name("面的颜色").onChange(function (value) {
+            polygonGrap.setColor(value);
+        });
+
+        // 缩放级别
+        gui.add(controls, 'Zoom', 0, 12).name("层级").onChange(function (value) {
+            map.setZoom(value)
+        });
+        // 地理中心点
+        gui.add(controls, 'CenterLon', -180, 180).name("中心值的经度").onChange(function (value) {
+            var center = []
+            center.push(value)
+            center.push(controls.CenterLat)
+            map.setCenter(center)
+        });
+        gui.add(controls, 'CenterLat', -85, 85).name("中心值的纬度").onChange(function (value) {
+            var center = []
+            center.push(controls.CenterLon)
+            center.push(value)
+            map.setCenter(center)
+        });
+        var grid = new PIE.GridTileLayer({
+             //url: 'http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}'
+             url: path.PIEGrid.GlobalDarkMap,
+        });
+        map.add(grid);    //将几何体图层添加到地图里
+    })
+
+
+   
+</script>
+</body>
+</html>

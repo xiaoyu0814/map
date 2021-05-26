@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>drawForCesium</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <link href="./js/lib/layui/css/layui.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script type="text/javascript" src="./js/show/path.js"></script>
+</head>
+<body oncontextmenu="return false;">
+<div id="map"></div>
+<div style="position:absolute;left:10px;top:10px;background-color:transparent;">
+    <input id="drawBufferLine" type="button" class="layui-btn layui-btn-sm layui-btn-normal" value="绘制缓冲区" />
+</div>
+
+<script>
+    var center = [110.98, 30.83];
+    var viewer = null;
+    var tracker = null;
+    //图层名称
+    var layerId = "globeDrawerDemoLayer";
+    //全局变量，用来记录shape坐标信息
+    var shapeDic = {};
+    //编辑或删除标识,1为编辑，2为删除
+    var flag = 0;
+
+    var map = new PIE.Map({
+            type:1
+        }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        center:[110,35],
+        zoom:4
+    });
+    var grid = new PIE.GridTileLayer({
+        url:path.GoogleURL.s,
+        id: 'tilelayer1'
+    });
+   
+    var BufferLine
+    map.on("load",function () {
+        map.add(grid);
+        BufferLine = new PIE.BufferLineDrawer(map,2);
+    });
+    $("#drawBufferLine").click(function () {
+        BufferLine.startDrawBufferLine(function(positions, radius){
+            var objId = (new Date()).getTime();
+            shapeDic[objId] = {
+                positions: positions,
+                radius: radius
+            };
+            showBufferLine(objId, positions, radius);
+        },function(error){
+            console.log(error)
+        })
+        
+    });
+    function showBufferLine(objId, positions, radius) {
+        var feature = BufferLine.computeBufferLine(positions, radius);
+        var _fillGeo = turf.featureCollection([feature])
+        var fill = new PIE.MetoStyle.FillLayer({
+            data:_fillGeo,
+            color:"#ff0",
+            id:objId+"",
+            opacity:0.5,
+        });
+        map.add(fill)
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>鹰眼</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #map2 {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script src="js/WMTSImageryProvider.js"></script>
+    <script src="js/compare-js.js"></script>
+    <script src="./js/show/path.js"></script>
+    <link href="js/compare-css.css" rel="stylesheet" />
+    <script>
+        var map = new PIE.Map({
+            type: 2
+        });
+
+        var view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 4,
+            center: [107.971532, 23.382439],
+            //projection: 'EPSG:4326'
+        });
+        
+        var controller = new PIE.controller({
+            map: map,
+            hawkEye: true,
+        });
+        var grid;
+        map.on("load", function () {
+            grid = new PIE.GridTileLayer({
+                url: path.GoogleURL.xyz,
+                id: "rr",
+            });
+            map.add(grid);
+            
+        });
+    </script>
+    <!-- <script src="js/lib/MapTool.js"></script> -->
+</body>
+
+</html>

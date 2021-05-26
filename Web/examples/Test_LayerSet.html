@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LayerSet</title>
+    <link href="js/PIE.css" rel="stylesheet" />
+    <script src="js/lib/dat.gui.min.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script src="js/lib/gethtml.js"></script>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .btnstyle {
+            position: absolute;
+            left: 0;
+            margin: 15px 30px;
+            background: #007dff;
+            border-radius: 4px;
+            padding: 12px 15px;
+            cursor: pointer;
+            outline: none;
+            border: 1px solid;
+            box-shadow: 3px 3px 10px #000;
+            color: white;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <button class="btnstyle" onclick="change(4326)">WCG 84</button>
+    <button class="btnstyle" style="top:100px" onclick="change(3857)">墨卡托</button>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/status.js"></script>
+    <script>
+
+        /**
+         * 初始化底图
+         * @param {Object} options
+         * [defaultSettings.type] — 1：Mapbox渲染类型，2：OpenLayer渲染类型
+         */
+        var map = new PIE.Map();
+
+        /**
+         * 设置视图
+         * @param {Object} parameters
+         * [map] — 地图对象
+         * [container] — 要绑定的dom元素ID
+         * [zoom] — 缩放级别
+         * [center] — 地理中信点位置
+         */
+        var view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 1,
+            center: [110, 0]
+        });
+
+        /**
+         * 定义点位置
+         * @param {Number} X 经度坐标位置信息
+         * @param {Number} Y 纬度坐标位置信息
+         */
+        var point = new PIE.Point(10, 10);
+
+        /**
+         * 声明线位置坐标
+         */
+        var LineData = [
+            [50, 50],
+            [123, 13]
+        ]
+
+        /**
+         * 定义线位置
+         * @param {Array} LineData 至少由两个点的经纬度坐标位置信息组成的二维数组
+         */
+        var Line = new PIE.Line(LineData);
+
+        /**
+         * 声明面位置坐标
+         */
+        var polygonData = [
+            [
+                [0, 0],
+                [0, 10],
+                [10, 10],
+                [10, 0],
+                [0, 0]
+            ]
+        ]
+
+        /**
+         * 定义面位置
+         * @param {Array} polygonData 至少由三个点的经纬度坐标位置信息组成的三维数组
+         */
+        var Polygon = new PIE.Polygon(polygonData);
+
+        /**
+         * dat.gui.js
+         * 定义一个变量 给这个变量添加你需要的属性
+         */
+        var controls = new function () {
+            this.PointSize = 5;
+            this.PointColor = "#66ccff";
+            this.PointOpacity = 1;
+            this.PointVisible = true;
+            this.LineWidth = 2;
+            this.LineColor = "#cc66ff";
+            this.LineOpacity = 1;
+            this.LineVisible = true;
+            this.PolygonColor = "#ff66cc";
+            this.PolygonOpacity = 1;
+            this.PolygonVisible = true;
+            this.Zoom = 1;
+            this.CenterLon = 110;
+            this.CenterLat = 0;
+        }
+
+        /**
+         * 底图加载成功后对底图编辑
+         */
+        map.on("load", function () {
+
+            /**
+             * 定义一个fill图层
+             * [data] — 地图数据源
+             * [color] — 陆地颜色
+             * [id] — 此图层ID
+             * [opacity] — 透明度
+             * [visible] — 是否显示陆地
+             */
+            var testFillLayer = new PIE.MetoStyle.FillLayer({
+                data: "data/worldPolyGon.geojson",
+                color: "rgba(243, 236, 236, 1)",
+                id: "measure-Map",
+                opacity: 1,
+                visible: true
+            });
+
+            /**
+             * 将图层添加到底图里
+             */
+            map.add(testFillLayer);
+
+            /**
+             * status.js
+             * map对象传入，返回缩放、中心点，左上点，右下点信息
+             * @param {Object} map 底图对象
+             */
+            var state = new Status(map);
+
+            /**
+             * 将信息添加到body元素里
+             */
+            document.body.appendChild(state.dom);
+
+            /**
+             * 定义一个绘制图层
+             * @param {Object}
+             * [geometry] — 点、线、面位置坐标
+             * [symbol] — 设置图层样式
+             */
+            var pointGrap = new PIE.Graphics({
+                geometry: point,
+                symbol: new PIE.MarketSymbol({
+                    color: controls.PointColor,
+                    size: controls.PointSize,
+                    opacity: controls.PointOpacity
+                }),
+            });
+            var LineGrap = new PIE.Graphics({
+                geometry: Line,
+                symbol: new PIE.LineSymbol({
+                    color: controls.LineColor,
+                    width: controls.LineWidth,
+                    opacity: controls.LineOpacity
+                })
+            });
+            var PolygonGrap = new PIE.Graphics({
+                geometry: Polygon,
+                symbol: new PIE.FillSymbol({
+                    color: controls.PolygonColor,
+                    opacity: controls.PolygonOpacity
+                })
+            });
+            
+            // 给testFillLayer图层添加监听，等testFillLayer图层加载完毕后执行添加点、线、面图层
+            testFillLayer.addEventListener('load', function () {
+                map.add(pointGrap); // 将定义的图层添加到testFillLayer图层上
+                map.add(LineGrap); // 将定义的图层添加到testFillLayer图层上
+                map.add(PolygonGrap); // 将定义的图层添加到testFillLayer图层上
+                
+
+                var gui = new dat.GUI(); // 初始化GUI
+
+                // 操作点图层
+                var PointOpacity = gui.add(controls, 'PointOpacity', 0.1, 1); // 设置变量范围值并绑定
+                PointOpacity.onChange(function (value) { // 你可以为每一项设置一个监听事件 onChange 或 onFinishChange
+                    pointGrap.setOpacity(value);
+                })
+                gui.add(controls, 'PointVisible').onChange(function (value) {
+                    pointGrap.setVisible(value);
+                }); // 设置变量范围值并绑定 // 你可以为每一项设置一个监听事件 onChange 或 onFinishChange
+                gui.add(controls, 'PointSize', 1, 50).onChange(function (value) {
+                    pointGrap.setSize(value);
+                });
+                gui.addColor(controls, 'PointColor').onChange(function (value) {
+                    pointGrap.setColor(value);
+                });
+
+                // 线
+                gui.add(controls, 'LineOpacity', 0.1, 1).onChange(function (value) {
+                    LineGrap.setOpacity(value);
+                });
+                gui.add(controls, 'LineVisible').onChange(function (value) {
+                    LineGrap.setVisible(value);
+                });
+                gui.add(controls, 'LineWidth', 1, 50).onChange(function (value) {
+                    console.log(value)
+                    LineGrap.setWidth(value);
+                });
+                gui.addColor(controls, 'LineColor').onChange(function (value) {
+                    LineGrap.setColor(value);
+                });
+
+                // 面
+                var PolygonOpacity = gui.add(controls, 'PolygonOpacity', 0.1, 1); // 设置变量范围值并绑定
+                PolygonOpacity.onChange(function (value) {
+                    PolygonGrap.setOpacity(value);
+                })
+                gui.add(controls, 'PolygonVisible').onChange(function (value) {
+                    PolygonGrap.setVisible(value);
+                });
+                gui.addColor(controls, 'PolygonColor').onChange(function (value) {
+                    PolygonGrap.setColor(value);
+                });
+
+                // 缩放级别
+                gui.add(controls, 'Zoom', 0, 12).onChange(function (value) {
+                    map.setZoom(value)
+                });
+
+                // 地理中心点
+                gui.add(controls, 'CenterLon', -180, 180).onChange(function (value) {
+                    var center = []
+                    center.push(value)
+                    center.push(controls.CenterLat)
+                    map.setCenter(center)
+                });
+                gui.add(controls, 'CenterLat', -85, 85).onChange(function (value) {
+                    var center = []
+                    center.push(controls.CenterLon)
+                    center.push(value)
+                    map.setCenter(center)
+                });
+            })
+        });
+        function change(code){
+            let _code = `EPSG:${code}`;
+            console.log(map)
+            map.projectionModes(_code)
+        };
+       
+    </script>
+</body>
+
+</html>

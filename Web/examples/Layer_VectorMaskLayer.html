@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>矢量图层</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src ="js/lib/status.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({
+        type:1,
+    });
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:4,
+        center:[110,30]
+    });
+    map.on('load',function(){
+        var grid = new PIE.GridTileLayer({
+      
+            url: path.windy.darkmap,
+            id: "rr"
+        });
+        map.add(grid);
+        addMask()
+    })
+    function addMask(){
+         getData("./data/shanxi.json",function(data){
+            var testMask = new PIE.MaskGridTileLayer({
+                id:"testMask",
+                url: path.GoogleURL.s,
+                mask:true,
+                maskData:data,
+            })
+            map.add(testMask)
+        })
+    }
+    function getData(url,fn){
+        var xhr = new XMLHttpRequest();         
+        xhr.open("GET",url, true);
+        xhr.onload = function () {
+            if (xhr.status == 200 ) {
+                var result = JSON.parse(xhr.response)
+                if (result.length === 0) {
+                    console.log('数据读取失败');
+                    return false;
+                }
+                fn(result);
+            
+            } else {
+                // reject(xhr.statusText);
+            }
+        };
+        xhr.onerror = function () {
+            // reject(xhr.statusText);
+        };
+        xhr.send(null);
+    }
+</script>
+</body>
+</html>

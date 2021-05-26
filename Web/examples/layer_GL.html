@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>GeoJson线数据</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <link href="js/PIE.css" rel="stylesheet" />
+    <script>
+        //初始化底图
+        var map = new PIE.Map({
+            baseMap: ""
+        });
+        //设置地图样式
+        var view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 1,
+            center: [110, 0]
+        });
+        var grid;
+        var testTextLayer2
+        //底图加载成功后对底图编辑
+        map.on("load", function () {
+      
+            //定义一个线图层
+            var testLineLayer = new PIE.MetoStyle.LineLayer({
+                data: "data/cccc.json",
+                width: 2,
+                color: "#444"
+            });
+            //将线图层添加到底图里
+            map.add(testLineLayer);
+            var testLineLayer2 = new PIE.MetoStyle.PointLayer({
+				url:'data/tttt.json',
+				
+				color:"#cf6"
+			});
+			//将线图层添加到底图里
+			map.add(testLineLayer2);
+
+        });
+    </script>
+</body>
+
+</html>

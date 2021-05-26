@@ -1,0 +1,416 @@
+/**
+ * WebGL 示例配置文件：包含示例的分类、名称、缩略图、文件路径
+ */
+var identification = {
+    name: "WebGL"
+};
+var exampleConfig = {
+    "layer": {
+        name: "地图管理",
+        name_en: "Basic map",
+        content: {
+            "Layer management": {
+                name: "基础地图",
+                name_en: "Layer management",
+                content: [
+                    {
+                        name: "栅格图层",
+                        name_en: "GridTileLayer",
+                        thumbnail: "layer_GridTileLayer.jpg",
+                        fileName: "Layer_GridTileLayer"
+                    },
+                    {
+                        name: "矢量图层",
+                        name_en: "VectorTileLayer",
+                        thumbnail: "layer_VectorTileLayer.jpg",
+                        fileName: "Layer_VectorTileLayer"
+                    },
+                    {
+                        name: "GeoJson数据",
+                        name_en: "S3MTiles_suofeiya",
+                        thumbnail: "layer_GeoJsonLayer.jpg",
+                        fileName: "Layer_GeoJsonLayer"
+                    },
+                    {
+                        name: "漫游",
+                        name_en: "VectorTileLayer",
+                        thumbnail: "layer_VectorTileLayer.jpg",
+                        fileName: "Cesium_roamHandler"
+                    }
+                ]
+            },
+            "Layer thematic": {
+                name: "专题图",
+                name_en: "Thematic",
+                content: [
+                    {
+                        name: "热力图",
+                        name_en: "heatmap",
+                        thumbnail: "layer_HeatmapLayer.jpg",
+                        fileName: "Thematic_HeatmapLayer"
+                    },
+                    /*{
+                        name: "等值线面图",
+                        name_en: "ContourLineAndPolygon",
+                        thumbnail: "layer_ContourLineAndPolygon.jpg",
+                        fileName: "Thematic_ContourLineAndPolygon"
+                    },
+                    {
+                        name: "气象专题图",
+                        name_en: "livelayer",
+                        thumbnail: "layer_livelayer.jpg",
+                        fileName: "Thematic_livelayer"
+                    },*/
+
+                ]
+            },
+            "model": {
+                name: "模型数据",
+                name_en: "Cesium",
+                content: [
+                    {
+                        name: "OSGB数据",
+                        name_en: "osgb",
+                        thumbnail: "osgb.jpg",
+                        fileName: "Cesium_3Dtile"
+                    },
+                    {
+                        name: "白膜数据",
+                        name_en: "task",
+                        thumbnail: "task.jpg",
+                        fileName: "Cesium_modelLayer"
+                    },
+                    /*{
+                        name: "3DMax数据",
+                        name_en: "max3d",
+                        thumbnail: "thumb.jpg",
+                        fileName: "Cesium_setDataScoure"
+                    }
+                    ,
+                    {
+                        name: "DEM数据",
+                        name_en: "dem",
+                        thumbnail: "thumb.jpg",
+                        fileName: "Cesium_DEM"
+                    }*/
+                ]
+            },
+            "imagery": {
+                name: "投影转换",
+                name_en: "ProjectionTransformation",
+                content: [
+                    {
+                        name: "投影转换",
+                        name_en: "ProjectionTransformation",
+                        thumbnail: "Pro_Transformation.jpg",
+                        fileName: "Pro_Transformation"
+                    },
+                ]
+            },
+            "GeoJson": {
+                name: "测量定位",
+                name_en: "MeasureTools",
+                content: [
+                    {
+                        name: "距离量测",
+                        name_en: "Distance Measure",
+                        thumbnail: "measure_Distance.jpg",
+                        fileName: "Measure_Distance"
+                    },
+                    {
+                        name: "面积量测",
+                        name_en: "Area Measure",
+                        thumbnail: "measure_Area.jpg",
+                        fileName: "Measure_Area"
+                    },
+                    {
+                        name: "坐标查询",
+                        name_en: "CoordinateLocation",
+                        thumbnail: "layer_CoordinateLocation.jpg",
+                        fileName: "Layer_CoordinateLocation"
+                    },
+                    {
+                        name: "空间测量",
+                        name_en: "SpaceMeasurement",
+                        thumbnail: "measure_Area.jpg",
+                        fileName: "Cesium_measureHandler"
+                    }
+                ]
+            },
+        }
+    },
+    "map-edit": {
+        name: "地图编辑",
+        name_en: "map edit",
+        content: {
+            "Graphics draw": {
+                name: "图形绘制",
+                name_en: "Graphics draw",
+                content: [
+                    {
+                        name: "矩形框选",
+                        name_en: "Rectangle select",
+                        thumbnail: "Graphics_RectangleSelect.jpg",
+                        fileName: "Graphics_RectangleSelect"
+                    },
+                    {
+                        name: "绘制图形",
+                        name_en: "DrawGraphics",
+                        thumbnail: "Graphics_GraphicsLayer.jpg",
+                        fileName: "Graphics_GraphicsLayer"
+                    },
+                ]
+            },
+            "Graphics edit": {
+                name: "图形编辑",
+                name_en: "Graphics edit",
+                content: [
+                    {
+                        name: "添加移动删除点",
+                        name_en: "addRemoveMove points",
+                        thumbnail: "Graphics_addRemoveMovePoints.jpg",
+                        fileName: "Graphics_addRemoveMovePoints"
+                    },
+                    {
+                        name: "图形选择",
+                        name_en: "graphics select",
+                        thumbnail: "Graphics_SelectGraphics.jpg",
+                        fileName: "Graphics_SelectGraphics"
+                    },
+                   /* {
+                        name: "图层设置",
+                        name_en: "Layer settings",
+                        thumbnail: "Graphics_LayerCountSettings.jpg",
+                        fileName: "Graphics_LayerCountSettings"
+                    }, */
+                    {
+                        name: "图形编辑",
+                        name_en: "GraphicsEditor",
+                        thumbnail: "Graphics_Editor.jpg",
+                        fileName: "Graphics_Editor"
+                    },
+                    /* {
+                        name: "地图类型",
+                        name_en: "Map type",
+                        thumbnail: "Graphics_MapType.jpg",
+                        fileName: "Graphics_MapType"
+                    },  */
+                     {
+
+                        name: "几何图形添加",
+                        name_en: "addGeometry",
+                        thumbnail: "Graphics_addGeometry.jpg",
+                        fileName: "Graphics_addGeometry"
+                    },
+                ]
+            },
+            "Graphics tools": {
+                name: "图形工具",
+                name_en: "Graphics tool",
+                content: [
+                    {
+                        name: "数据下载",
+                        name_en: "GeoJson download",
+                        thumbnail: "Graphics_GeoJsondownload.jpg",
+                        fileName: "Graphics_GeoJsondownload"
+                    },
+
+                ]
+            },
+        }
+    },
+
+    "Visualization": {
+        name: "气象可视化",
+        name_en: "Visualization",
+        content: {
+            "Observation": {
+                name: "观测资料",
+                name_en: "observation data",
+                content: [
+                    {
+                        name: "站点数据",
+                        name_en: "station",
+                        thumbnail: "Observation_Station.jpg",
+                        fileName: "Observation_Station"
+                    },
+                    {
+                        name: "等值线分析图",
+                        name_en: "IsoLineLayer",
+                        thumbnail: "Observation_IsoLineLayer.jpg",
+                        fileName: "Observation_IsoLineLayer"
+                    }
+                ]
+            },
+            "Pattern": {
+                name: "模式数据",
+                name_en: "Pattern data",
+                content: [
+                    {
+                        name: "风力图",
+                        name_en: "WindMapLayer",
+                        thumbnail: "Pattern_WindMapLayer.jpg",
+                        fileName: "Pattern_WindMapLayer"
+                    },
+                    {
+                        name: "风羽图",
+                        name_en: "WindIconLayer",
+                        thumbnail: "Pattern_WindIconLayer.jpg",
+                        fileName: "Pattern_WindIconLayer"
+                    },
+                    {
+                        name: "格网值",
+                        name_en: "WindTextLayer",
+                        thumbnail: "Pattern_WindTextLayer.jpg",
+                        fileName: "Pattern_WindTextLayer"
+                    },
+                    {
+                        name: "色斑图",
+                        name_en: "Pattern_SpotPattern",
+                        thumbnail: "Pattern_SpotPattern.jpg",
+                        fileName: "Pattern_SpotPattern"
+                    }
+                ]
+            },
+            "CloudMap": {
+                name: "云图资料",
+                name_en: "cloud map",
+                content: [
+                    {
+                        name: "云图",
+                        name_en: "cloud map",
+                        thumbnail: "Cloud_mapLayer.jpg",
+                        fileName: "Cloud_mapLayer"
+                    }
+                ]
+            },
+            "Typhoon": {
+                name: "台风资料",
+                name_en: "Typhoon data",
+                content: [
+                    {
+                        name: "台风图",
+                        name_en: "Typhoon map",
+                        thumbnail: "Typhoon_mapLayer.jpg",
+                        fileName: "Typhoon_mapLayer"
+                    }
+                ]
+            },
+           "flood": {
+                name: "洪水模拟",
+                name_en: "flood data",
+                content: [
+                    {
+                        name: "洪水模拟",
+                        name_en: "Typhoon map",
+                        thumbnail: "Typhoon_mapLayer.jpg",
+                        fileName: "floodInundation"
+                    }
+                ]
+            },
+            // "Radar": {
+            //     name: "雷达资料",
+            //     name_en: "radar data",
+            //     content: [
+            //         {
+            //             name: "雷达数据",
+            //             name_en: "area",
+            //             thumbnail: "thumb.jpg",
+            //             fileName: "measure_Area"
+            //         }
+            //     ]
+            // },
+        }
+    },
+	 "Plugins": {
+        name: "第三方接入",
+        name_en: "Plugins",
+        content: {
+            "Echarts": {
+                name: "Echarts",
+                name_en: "Echarts",
+                content: [
+                   /*{
+                        name: "飞机航线",
+                        name_en: "Echart_Airline",
+                        thumbnail: "Echart_Airline.jpg",
+                        fileName: "Echart_Airline"
+                    },*/
+                    {
+                        name: "模拟迁移",
+                        name_en: "Echart_Geoline",
+                        thumbnail: "Echart_Geoline.jpg",
+                        fileName: "Echart_Geoline"
+                    },
+                    {
+                        name: "微博签到数据",
+                        name_en: "Echart_Scatterweibo",
+                        thumbnail: "Echart_Scatterweibo.jpg",
+                        fileName: "Echart_Scatterweibo"
+                    },
+                    {
+                        name: "城市空气质量",
+                        name_en: "Echart_EffectScattermap",
+                        thumbnail: "Echart_EffectScattermap.jpg",
+                        fileName: "Echart_EffectScattermap"
+                    }         
+                ]
+            },
+            "ThreeJS": {
+                name: "ThreeJS",
+                name_en: "ThreeJS",
+                content: [
+                    {
+                        name: "雷达卫星",
+                        name_en: "ThreeJS_Radar",
+                        thumbnail: "ThreeJS_Radar.jpg",
+                        fileName: "ThreeJS_Radar"
+                    },
+                ]
+            },
+
+        }
+    },
+       
+  };
+
+/**
+ *key值：为exampleConfig配置的key值或者fileName值
+ *      （为中间节点时是key值，叶结点是fileName值）
+ *value值：fontawesome字体icon名
+ *不分层
+ */
+var sideBarIconConfig = {
+    "map-edit": "fa-pencil-square",
+    "Visualization": "fa-globe",
+    "layer": "fa-map",
+	"Plugins":"fa-edit",
+  /* "KMLAndModel": "fa-cubes",
+    "online-draw": "fa-edit",
+    "search": "fa-search",
+    "measurement": "fa-arrows-v",
+    "analysis": "fa-map",
+    "visualization": "fa-eye",
+    "stereoscopic-show": "fa-cube",
+    "plot": "fa-pencil"*/
+};
+
+/**
+ *key值：为exampleConfig配置的key值
+ *value值：fontawesome字体icon名
+ *与sideBarIconConfig的区别：sideBarIconConfig包括侧边栏所有层级目录的图标，exampleIconConfig仅包括一级标题的图标
+ */
+var exampleIconConfig = {
+    "map-edit": "fa-pencil-square",
+    "Visualization": "fa-globe",
+    "layer": "fa-map",
+	"Plugins":"fa-edit",
+  /*  "KMLAndModel": "fa-cubes",
+    "online-draw": "fa-edit",
+    "search": "fa-search",
+    "measurement": "fa-arrows-v",
+    "analysis": "fa-map",
+    "visualization": "fa-eye",
+    "stereoscopic-show": "fa-cube",
+    "plot": "fa-pencil"*/
+};

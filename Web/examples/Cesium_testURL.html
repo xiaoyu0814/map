@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>根据选择设置数据源</title>
+	<link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+	<style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+	
+        }
+        html, body,#map {
+            width: 100%;
+			height:100%;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+</body>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map;
+    var view;
+    var iconJson,stadata;
+    var _num = window.location.href.indexOf("//");
+    var _numb = window.location.href.indexOf("/", _num + 2);
+    var _url = window.location.href.substr(0, _numb);
+    init();
+
+    //初始化底图
+    function init() {
+        map =new PIE.Map({
+			type:2,
+		});//初始化底图
+		 //设置视图
+		view = new PIE.MapView({
+			map:map,
+			container:"map",
+           
+            sprite: _url + "/examples/sprite/Weather",
+		});
+        map.on('load',function(){
+              var grid1 = new PIE.GridTileLayer({
+                //url:'https://ims.windy.com/ecmwf-hres/2019/05/10/06/257w{z}/{y}/{x}/temp-surface.jpg?reftime=2019050912',
+                //url:path.windy.ecmwfHres,
+                url:'/fy3dimg/getTile?X={x}&Y={y}&Z={z}&date=20190831',
+               // url:'http://10.1.6.77:8060/PIE-Web/groundLive/showStationColorTilePng/{z}/{x}/{y}.png?params=date:20181204,type:liveInfo_Gts,span:0800,level:999,element:T24',
+                //url:path.PIEWeb.showStationColorTilePng, 
+               id: 'tilelayer1'
+            });
+           
+             var grid = new PIE.GridTileLayer({
+                url:'http://cloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}',
+                 //url:'http://t0.tianditu.gov.cn/vec_c/wmts?tk=c1d6b49adb2ba817109873dbc13becb4&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=c&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles',
+                //url: path.TiandituURL.vec,
+                 id: 'tilelayer2'
+            });
+           
+     var GridTileLayer = new PIE.ol.layer.Tile({
+        source: new PIE.ol.source.XYZ({
+            url: '/fy3dimg/getTile?X={x}&Y={y}&Z={z}&date=20190831',
+            projection:"EPSG:4326"
+        }),
+        zIndex: 0
+    });
+    map.map.addLayer(GridTileLayer)
+             map.add(grid);
+             var isoLineLayer = new PIE.MetoStyle.IsoLineLayer({
+                data :'./data/IsoLineData.json',
+                id :"isoline",
+                opacity:1
+            })
+        isoLineLayer.addEventListener("load", function () {
+            map.add(isoLineLayer)
+        })
+        stationLayer = new PIE.MetoStyle.StationLayer({
+            data: "./data/groundstation.json",
+            id: "station"
+        });
+        stationLayer.addEventListener('load',function(){
+              map.add(stationLayer);
+        })
+ // map.add(grid1);
+           
+        })
+
+    
+    }
+
+
+
+</script>
+</html>

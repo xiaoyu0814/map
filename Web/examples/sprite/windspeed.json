@@ -1,0 +1,4625 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 274
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 268
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 283
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 310
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 299
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 257
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 326
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 355
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 15
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 25
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 22
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 25
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 16
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 25
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 35
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 59
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 54
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 62
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 79
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 108
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 138
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          60.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 113
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 274
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 282
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 299
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 314
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 304
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 277
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 349
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "09",
+        "WindDirection": 17
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 25
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 19
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 17
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 344
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 7
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 13
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 14
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 18
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 33
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 53
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 78
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 99
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 122
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          56.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 77
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 303
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 314
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 319
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 333
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 324
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 326
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 16
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 15
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 14
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 28
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 43
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 28
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 10
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 11
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 28
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 35
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 66
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 100
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 69
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          52.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 87
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 30
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 59
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 341
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 302
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 316
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 321
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 349
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 12
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 20
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 34
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 13
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 347
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 322
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 305
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 286
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 275
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 278
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 241
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          48.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 272
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 313
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 254
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 246
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 259
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 301
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 317
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 330
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 342
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 344
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 342
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 338
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 318
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 319
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 306
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 301
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 291
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 277
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "09",
+        "WindDirection": 274
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "09",
+        "WindDirection": 273
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "09",
+        "WindDirection": 274
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 258
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          44.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 268
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 283
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 267
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 240
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 244
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 290
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 315
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 312
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 320
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 320
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 320
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 295
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 297
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 274
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 276
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "09",
+        "WindDirection": 274
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 262
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 264
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "13",
+        "WindDirection": 265
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "14",
+        "WindDirection": 265
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "15",
+        "WindDirection": 265
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "15",
+        "WindDirection": 267
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          40.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "15",
+        "WindDirection": 268
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 292
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 324
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 48
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 209
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 205
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 313
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 306
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 308
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 304
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 297
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 281
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 281
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 275
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 265
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "14",
+        "WindDirection": 263
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "13",
+        "WindDirection": 266
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 262
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 258
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "13",
+        "WindDirection": 257
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "13",
+        "WindDirection": 256
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "14",
+        "WindDirection": 256
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          36.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "13",
+        "WindDirection": 257
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 294
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 327
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 328
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 257
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 156
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "01",
+        "WindDirection": 217
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 284
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 292
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "09",
+        "WindDirection": 290
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 283
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 283
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 277
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 272
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 274
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "13",
+        "WindDirection": 260
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 247
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 249
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "13",
+        "WindDirection": 251
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 251
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 265
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "12",
+        "WindDirection": 273
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          32.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 259
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 294
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 317
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "09",
+        "WindDirection": 321
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 283
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 216
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 215
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 266
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 274
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 303
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 281
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 279
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 266
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 268
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 268
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 241
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 255
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 264
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 253
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "09",
+        "WindDirection": 263
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 271
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 268
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          28.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 248
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 267
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 308
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "09",
+        "WindDirection": 314
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 290
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 277
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 266
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 244
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 245
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 255
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 236
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 247
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 268
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "10",
+        "WindDirection": 255
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 251
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 252
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 260
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 264
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 264
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "11",
+        "WindDirection": 262
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "09",
+        "WindDirection": 254
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 264
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          24.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 280
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 270
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 303
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 310
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 296
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 282
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 271
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 255
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 264
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 245
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 256
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "09",
+        "WindDirection": 258
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 259
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 249
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "08",
+        "WindDirection": 252
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 257
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 259
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 243
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 249
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 256
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 258
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 254
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          20.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 255
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 63
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 33
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 356
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 294
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 282
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 273
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 257
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 251
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 245
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 239
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 235
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 241
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 235
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 236
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 252
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 201
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 199
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 173
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 208
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 190
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 150
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          16.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 34
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 80
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 343
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 293
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 257
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 262
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 238
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 259
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 233
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 142
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 152
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 137
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 104
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 107
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 94
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 75
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 38
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 59
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 87
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 96
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 100
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 84
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          12.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 63
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "01",
+        "WindDirection": 27
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 327
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "01",
+        "WindDirection": 225
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "01",
+        "WindDirection": 49
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "01",
+        "WindDirection": 92
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 87
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 95
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 71
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 98
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 90
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 99
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 83
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 89
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 96
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 101
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 94
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 86
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 81
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 87
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 86
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 79
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          8.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "07",
+        "WindDirection": 74
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 55
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          64.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 78
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 102
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 101
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 86
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "02",
+        "WindDirection": 295
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          84.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "03",
+        "WindDirection": 133
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 123
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 99
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 89
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 83
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 86
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 85
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 90
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 94
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 86
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 88
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          128.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "06",
+        "WindDirection": 89
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 91
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 95
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "05",
+        "WindDirection": 82
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.0,
+          4.0
+        ]
+      },
+      "properties": {
+        "WindSpeed": "04",
+        "WindDirection": 56
+      }
+    }
+  ]
+}

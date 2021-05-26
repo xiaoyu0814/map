@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>台风图</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        .mapboxgl-popup {
+            max-width: 400px;
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        }
+        .marker {
+            display: block;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+        }
+    </style>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+</head>
+<body>
+<div id="map"></div>
+<input type="button" onclick="delMap();" value="删除风场" style="position: absolute">
+<script src="../build/PIE.js"></script>
+<script src="./js/show/path.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script>
+    //初始化底图
+    var map = new PIE.Map({
+        type:1,
+        baseMap:""
+    });
+    //设置地图样式
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:4,
+        center:[118,10]
+        //sprite:"http://127.0.0.1:8081/examples/sprite/Weather"
+    });
+    var typhoon;
+    //添加矢量瓦片图层
+    var vectorTileLayer  = new PIE.GridTileLayer({
+            //url: "http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+            url: path.PIEGrid.GlobalDarkMap,
+            id:"drakmap"
+        });
+
+
+    var vectorTileLayer1  = new PIE.GridTileLayer({
+            //url:'http://cloud.piesat.cn/dataservices/service/v1/tile?map=GlobalHillShadingMap&x={x}&y={y}&z={z}'
+            //url : 'http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalGrayLandMap&x={x}&y={y}&z={z}'
+            url: path.PIEGrid.GlobalGrayLandMap,
+        });
+    var bbox=[56.02,-4.96,150.97,59.97];
+    var imgUrl ,i=0;
+    var linePath = [];
+    
+    //底图加载成功后对底图编辑
+    map.on("load",function () {
+        
+       // map.add(vectorTileLayer1);
+       map.add(vectorTileLayer);
+        typhoon = new PIE.MetoStyle.TyphoonLayer({
+            url:"./data/jilaka.json",
+            id:"ces"
+        });
+        map.add(typhoon)
+
+    });
+     function delMap() {
+         map.remove(map.getLayer("ces"));
+     }
+</script>
+<!--<script src ="js/lib/MapTool.js"></script>-->
+<script type="module">
+    import * as MapTool from './js/lib/MapTool_BtnSeparate.js';
+    new MapTool.MapSwitch_MKT(MapTool.MapToolManger);
+    var btn3W=new MapTool.MapSwitch_3W(MapTool.MapToolManger);
+    btn3W.style.top = "5%";
+</script>
+</body>
+</html>

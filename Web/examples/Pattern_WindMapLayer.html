@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>风力图</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src ="js/lib/status.js"></script>
+<script src="./js/show/path.js"></script>
+<script src="./data/test1.js"></script>
+<!-- 动态流线数据 -->
+<script type="text/javascript" src="data/dynamicflow1.js"></script>
+<script>
+    var map = new PIE.Map({//新建一个map对象
+        baseMap:""
+    });
+    var view = new PIE.MapView({//新建视图
+        map:map,
+        container:"map",
+        zoom:3,
+        backgroundColor:"#7d7d7d",
+        center:[110,30]
+    });
+    //定义一个流线图层
+   
+    var testWindMapLayer;
+    map.on("load",function () {//添加监听事件，在加载的时候添加图层
+        var state = new Status(map);
+        document.body.appendChild(state.dom);
+        var grid1 = new PIE.GridTileLayer({
+            //url:'https://t5.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}&tk=1072d95046f18e67463ce40d645a9b8d'
+            url: path.TiandituURL.vec_w1,
+        });
+        //map.add(grid1);
+        //定义一个栅格瓦片图层
+        var grid = new PIE.GridTileLayer({
+            url: "https://tiles.windy.com/tiles/v9.0/darkmap/{z}/{x}/{y}.png",
+            // url: path.PIEGrid.GlobalDarkMap,
+            id:"darkmap"
+        });
+        map.add(grid);
+        var c =new  PIE.Layer()
+        c.getData("./data/wind.json",function(res){
+            
+            testWindMapLayer = new PIE.MetoStyle.WindMapLayer({data:res.data.value.value,id:"test"});
+             map.add(testWindMapLayer)
+        })
+     
+    })
+</script>
+<script src ="js/lib/MapTool1.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>地图切换</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        .btstyle{
+            z-index: 8001;
+            position: relative;
+            background-color: blanchedalmond;
+            border: solid 2px rgb(180, 154, 123);
+            border-radius: 10px;
+            float: left;
+            margin: 5px;
+            padding: 10px;
+            width: 115px;
+            cursor: pointer;
+            outline:none;
+            color: sienna;
+        }
+    </style>
+</head>
+<body>
+<button onclick="checkmapbox(this)" class="btstyle" style="background:burlywood">切换mapbox</button>
+<button onclick="checkopenlaryer(this)" class="btstyle">切换openlayer</button>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script>
+    //初始化底图
+    var map = new PIE.Map();
+    //设置视图
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:1,
+        center:[110,0]
+    });
+    //底图加载成功后对底图编辑
+    map.on("load",function () {
+        //定义一个fill图层
+        var testFillLayer = new PIE.MetoStyle.FillLayer({data:"data/worldPolyGon.geojson",color:"rgba(243, 236, 236, 1)",id:"measure-points",opacity:1,visible:true});
+        //将图层添加到底图里
+        map.add(testFillLayer);
+        testFillLayer.addEventListener("load",function () {
+            var testLineLayer = new PIE.MetoStyle.LineLayer({data:"data/countries-110m.geojson",color:"rgba(0, 0, 0, 1)",id:"measure-Line",opacity:1,visible:true});
+            map.add(testLineLayer);
+        })
+    });
+    var maptype = 1;
+    function checkmapbox(item){
+        $(item).css("background","burlywood").siblings(".btstyle").css("background","blanchedalmond")
+        if(maptype==2){
+            map.changeMapType(1);
+            maptype = 1
+        }
+    }
+    function checkopenlaryer(item){
+        $(item).css("background","burlywood").siblings(".btstyle").css("background","blanchedalmond")
+        if(maptype==1){
+            map.changeMapType(2);
+            maptype = 2
+        }
+    }
+
+</script>
+</body>
+</html>

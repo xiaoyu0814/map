@@ -1,0 +1,7 @@
+syntax = "proto3";
+import "wpGeoLine.proto";
+package pbufWeather; 
+message wpIsolineRenderData 
+{ 
+   repeated wpGeoLine wGeoLineArray = 1;
+}

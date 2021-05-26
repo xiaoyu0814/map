@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>line</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .measureCur {
+            cursor: url(./image/measure.cur), auto;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<div id="toolTip" style="z-index: 9999; position: absolute; top: 250px; left: 20px; width:45px"></div>
+<script src="../../build/Cesium/Cesium.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/measureHelper.js"></script>
+<script>
+     Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+     var viewer = new Cesium.Viewer("map", {
+            geocoder: false,
+            homeButton: false,
+            sceneModePicker: true,
+            baseLayerPicker: false,
+            navigationHelpButton: false,
+            animation: false,
+            //creditContainer: "credit",
+            timeline: false,
+            fullscreenButton: false,
+            vrButton: false,
+            //terrainProvider: terrainLayer,
+            maximumLevel: 18,
+            imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                url: "https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}"
+            }),
+            orderIndependentTranslucency: false,
+            contextOptions: {
+                webgl: {
+                    alpha: true,
+                }
+            },
+        });
+
+        viewer.scene.skyBox.show = false;
+        viewer.scene.backgroundColor = Cesium.Color.BLUE.withAlpha(0);
+        viewer.scene.sun.show = false;
+        viewer.scene.moon.show = false;
+
+        // viewer.scene.skyBox.show = false;
+        // viewer.scene.backgroundColor = new Cesium.Color(0.0, 0.0, 0.0, 0.0);
+        viewer.useDefaultRenderLoop = true;
+        viewer.scene.globe.depthTestAgainstTerrain = true;
+        viewer.scene.pickTranslucentDepth = true;
+  
+        viewer.terrainProvider=Cesium.createWorldTerrain();
+
+        getToolButton();
+        var handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+        //定义目标位置
+        var destination=Cesium.Rectangle.fromDegrees(118.30037712999183,29.854291959512913,118.50337712999183,29.869921830807358);
+        var  heading=Cesium.Math.toRadians(0.0);//朝北
+        var  pitch=Cesium.Math.toRadians(-15);
+        var  roll=Cesium.Math.toRadians(0);
+        var  duration=0;
+        //实例化测量类
+        var measure=new measureHelper({viewer:viewer,handler:handler,toolTipId:"toolTip"});
+        //定位到目标位置
+        measure.flyTo(destination,heading,pitch,roll,duration);
+        //增加监听事件
+        document.getElementById('distance').addEventListener('click',function () {
+            measure.measureDistance();
+        }, false);
+        document.getElementById('height').addEventListener('click',function () {
+            measure.measureHeight();
+        }, false);
+        document.getElementById('area').addEventListener('click',function () {
+            measure.measureArea();
+        }, false);
+        document.getElementById('btn_Clear').addEventListener('click',function () {
+            measure.clearAll();
+        }, false);
+    function getToolButton() {//增加测试按钮
+        var toolbar = document.getElementById('toolbar');
+        toolbar.innerHTML =
+            '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="distance">测距</button>' +
+            '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="height">测高</button>' +
+            '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="area">测面积</button>' +
+            '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="btn_Clear">清除</button>';
+        toolbar.setAttribute('style', 'background: rgba(42,42,42,0.9); border-radius: 5px;');
+    }
+</script>
+</body>
+</html>

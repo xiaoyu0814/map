@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Use correct character set. -->
+    <meta charset="utf-8">
+    <!-- Tell IE to use the latest, best version. -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>Hello World!</title>
+
+    <script src="../build/PIE.js"></script>
+
+    <!-- <script src="./js/modules/cesium-plugins/measure.js"></script> -->
+    <!-- <script src="./js/modules/cesium-plugins/VisiableAnalysis/VisiableAnalysis.js"></script> -->
+    <script src="./js/modules/cesium-plugins/VisiableAnalysis/turf.min.js"></script>
+    <!-- <script src="./js/modules/cesium-plugins/VisiableAnalysis/ModelVisiable.js"></script> -->
+    <!-- <script src="./js/modules/cesium-plugins/Measure/SpaceLineMeasure.js"></script> -->
+    <!-- <script src="./js/modules/cesium-plugins/ProfileAnalyst.js"></script> -->
+    <!-- <script src="./js/modules/cesium-plugins/measure.js"></script> -->
+    <!-- <script src="./js/modules/cesium-plugins/BufferAnalysis/DrawGeometry.js"></script> -->
+    <!-- <script src="./js/modules/cesium-plugins/FloodAnalysis/FloodAnalysis.js"></script> -->
+    <!-- <script src="./js/modules/cesium-plugins/SlopeDirectionAnalysis/SlopeAspectAnalysis.js"></script> -->
+    <!-- <script src="./js/modules/cesium-plugins/SunlightAnalysis/SunlightAnalysis.js"></script> -->
+    <script src="./js/show/jquery.min.3.2.1.js"></script>
+    <!-- <script src="./js/modules/cesium-plugins/ViewsheldAnalysis/ViewsheldAnalysis.js"></script> -->
+    <script src="./js/lib/echarts-all-3.js"></script>
+    <script src="./js/modules/cesium-plugins/all-daafc94704.js"></script>
+    <script src="./js/show/path.js"></script>
+
+
+    <style>
+        @import url(../Build/Cesium/Widgets/widgets.css);
+
+        html,
+        body,
+        #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+
+        .sectionChars {
+            top: 600px;
+            width: 100%;
+            height: 200px;
+
+            left: 5%;
+
+
+            display: none;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sectionChars" class="infoview sectionChars">
+        <div id="echartsView1" style="width:100%;height:100% ;"></div>
+    </div>
+    <div id="cesiumContainer"></div>
+    <div id="credit"></div>
+    <div id="switchButton" style="position: absolute; top: 2%; left: 10px;">
+        <button onclick="flyTerrain()">定位到地形</button>
+        <button onclick="flyBeijing()">定位到场景</button>
+        <button onclick="showGrid()">格网</button>
+        <button onclick="showBuilding()">建筑</button>
+        <button onclick="showModel()">模型</button>
+        <button onclick="showTargets()">目标</button>
+        <button onclick="showViewsheld()">动态可视域</button>
+        <button onclick="createRoute()">添加轨迹</button>
+    </div>
+    <div style="position: absolute; top: 5%; left: 10px;">
+        <div style="margin-bottom: 6px;">
+            <span style="color: cyan;">可视域分析</span>
+            <button onclick="visualAnalyist()">可视域分析</button>
+            <button onclick="cleanVisual()">清除可视域</button>
+        </div>
+        <div style="margin-bottom: 6px;">
+            <span style="color: cyan;">模型通视分析</span>
+
+            <button onclick="modelAnalyist()">模型通视分析</button>
+            <button onclick="cleanModel()">清除模型分析结果</button>
+        </div>
+        <div style="margin-bottom: 6px;">
+
+            <span style="color: cyan;">地形通视分析</span>
+            <button onclick="terrainVisiable()">地形通视分析</button>
+            <button onclick="cleanVisiable()">清除地形分析结果</button>
+        </div>
+<!-- 
+        <div style="margin-bottom: 6px;">
+
+            <span style="color: cyan;">剖面分析</span>
+            <button onclick="analyst()">剖面分析</button>
+            <button onclick="clearProfile()">清除剖面分析结果</button>
+        </div> -->
+
+        <div style="margin-bottom: 6px;">
+
+            <span style="color: cyan;">地表测量</span>
+            <button onclick="createMeasureLineTool()">测量地表距离</button>
+            <button onclick="createMeasureAreaTool()">测量地表面积</button>
+            <button onclick="clearMeasureResult()">清除地表测量结果</button>
+        </div>
+        <div style="margin-bottom: 6px;">
+
+            <span style="color: cyan;">空间测量</span>
+            <button onclick="measureLine()">测量空间距离</button>
+            <button onclick="measureArea()">测量空间面积</button>
+            <button onclick="spaceMeasureClean()">清除空间测量结果</button>
+        </div>
+        <div style="margin-bottom: 6px;">
+
+            <span style="color: cyan;">淹没分析</span>
+            <button onclick="drawplygon()">绘制面</button>
+            <button onclick="floodanalyis()">开始分析</button>
+            <button onclick="clean()">清除</button>
+        </div>
+        <div style="margin-bottom: 6px;">
+
+            <span style="color: cyan;">坡度分析</span>
+            <button onclick="drawSlopePlygon()">绘制面</button>
+            <button onclick="cleanSlopeResult()">清除坡度坡向分析结果</button>
+
+        </div>
+        <div style="margin-bottom: 6px;">
+
+            <button onclick="sunAnlysis()">日照分析</button>
+            <button onclick="clearResult()">清除日照分析结果</button>
+
+        </div>
+
+    </div>
+
+    <div id="visiableTips">
+        <div id="visiableAnalysisPanel"></div>
+    </div>
+    <script>
+       
+        var terrainLayer = new Cesium.CesiumTerrainProvider({
+            url: path.PIEterrain.test,
+            // url:'https://www.supermapol.com/realspace/services/3D-stk_terrain/rest/realspace/datas/info/data/path',
+            requestWaterMask: true,
+        });
+     
+        var viewer = new Cesium.Viewer("cesiumContainer", {
+            geocoder: false,
+            homeButton: false,
+            sceneModePicker: true,
+            baseLayerPicker: false,
+            navigationHelpButton: false,
+            animation: false,
+            creditContainer: "credit",
+            timeline: false,
+            fullscreenButton: false,
+            vrButton: false,
+            // terrainProvider: terrainLayer,
+            maximumLevel: 18,
+            imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                url: "https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}"
+            }),
+            orderIndependentTranslucency: false,
+            contextOptions: {
+                webgl: {
+                    alpha: true,
+                }
+            },
+
+        });
+        viewer._cesiumWidget._creditContainer.style.display = "none";
+        viewer.scene.skyBox.show = false;
+        viewer.scene.backgroundColor = Cesium.Color.BLUE.withAlpha(0);
+        viewer.scene.sun.show = false;
+        viewer.scene.moon.show = false;
+
+        // viewer.scene.skyBox.show = false;
+        // viewer.scene.backgroundColor = new Cesium.Color(0.0, 0.0, 0.0, 0.0);
+        viewer.useDefaultRenderLoop = true;
+        viewer.scene.globe.depthTestAgainstTerrain = true;
+        viewer.scene.pickTranslucentDepth = true;
+
+        // var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+        // handler.setInputAction(function (event) {
+        //     var earthPosition = viewer.camera.pickEllipsoid(event.position, viewer.scene.globe.ellipsoid);
+        //     var cartographic = Cesium.Cartographic.fromCartesian(earthPosition, viewer.scene.globe.ellipsoid, new Cesium.Cartographic());
+        //     var lat = Cesium.Math.toDegrees(cartographic.latitude);
+        //     var lng = Cesium.Math.toDegrees(cartographic.longitude);
+        //     var height = cartographic.height;
+        //     console.log("[Lng=>" + lng + ",Lat=>" + lat + ",H=>" + height + "]");
+        // }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+   
+
+        // 可视域分析
+        var viewsheld = new ViewsheldTool({
+            viewer: viewer,
+        });
+        function visualAnalyist() {
+            viewsheld.setEnable(true);
+        }
+        function cleanVisual() {
+            viewsheld.setEnable(false);
+        }
+
+        // 模型通视分析
+        var model = new ModelVisiableTool({ viewer: viewer });
+        function modelAnalyist() {
+            model.setEnable(true);
+        }
+        function cleanModel() {
+            model.setEnable(false)
+        }
+
+        // 地形通视分析
+        var analysisTool = new AnalysisTool({
+            viewer: viewer,
+        })
+        function terrainVisiable() {
+            analysisTool.setEnable(true);
+        }
+        function cleanVisiable() {
+            analysisTool.setEnable(false);
+            console.log(analysisTool)
+        }
+
+        // 剖面分析
+        // var sectionChars = $("#sectionChars");
+        // var echartsView1 = document.getElementById("echartsView1");
+        // var profileAnalyst = new ProfileAnalystTool({
+        //     viewer: viewer,
+        //     sectionChars: sectionChars,
+        //     echartsView1: echartsView1,
+        //     drawingMode: "line"
+        // });
+        // function analyst() {
+        //     profileAnalyst.setEnable(true);
+        // }
+        // function clearProfile() {
+        //     profileAnalyst.setEnable(false)
+        // }
+
+        // 地表测量
+        var measureTool = new MeasureTool({
+            viewer: viewer,
+            target: 'measure'
+        });
+        function createMeasureLineTool() {
+            measureTool.measureLine();
+        }
+        function createMeasureAreaTool() {
+            measureTool.measureArea();
+        }
+        function clearMeasureResult() {
+            measureTool.clearResult();
+        }
+
+        // 空间测量
+        var spaceMeasureTool = new SpaceMeasureTool(viewer)
+        function measureLine() {
+            spaceMeasureTool.measureLineSpace()
+        }
+        function measureArea() {
+            spaceMeasureTool.measureAreaSpace()
+        }
+        function spaceMeasureClean() {
+            spaceMeasureTool.clean();
+        }
+
+        // 淹没分析
+        // 为了防止第一次分析闪屏
+        var greenCylinder = viewer.entities.add({
+            name: 'Green cylinder with black outline',
+            position: Cesium.Cartesian3.fromDegrees(-100.0, 40.0, 200000.0),
+            cylinder: {
+                length: 400000.0,
+                topRadius: 200000.0,
+                bottomRadius: 200000.0,
+                material: Cesium.Color.GREEN.withAlpha(0.5),
+                outline: true,
+                outlineColor: Cesium.Color.DARK_GREEN
+            },
+            show: false
+        });
+        var floodAnalysisTool = new FloodAnalysisTool(viewer)
+        function drawplygon() {
+            floodAnalysisTool.drawPlygon();
+        };
+        function floodanalyis() {
+            floodAnalysisTool.floodAnalysis(1000)
+        };
+        function clean() {
+            floodAnalysisTool.clean();
+        }
+        //日照分析
+        var sunlightTool = new SunlightTool(viewer);
+
+        function sunAnlysis() {
+            sunlightTool.setEnable(true)
+        }
+        function clearResult() {
+            sunlightTool.setEnable(false)
+        }
+
+        var gridBackProvider;
+        var gridBack;
+        var gridForeDataSource;
+        var gridFore;
+        var geojsonDataSource;
+        var geojson;
+
+        var beijingTileset;
+        var beijingPrimitive;
+        var sichuanTileset;
+        var sichuanPrimitive;
+
+        addGrid();
+        function addGrid() {
+            var imageryLayers = viewer.imageryLayers;
+            // gridBackProvider = new Cesium.SingleTileImageryProvider({
+            //     url: './grid.png',
+            //     rectangle: Cesium.Rectangle.fromDegrees(116.203, 39.923, 116.268, 39.9714)
+            // });
+            // gridBack = imageryLayers.addImageryProvider(gridBackProvider);
+            // gridBack.show = false;
+
+
+            gridForeDataSource = Cesium.GeoJsonDataSource.load('./data/SampleData/Data/beijinggrid.json', {
+                stroke: Cesium.Color.CYAN.withAlpha(0.5),
+                fill: Cesium.Color.GREEN.withAlpha(0.0),
+                strokeWidth: 3,
+                clampToGround: false,
+            });
+
+            viewer.dataSources.add(gridForeDataSource);
+            gridForeDataSource.then(function (dataSource) {
+                console.log(dataSource)
+                gridFore = dataSource;
+                gridFore.show = false;
+
+            })
+
+
+            // var worldContent = null;
+            // var xhrWorld = new XMLHttpRequest();
+            // xhrWorld.timeout = 0;
+            // xhrWorld.withCredentials = false;
+            // xhrWorld.responseType = "";
+            // xhrWorld.onload = function () {
+            //     worldContent = JSON.parse(this.response);
+            //     var geometries = worldContent.geometries;
+            //     for (var i = 0; i < geometries.length; i++) {
+            //         var geometry = geometries[i];
+            //         var coords = geometry.coordinates;
+            //         if (coords.length > 0 && i < 1000) {
+
+            //             for (let k = 0; k < coords.length; k++) {
+            //                 var points = coords[k];
+            //                 var positions = [];
+            //                 for (let j = 0; j < points.length; j++) {
+            //                     var ellipsoid = viewer.scene.globe.ellipsoid;
+            //                     var coord = Cesium.Cartesian3.fromDegrees(points[j][0], points[j][1], 0, ellipsoid);
+            //                     positions.push(coord);
+            //                 }
+            //                 var shape = viewer.entities.add(
+            //                     {
+            //                         name: '直线',
+            //                         polyline: {
+            //                             show: true,
+            //                             positions: positions,
+            //                             material: Cesium.Color.CHARTREUSE,
+            //                             width: 2,
+            //                             clampToGround: true
+            //                         }
+
+            //                     });
+            //             }
+
+            //         }
+            //     }
+            // }
+            // xhrWorld.open("GET", "./santai1.json", true);
+            // xhrWorld.send(null);
+
+
+
+        }
+
+        // addGeojson();
+        function addGeojson() {
+            geojsonDataSource = Cesium.GeoJsonDataSource.load('./data/SampleData/data/beijing_building_R_1.json', {
+                stroke: Cesium.Color.AQUA.withAlpha(1),
+                fill: Cesium.Color.ALICEBLUE.withAlpha(0.2),
+                strokeWidth: 8,
+            })
+            viewer.dataSources.add(geojsonDataSource);
+            geojsonDataSource.then(function (dataSource) {
+                viewer.dataSources.add(dataSource);
+                geojson = dataSource;
+                geojson.show = false;
+                console.log(dataSource)
+                var entities = dataSource.entities.values;
+                var colorHash = {};
+                for (let i = 0; i < entities.length; i++) {
+                    var entity = entities[i];
+                    var name = entity.name;
+                    entity.polygon.outline = false;
+                    entity.polygon.height = 0;
+                    entity.polygon.outline.heightReference = Cesium.HeightReference.CLAMP_TO_GROUND;
+                    entity.polygon.extrudedHeight = 50;
+                    // var height = entity.properties.HEIGHT; // 取出GB1999属性内容
+                    // var color = colorHash[height]; // 如果GB1999属性相同，则赋同一个颜色。
+                    // if (!color) {
+                    //     color = Cesium.Color.fromRandom({
+                    //         alpha: 1.0
+                    //     });
+                    //     colorHash[height] = color;
+                    // }
+                    // entity.polygon.material = Cesium.Color.AQUA; // 设置polygon对象的填充颜色
+                }
+                var temp = new Array();
+                window.Hightlightline = function (entity) {
+                    if (!Cesium.defined(entity)) {
+                        return
+                    }
+                    var exists = temp.indexOf(entity.id);
+                    if (exists <= -1) {
+                        Highlight(entity);
+                        temp.push(entity.id);
+                    } else {
+                        store(entity);
+                        temp.splice(exists, 1);
+                    }
+                }
+                window.Highlight = function (entity) {
+                    var m = entity;
+                    if (m) {
+                        m.polygon.material = Cesium.Color.GREEN;
+                    }
+                }
+                window.store = function (entity) {
+                    var m = entity;
+                    if (m) {
+                        m.polygon.material = Cesium.Color.WHITE;
+                    }
+                }
+            });
+            var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+            handler.setInputAction(function onLeftClick(movement) {
+                var pickedFeature = viewer.scene.pick(movement.position);
+                var position = viewer.scene.pickPosition(movement.position);
+                var ellipsoid = viewer.scene.globe.ellipsoid;
+                var cartographic = ellipsoid.cartesianToCartographic(position);
+                var lat = Cesium.Math.toDegrees(cartographic.latitude);
+                var lng = Cesium.Math.toDegrees(cartographic.longitude);
+                var alt = cartographic.height;
+                var position = {
+                    lat: lat,
+                    lng: lng,
+                    alt: alt
+                }
+                console.log(position)
+                if (Cesium.defined(pickedFeature)) {
+                    var entity = pickedFeature.id;
+                    Hightlightline(entity);
+                }
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+        }
+
+
+        addBeijing();
+        function addBeijing() {
+            beijingTileset = new Cesium.Cesium3DTileset({
+                url: './data/SampleData/data/beijingbuildings3Dtiles1/tileset.json'
+            });
+            beijingPrimitive = viewer.scene.primitives.add(beijingTileset);
+            beijingTileset.readyPromise.then(function (tileset) {
+                // var heightOffset = 41; //高度
+                // var boundingSphere = tileset.boundingSphere;
+
+                // var cartographic = Cesium.Cartographic.fromCartesian(
+                //     boundingSphere.center
+                // );
+                // var surface = Cesium.Cartesian3.fromRadians(
+                //     cartographic.longitude,
+                //     cartographic.latitude,
+                //     0.0
+                // );
+                // var offset = Cesium.Cartesian3.fromRadians(
+                //     cartographic.longitude,
+                //     cartographic.latitude,
+                //     heightOffset
+                // );
+                // var translation = Cesium.Cartesian3.subtract(
+                //     offset,
+                //     surface,
+                //     new Cesium.Cartesian3()
+                // );
+                // tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+                tileset._modelMatrix = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, 0));
+                tileset.show = false;
+            }).otherwise(function (error) {
+                console.log(error);
+            });
+        }
+        viewer.zoomTo(beijingPrimitive);
+
+        addSichuan();
+        function addSichuan() {
+            sichuanTileset = new Cesium.Cesium3DTileset({
+                url: './data/SampleData/Data/Production_OSGB15/tileset.json',
+                maximumScreenSpaceError: 2,
+                maximumNumberOfLoadedTiles: 1000,
+            });
+            sichuanPrimitive = viewer.scene.primitives.add(sichuanTileset);
+       
+            // 模型加载完毕后的回调
+            sichuanTileset.readyPromise.then(function (tileset) {
+                var cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center);
+				var surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
+				var offset = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, -455);
+				var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
+				var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
+				var newMatrix = Cesium.Matrix4.fromTranslation(translation);
+				console.log(newMatrix)
+				tileset.modelMatrix = newMatrix;
+                tileset.show = false;
+            })
+        }
+
+        var camera = viewer.camera;
+        var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+        var height = 0;
+        var linePoints = [
+            104.40105556, 31.13496637,
+            104.40268903, 31.13479017,
+        ];
+        function createRoute() {
+            var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+            handler.setInputAction(function onLeftClick(movement) {
+                var pickedFeature = viewer.scene.pick(movement.position);
+                var position = viewer.scene.pickPosition(movement.position);
+                var ellipsoid = viewer.scene.globe.ellipsoid;
+                var cartographic = ellipsoid.cartesianToCartographic(position);
+                var lat = Cesium.Math.toDegrees(cartographic.latitude);
+                var lng = Cesium.Math.toDegrees(cartographic.longitude);
+                var alt = cartographic.height;
+                var position = {
+                    lat: lat,
+                    lng: lng,
+                    alt: alt
+                }
+                console.log(position)
+
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+            var line = viewer.entities.add({
+                name: '直线',
+                polyline: {
+                    show: true,
+                    positions: Cesium.Cartesian3.fromDegreesArray(linePoints),
+                    material: Cesium.Color.RED,
+                    width: 3,
+                    clampToGround: true
+                }
+            });
+        }
+
+        var isShowViewsheld = false;
+        var viewsheldHeading = 0;
+        var viewsheldPitch = 0;
+        function startFly() {
+            //Make sure viewer is at the desired time.
+            var start = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
+            var stop = Cesium.JulianDate.addSeconds(start, 120, new Cesium.JulianDate());
+            viewer.clock.startTime = start.clone();
+            viewer.clock.stopTime = stop.clone();
+            viewer.clock.currentTime = start.clone();
+            viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; //Loop at the end
+            viewer.clock.multiplier = 1;
+            viewer.clock.shouldAnimate = true;
+
+            //Set timeline to simulation bounds
+            // viewer.timeline.zoomTo(start, stop);
+            var pos1 = Cesium.Cartesian3.fromDegrees(linePoints[0], linePoints[1], height);
+            var pos2 = Cesium.Cartesian3.fromDegrees(linePoints[2], linePoints[3], height);
+            var position = new Cesium.SampledPositionProperty();
+
+            position.addSample(start, pos1);
+            position.addSample(stop, pos2);
+
+            var carEntity = viewer.entities.add({
+                availability: new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
+                    start: start,
+                    stop: stop
+                })]),
+                model: {
+                    uri: './data/SampleData/models/GroundVehicle/GroundVehicle.glb',
+                    // minimumPixelSize: 64,
+                    scale: 2
+                },
+                viewFrom: new Cesium.Cartesian3(-100.0, 0.0, 100.0),
+                position: position,
+                orientation: new Cesium.VelocityOrientationProperty(position),
+
+            });
+
+            var startCar = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
+            var stopCar = Cesium.JulianDate.addSeconds(startCar, 360, new Cesium.JulianDate());
+            var carPos1 = Cesium.Cartesian3.fromDegrees(linePoints[0], linePoints[1], height);
+            var carPos2 = Cesium.Cartesian3.fromDegrees(linePoints[2], linePoints[3], height);
+            var carPosition = new Cesium.SampledPositionProperty();
+
+            carPosition.addSample(startCar, carPos1);
+            carPosition.addSample(stopCar, carPos2);
+            var personEntity = viewer.entities.add({
+                availability: new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
+                    start: startCar,
+                    stop: stopCar
+                })]),
+                model: {
+                    uri: './data/SampleData/models/CesiumMan/Cesium_Man.glb',
+                    // minimumPixelSize: 64,
+                    scale: 5
+                },
+                viewFrom: new Cesium.Cartesian3(-100.0, 0.0, 100.0),
+                position: carPosition,
+                orientation: new Cesium.VelocityOrientationProperty(carPosition)
+            });
+            var label = {
+                text: "",
+                show: true,
+                showBackground: true,
+                font: '14px monospace',
+                horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                pixelOffset: new Cesium.Cartesian3(20, -30, 10),
+                disableDepthTestDistance: Number.POSITIVE_INFINITY
+            }
+            var labelPer = {
+                text: "",
+                show: true,
+                showBackground: true,
+                font: '14px monospace',
+                horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                pixelOffset: new Cesium.Cartesian3(20, -30, 10),
+                disableDepthTestDistance: Number.POSITIVE_INFINITY
+            }
+            window.setInterval(function () {
+                var curtime = viewer.clock.currentTime;
+                var pos = position.getValue(curtime);
+                var cartographic = Cesium.Ellipsoid.WGS84.cartesianToCartographic(pos);
+                var lon = Cesium.Math.toDegrees(cartographic.longitude);
+                var lat = Cesium.Math.toDegrees(cartographic.latitude);
+                var height = cartographic.height;
+                label.text = "经度" + Number(lon).toFixed(6) + "  纬度" + Number(lat).toFixed(6);
+                carEntity.label = label;
+
+                var posCar = carPosition.getValue(curtime);
+                var cartographicCar = Cesium.Ellipsoid.WGS84.cartesianToCartographic(pos);
+                var lonCar = Cesium.Math.toDegrees(cartographicCar.longitude);
+                var latCar = Cesium.Math.toDegrees(cartographicCar.latitude);
+                labelPer.text = "经度" + Number(lonCar).toFixed(6) + "  纬度" + Number(latCar).toFixed(6);
+                personEntity.label = labelPer;
+
+                if (isShowViewsheld) {
+                    if (viewsheld.camera == null) {
+                        pos.z += 10;
+                        viewsheld.makeShadowMap(pos, viewsheldHeading, viewsheldPitch, 500);
+                    } else {
+                        pos.z += 10;
+                        viewsheld.camera.setView({
+                            destination: pos,
+                            orientation: {
+                                heading: Cesium.Math.toRadians(viewsheldHeading),
+                                pitch: Cesium.Math.toRadians(viewsheldPitch)
+                            }
+                        });
+                        viewsheld.camera.position = pos;
+                    }
+                    viewsheldHeading += 0.1;
+                }
+
+            }, 30);
+
+        }
+
+        // 飞行到地形
+        function flyTerrain() {
+            viewer.terrainProvider = terrainLayer;
+            viewer.camera.flyTo({
+                destination: Cesium.Cartesian3.fromDegrees(116.13776364026992, 39.97991459375004, 15000.0)
+            });
+        }
+
+        // 飞行到北京
+        function flyBeijing() {
+            viewer.flyTo(beijingPrimitive);
+        }
+
+        // 飞行到四川
+        function flySichuan() {
+            viewer.flyTo(tilesetSichuan, new Cesium.HeadingPitchRange(0.5, -0.2, tilesetSichuan.boundingSphere.radius * 1.0));
+        }
+
+        function showGrid() {
+            if (gridBack != null) {
+                gridBack.show = !gridBack.show;
+            }
+            if (gridFore != null) {
+                gridFore.show = !gridFore.show;
+            }
+        }
+
+        function showBuilding() {
+            if (beijingTileset != null) {
+                beijingTileset.show = !beijingTileset.show;
+            }
+            if (geojson != null) {
+                geojson.show = !geojson.show;
+            }
+        }
+
+        function showModel() {
+            if (sichuanTileset != null) {
+                sichuanTileset.show = !sichuanTileset.show;
+                // sichuanPrimitive
+                viewer.flyTo(sichuanTileset, new Cesium.HeadingPitchRange(0.5, -0.2, sichuanTileset.boundingSphere.radius * 1.0));
+            }
+        }
+
+        function showTargets() {
+            startFly();
+        }
+
+        function showViewsheld() {
+            isShowViewsheld = !isShowViewsheld;
+            if (!isShowViewsheld) {
+                viewsheld.clean();
+            }
+        }
+
+        var handler = null;
+        var shape = null;
+        var positionArray = [];
+        var activeShapePoints = [];
+        var floatingPoint = null;
+        var activeShape = [];
+        var entityPolygon = null;
+        var activeEntityPoint = [];
+
+        //dian
+        var pointGeometry = null;
+
+        //线
+        var linefloatPoint = null;
+        var linePositionArray = [];
+        var lineEntity = null;
+        var shape;
+        var slopeAspectTool = new SlopeAspectTool(viewer, terrainLayer)
+        function drawSlopePlygon() {
+            slopeAspectTool.setEnable(true);
+
+        }
+        function cleanSlopeResult() {
+            slopeAspectTool.setEnable(false);
+        }
+        // function drawPlygon() {
+        //     handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+        //     viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+        //     handler.setInputAction(function (event) {
+        //         var earthPosition;
+        //         var feature = viewer.scene.pick(event.position);
+        //         if (feature) {
+        //             earthPosition = viewer.scene.pickPosition(event.position);
+        //         } else {
+        //             let ray = viewer.camera.getPickRay(event.position);
+        //             earthPosition = viewer.scene.globe.pick(ray, viewer.scene);
+
+        //         }
+
+        //         // 使用viewer.scene.pickPosition` 来代替`viewer.camera.pickEllipsoid` 这样当鼠标掠过terrain能得到正确的坐标
+        //         // var earthPosition = that.viewer.scene.pickPosition(event.position);
+        //         if (Cesium.defined(earthPosition)) {
+
+        //             if (activeShapePoints.length === 0) {
+        //                 floatingPoint = createPoint(earthPosition);
+
+        //                 activeShapePoints.push(earthPosition);
+        //                 var dynamicPositions = new Cesium.CallbackProperty(function () {
+        //                     return new Cesium.PolygonHierarchy(activeShapePoints);;
+        //                 }, false);
+        //                 activeShape = drawShape(dynamicPositions);
+        //             }
+        //             activeShapePoints.push(earthPosition);
+        //             createPoint(earthPosition);
+
+        //         }
+        //     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+        //     //
+        //     handler.setInputAction(function (event) {
+        //         if (Cesium.defined(floatingPoint)) {
+        //             var newPosition;
+        //             var feature = viewer.scene.pick(event.endPosition);
+        //             if (feature) {
+        //                 newPosition = viewer.scene.pickPosition(event.endPosition);
+        //             } else {
+        //                 let ray = viewer.camera.getPickRay(event.endPosition);
+        //                 newPosition = viewer.scene.globe.pick(ray, viewer.scene);
+
+        //             }
+        //             // var newPosition = that.viewer.scene.pickPosition(event.endPosition);
+        //             if (Cesium.defined(newPosition)) {
+        //                 floatingPoint.position.setValue(newPosition);
+        //                 activeShapePoints.pop();
+        //                 activeShapePoints.push(newPosition);
+        //             }
+        //         }
+        //     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+        //     //
+        //     handler.setInputAction(function (event) {
+
+        //         handler.destroy(); //关闭事件句柄
+        //         handler = undefined;
+
+
+        //         activeShapePoints.pop();
+        //         entityPolygon = drawShape(activeShapePoints);
+        //         viewer.entities.remove(floatingPoint);
+        //         viewer.entities.remove(activeShape);
+        //         entityPolygon = null;
+        //         floatingPoint = undefined;
+        //         activeShape = undefined;
+        //         var positionArray = [];
+        //         for (let i = 0; i < activeShapePoints.length; i++) {
+        //             var point = activeShapePoints[i];
+        //             var ellipsoid = viewer.scene.globe.ellipsoid;
+        //             var cartographic = ellipsoid.cartesianToCartographic(point);
+        //             var lat = Cesium.Math.toDegrees(cartographic.latitude);
+        //             var lng = Cesium.Math.toDegrees(cartographic.longitude);
+        //             var alt = cartographic.height;
+        //             var position = {
+        //                 lat: lat,
+        //                 lng: lng,
+        //                 alt: alt
+        //             };
+        //             positionArray.push(position)
+        //         }
+        //         viewer.entities.remove(shape)
+
+        //         drawSlopePolygon(positionArray[0].lng, positionArray[0].lat, positionArray[0].alt,
+        //             positionArray[1].lng, positionArray[1].lat, positionArray[1].alt,
+        //             positionArray[2].lng, positionArray[2].lat, positionArray[2].alt,
+        //             positionArray[3].lng, positionArray[3].lat, positionArray[3].alt,
+        //         )
+        //     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+
+        //     function createPoint(worldPosition) {
+        //         var point = viewer.entities.add({
+        //             position: worldPosition,
+        //             point: {
+        //                 pixelSize: 10,
+        //                 color: Cesium.Color.YELLOW,
+        //                 //disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        //                 heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+        //             },
+        //         });
+        //         activeEntityPoint.push(point);
+        //         points = point;
+        //         return point;
+        //     }
+        //     function drawShape(positionData) {
+        //        shape = viewer.entities.add({
+        //             polygon: {
+        //                 hierarchy: positionData,
+        //                 material: new Cesium.ColorMaterialProperty(Cesium.Color.LIGHTSKYBLUE.withAlpha(0.7))
+        //             }
+        //         });
+
+        //         return shape;
+        //     }
+
+        // }
+
+        //绘制小矩形面 四个经纬度的点，z值高度可以忽略 如：113.xx  ,37.xx,0 ,113.xx,37.xx,0
+        function drawSlopePolygon(startx1, starty1, startz1, startx2, starty2, startz2, startx3, starty3, startz3, startx4, starty4, startz4) {
+
+            //高度z全为0
+            var count = 100;
+            var slopelineposition = [];
+            var hireacys = [];
+            var hireacysdistance = []
+            for (j = 0; j < 100; j++) {
+                for (var i = 0; i < 100; i++) {
+                    var hireacy = [];
+                    //分割成小面，切分经纬度
+                    hireacy.push(new Cesium.Cartesian3(startx1 + (startx2 - startx1) / count * i + (startx4 + (startx3 - startx4) / count * (i) - startx1 - (startx2 - startx1) / count * i) / count * j,
+                        starty1 + (starty2 - starty1) / count * i + (starty4 + (starty3 - starty4) / count * (i) - starty1 - (starty2 - starty1) / count * i) / count * j,
+                        startz1 + (startz2 - startz1) / count * i + (startz4 + (startz3 - startz4) / count * (i) - startz1 - (startz2 - startz1) / count * i) / count * j))
+                    hireacy.push(new Cesium.Cartesian3(startx1 + (startx2 - startx1) / count * (i + 1) + (startx4 + (startx3 - startx4) / count * (i + 1) - startx1 - (startx2 - startx1) / count * (i + 1)) / count * j,
+                        starty1 + (starty2 - starty1) / count * (i + 1) + (starty4 + (starty3 - starty4) / count * (i + 1) - starty1 - (starty2 - starty1) / count * (i + 1)) / count * j,
+                        startz1 + (startz2 - startz1) / count * (i + 1) + (startz4 + (startz3 - startz4) / count * (i + 1) - startz1 - (startz2 - startz1) / count * (i + 1)) / count * j))
+                    hireacy.push(new Cesium.Cartesian3(startx4 + (startx3 - startx4) / count * (i + 1) - (startx4 + (startx3 - startx4) / count * (i + 1) - startx1 - (startx2 - startx1) / count * (i + 1)) / count * (count - 1 - j),
+                        starty4 + (starty3 - starty4) / count * (i + 1) - (starty4 + (starty3 - starty4) / count * (i + 1) - starty1 - (starty2 - starty1) / count * (i + 1)) / count * (count - 1 - j),
+                        startz4 + (startz3 - startz4) / count * (i + 1) - (startz4 + (startz3 - startz4) / count * (i + 1) - startz1 - (startz2 - startz1) / count * (i + 1)) / count * (count - 1 - j)))
+                    hireacy.push(new Cesium.Cartesian3(startx4 + (startx3 - startx4) / count * i - (startx4 + (startx3 - startx4) / count * (i) - startx1 - (startx2 - startx1) / count * i) / count * (count - 1 - j),
+                        starty4 + (starty3 - starty4) / count * i - (starty4 + (starty3 - starty4) / count * (i) - starty1 - (starty2 - starty1) / count * i) / count * (count - 1 - j),
+                        startz4 + (startz3 - startz4) / count * i - (startz4 + (startz3 - startz4) / count * (i) - startz1 - (startz2 - startz1) / count * i) / count * (count - 1 - j)))
+                    hireacys.push(hireacy);
+                    //取出面的8个点坐标，拿点坐标去求高度值
+                    slopelineposition.push(Cesium.Cartographic.fromDegrees(hireacy[0].x, hireacy[0].y));
+                    slopelineposition.push(Cesium.Cartographic.fromDegrees((hireacy[0].x + hireacy[1].x) / 2, (hireacy[0].y + hireacy[1].y) / 2));
+                    slopelineposition.push(Cesium.Cartographic.fromDegrees(hireacy[1].x, hireacy[1].y));
+                    slopelineposition.push(Cesium.Cartographic.fromDegrees((hireacy[1].x + hireacy[2].x) / 2, (hireacy[1].y + hireacy[2].y) / 2));
+                    slopelineposition.push(Cesium.Cartographic.fromDegrees(hireacy[2].x, hireacy[2].y));
+                    slopelineposition.push(Cesium.Cartographic.fromDegrees((hireacy[2].x + hireacy[3].x) / 2, (hireacy[2].y + hireacy[3].y) / 2));
+                    slopelineposition.push(Cesium.Cartographic.fromDegrees(hireacy[3].x, hireacy[3].y));
+                    slopelineposition.push(Cesium.Cartographic.fromDegrees((hireacy[3].x + hireacy[0].x) / 2, (hireacy[3].y + hireacy[0].y) / 2));
+
+                }
+            }
+            var promise = Cesium.sampleTerrainMostDetailed(terrainLayer, slopelineposition);
+            Cesium.when(promise,
+                function (updatedPositions) {
+                    //拿到所有的高度数据
+                    var heighmm = [];
+                    var m = 0
+                    //计算坡度比的次数
+                    var countcolor1 = 0;
+                    var countcolor2 = 0;
+                    var countcolor3 = 0;
+                    var countcolor4 = 0;
+                    var countcolor5 = 0;
+                    var countcolor6 = 0;
+                    var countcolor7 = 0;
+                    for (var k = 0; k < updatedPositions.length / 8; k++) {
+                        //第一个点与第五个点的坡度
+                        var slope1 = (updatedPositions[m].height - updatedPositions[m + 4].height) / (Cesium.Cartesian3.distance(
+                            Cesium.Cartesian3.fromDegrees(updatedPositions[m].longitude, updatedPositions[m].latitude, updatedPositions[m].height),
+                            Cesium.Cartesian3.fromDegrees(updatedPositions[m + 4].longitude, updatedPositions[m + 4].latitude, updatedPositions[m + 4].height)))
+                        //第二个点与第六个点的坡度
+                        var slope2 = (updatedPositions[m + 1].height - updatedPositions[m + 5].height) / (Cesium.Cartesian3.distance(
+                            Cesium.Cartesian3.fromDegrees(updatedPositions[m + 1].longitude, updatedPositions[m + 1].latitude, updatedPositions[m + 1].height),
+                            Cesium.Cartesian3.fromDegrees(updatedPositions[m + 5].longitude, updatedPositions[m + 5].latitude, updatedPositions[m + 5].height)))
+                        //第三个点与第七个点的坡度
+                        var slope3 = (updatedPositions[m + 2].height - updatedPositions[m + 6].height) / (Cesium.Cartesian3.distance(
+                            Cesium.Cartesian3.fromDegrees(updatedPositions[m + 2].longitude, updatedPositions[m + 2].latitude, updatedPositions[m + 2].height),
+                            Cesium.Cartesian3.fromDegrees(updatedPositions[m + 6].longitude, updatedPositions[m + 6].latitude, updatedPositions[m + 6].height)))
+                        //第四个点与第八个点的坡度
+                        var slope4 = (updatedPositions[m + 3].height - updatedPositions[m + 7].height) / (Cesium.Cartesian3.distance(
+                            Cesium.Cartesian3.fromDegrees(updatedPositions[m + 3].longitude, updatedPositions[m + 3].latitude, updatedPositions[m + 3].height),
+                            Cesium.Cartesian3.fromDegrees(updatedPositions[m + 7].longitude, updatedPositions[m + 7].latitude, updatedPositions[m + 7].height)))
+                        // console.log("slope1:"+slope1+";slope2:"+slope2+";slope3:"+slope3+";slope4:"+slope4);
+                        var arrposition = [Math.abs(slope1), Math.abs(slope2), Math.abs(slope3), Math.abs(slope4)];//取绝对值
+                        arrposition.sort();
+                        var slope = arrposition[3]; // 拿到最大的坡度值  
+                        var lineposition = [];//画方向线的坐标
+                        if (slope == Math.abs(slope1)) {
+                            if (slope1 > 0) {
+                                lineposition.push(Cesium.Math.toDegrees(updatedPositions[m].longitude), Cesium.Math.toDegrees(updatedPositions[m].latitude),
+                                    Cesium.Math.toDegrees(updatedPositions[m + 4].longitude), Cesium.Math.toDegrees(updatedPositions[m + 4].latitude));
+                            } else {
+                                lineposition.push(
+                                    Cesium.Math.toDegrees(updatedPositions[m + 4].longitude), Cesium.Math.toDegrees(updatedPositions[m + 4].latitude),
+                                    Cesium.Math.toDegrees(updatedPositions[m].longitude), Cesium.Math.toDegrees(updatedPositions[m].latitude));
+
+                            }
+                        } else if (slope == Math.abs(slope2)) {
+                            if (slope2 > 0) {
+                                lineposition.push(Cesium.Math.toDegrees(updatedPositions[m + 1].longitude), Cesium.Math.toDegrees(updatedPositions[m + 1].latitude),
+                                    Cesium.Math.toDegrees(updatedPositions[m + 5].longitude), Cesium.Math.toDegrees(updatedPositions[m + 5].latitude));
+                            } else {
+                                lineposition.push(
+                                    Cesium.Math.toDegrees(updatedPositions[m + 5].longitude), Cesium.Math.toDegrees(updatedPositions[m + 5].latitude),
+                                    Cesium.Math.toDegrees(updatedPositions[m + 1].longitude), Cesium.Math.toDegrees(updatedPositions[m + 1].latitude));
+                            }
+                        } else if (slope == Math.abs(slope3)) {
+                            if (slope3 > 0) {
+                                lineposition.push(Cesium.Math.toDegrees(updatedPositions[m + 2].longitude), Cesium.Math.toDegrees(updatedPositions[m + 2].latitude),
+                                    Cesium.Math.toDegrees(updatedPositions[m + 6].longitude), Cesium.Math.toDegrees(updatedPositions[m + 6].latitude));
+                            } else {
+                                lineposition.push(
+                                    Cesium.Math.toDegrees(updatedPositions[m + 6].longitude), Cesium.Math.toDegrees(updatedPositions[m + 6].latitude),
+                                    Cesium.Math.toDegrees(updatedPositions[m + 2].longitude), Cesium.Math.toDegrees(updatedPositions[m + 2].latitude));
+                            }
+                        } else if (slope == Math.abs(slope4)) {
+                            if (slope4 > 0) {
+                                lineposition.push(Cesium.Math.toDegrees(updatedPositions[m + 3].longitude), Cesium.Math.toDegrees(updatedPositions[m + 3].latitude),
+                                    Cesium.Math.toDegrees(updatedPositions[m + 7].longitude), Cesium.Math.toDegrees(updatedPositions[m + 7].latitude));
+                            } else {
+                                lineposition.push(
+                                    Cesium.Math.toDegrees(updatedPositions[m + 7].longitude), Cesium.Math.toDegrees(updatedPositions[m + 7].latitude),
+                                    Cesium.Math.toDegrees(updatedPositions[m + 3].longitude), Cesium.Math.toDegrees(updatedPositions[m + 3].latitude));
+                            }
+                        }
+                        var slopecolor;
+                        slope = (Math.abs(slope1) + Math.abs(slope2) + Math.abs(slope3) + Math.abs(slope4)) / 4; //四个坡度值大小有的差值特别大，这里取的平均值用来配置颜色
+                        // console.log(slope);
+                        if (0 <= slope && slope < 0.29) {
+                            slopecolor = '#FFFFFF'
+                            countcolor1++;
+                        } else if (0.29 <= slope && slope < 0.5) {
+                            slopecolor = '#C0C0C0'
+                            countcolor2++;
+                        } else if (0.5 <= slope && slope < Math.sqrt(2) / 2) {
+                            slopecolor = '#FF00FF'
+                            countcolor3++;
+                        } else if (Math.sqrt(2) / 2 <= slope && slope < 0.87) {
+                            slopecolor = '#00FFFF'
+                            countcolor4++;
+                        } else if (0.87 <= slope && slope < 0.91) {
+                            slopecolor = '#FFFF00'
+                            countcolor5++;
+                        } else if (0.91 <= slope && slope < 0.95) {
+                            slopecolor = '#0000FF'
+                            countcolor6++;
+                        } else {
+                            slopecolor = '#FF0000'
+                            countcolor7++;
+                        }
+
+
+
+                        var cartographics = [updatedPositions[m], updatedPositions[m + 4]]
+                        viewer.entities.add({
+                            type: 'drawSloperectange',
+                            rectangle: {
+                                coordinates: Cesium.Rectangle.fromCartographicArray(cartographics)
+                                ,
+                                material: Cesium.Color.fromCssColorString(slopecolor)
+
+                            },
+                            polyline: {
+                                clampToGround: true,
+                                positions: Cesium.Cartesian3.fromDegreesArray(lineposition),
+                                material: new Cesium.PolylineArrowMaterialProperty(Cesium.Color.BLUE.withAlpha(0.5)),// Cesium.Color.BLUE.withAlpha(0.5) ,
+                                width: 8,
+                                distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, updatedPositions[m + 4].height + 4500)
+                            },
+                        }
+                        );
+                        m += 8;
+                    }
+                    var contents = "<div class='slope_layer'><div> <div style='height:19px;background-color:#FFFFFF; width: 64px;float: left;'> </div><span >" + (countcolor1 / (updatedPositions.length / 8) * 100).toFixed(2) + "% (<0.29)</span></div>";
+                    contents += " <div  style='clear: both;'><div style='height:19px;background-color:#C0C0C0 ; width: 64px;float: left;'></div><span >  " + (countcolor2 / (updatedPositions.length / 8) * 100).toFixed(2) + "%(<0.5)</span></div>";
+                    contents += "<div   style='clear: both;'><div  style='height:19px;background-color:#FF00FF;width: 64px;float: left;'> </div><span >" + (countcolor3 / (updatedPositions.length / 8) * 100).toFixed(2) + "%(<0.7)</span></div>";
+                    contents += " <div  style='clear: both;'><div style='height:19px;background-color:#00FFFF;width: 64px;float: left;'> </div><span >" + (countcolor4 / (updatedPositions.length / 8) * 100).toFixed(2) + "%(<0.87)</span></div>";
+                    contents += " <div  style='clear: both;'><div style='height:19px;background-color:#FFFF00;width: 64px;float: left;'> </div><span > " + (countcolor5 / (updatedPositions.length / 8) * 100).toFixed(2) + "%(<0.91)</span></div>";
+                    contents += " <div  style='clear: both;'><div style='height:19px;background-color:#0000FF;width: 64px;float: left;'> </div><span >" + (countcolor6 / (updatedPositions.length / 8) * 100).toFixed(2) + "%(<0.95)</span></div>";
+                    contents += " <div  style='clear: both;'><div style='height:19px;background-color:#FF0000;width: 64px;float: left;'> </div><span > " + (countcolor7 / (updatedPositions.length / 8) * 100).toFixed(2) + "%(<1)</span></div></div>";
+                    layer.closeAll();
+
+
+                    layer.open({
+                        type: 1,
+                        offset: ["500px", "1200px"],
+                        area: ['260px', '179px'],
+                        title: "坡度分析信息"
+                        ,
+                        content: contents
+                        ,
+                        btnAlign: 'c' //按钮居中
+                        ,
+                        shade: 0 //不显示遮罩
+                        ,
+                        cancel: function (index) {
+                            layer.close(index);
+                        }
+                    });
+
+
+                })
+
+        }
+
+    </script>
+</body>
+
+</html>

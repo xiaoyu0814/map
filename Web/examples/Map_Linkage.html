@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Use correct character set. -->
+    <meta charset="utf-8">
+    <!-- Tell IE to use the latest, best version. -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>Hello World!</title>
+    <script src="../build/globemap.js"></script>
+    <script src="../build/PIE.js"></script>
+    <script src="./js/show/path.js"></script>
+
+    <style>
+        @import url(../build/widgets.css);
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        #mapboxContainer {
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #cesiumContainer {
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="mapboxContainer"></div>
+<div id="cesiumContainer"></div>
+<div id="credit"></div>
+<script>
+    var mapboxMap = new PIE.Map({
+            type: 1
+        }
+    );
+
+    var mapboxview = new PIE.MapView({
+        map: mapboxMap,
+        container: "mapboxContainer"
+    });
+
+    var map = mapboxMap.map;
+    map.on('load', function () {
+        var cesuimMap = new PIE.Map({
+                type: 3
+            }
+        );
+
+        var view = new PIE.MapView({
+            map: cesuimMap,
+            container: "cesiumContainer"
+        });
+
+        var viewer = cesuimMap.map._cesiumViewer;
+        var grid = new PIE.GridTileLayer({
+            //url: "https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}",
+            url:path.GoogleURL.satellite,
+            id: 'tilelayer1'
+        });
+        mapboxMap.add(grid);
+        cesuimMap.add(grid);
+
+        var scene2D = new GlobeMap.MapboxScene('mapboxContainer', map);
+        var scene3D = new GlobeMap.CesiumScene('cesiumContainer', viewer);
+        var sceneControl = new GlobeMap.SceneControl(scene2D, scene3D);
+        sceneControl.isAutoSwitch = false;
+
+        var inMapbox = false;
+        document.getElementById('mapboxContainer').onmouseover = function (event) {
+            inMapbox = true;
+        }
+        document.getElementById('mapboxContainer').onmouseout = function (event) {
+            inMapbox = false;
+        }
+
+        var inCesium = false;
+        document.getElementById('cesiumContainer').onmouseover = function (event) {
+            inCesium = true;
+        }
+        document.getElementById('cesiumContainer').onmouseout = function (event) {
+            inCesium = false;
+        }
+
+        map.on('move', function (e) {
+            if (inMapbox) {
+                var param = scene2D.camera.computeParam();
+                scene3D.camera.switchTo(param);
+            }
+        })
+
+        viewer.scene.postRender.addEventListener(function () {
+            if (inCesium) {
+                var param = scene3D.camera.computeParam();
+                scene2D.camera.switchTo(param);
+            }
+        });
+
+    });
+
+
+</script>
+</body>
+</html>

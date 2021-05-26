@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+	<title>JB绘制</title>
+	<script src="../build/PIE.js"></script>
+	<script type="text/javascript" src="./data/JB/Config.js"></script>
+	 <script src="./js/show/jquery.min.3.2.1.js"></script>
+	 <script src="./js/show/path.js"></script>
+	<style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+<select class="selectpicker form-control" id = "oneSelect" style="    width: 15%;
+    z-index: 1000;
+    position: absolute;
+    left: 10px;
+    top: 20px;">
+	<option></option>
+</select>
+<select class="selectpicker form-control" id = "twoSelect" style="    width: 15%;
+    z-index: 1000;
+    position: absolute;
+    left: 10px;
+    top: 60px;
+    display: none">
+	<option></option>
+</select>
+<div style="width: 15%;z-index: 1000;position: absolute;left: 10px;top: 100px;    background-color: #fff;" id="imagelist" >
+	
+</div>
+<div id="map"></div>
+<script type="text/javascript">
+	let Ridus = 63713930
+	let EARTH_CIRCUM = 2*Math.PI*Ridus
+	var code = 12;//12,21509,13,30213,40203,40202,4010601
+	let pointNum = 1;
+	let color = "#ff0000"
+	let width = 10;
+	var map = new PIE.Map({
+            type:2
+        });
+        var view = new PIE.MapView({
+            map:map,
+            container:"map",
+            zoom:10,
+            center:[110,35]
+        });
+        var grid ,drawPlot;
+        map.on("load",function () {
+            grid = new PIE.GridTileLayer({
+                //url : "https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}",
+				url:path.GoogleURL.satellite,
+				id:"rr"
+            });
+            map.add(grid);
+			drawPlot = new PIE.DrawPlot(map);
+           
+        });
+        
+        
+		function guid() {
+		    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+		        return v.toString(16);
+		    });
+
+		}
+
+		initConfig()
+		function initConfig(){
+			for(let i=0;i<config.length;i++){
+				let _temp = config[i];
+				console.log(_temp);
+
+				 $("#oneSelect").append("<option value='"+_temp.id+"'>"+_temp.name+"</option>");
+			}
+		}
+		var oneSelectID = "";twoSelectValue=""
+		$("#oneSelect").on('change',twoConfig)
+		function twoConfig(e){
+			console.log(e.target.value)
+			let _id = Number(e.target.value)
+			oneSelectID = _id
+			let _oneselect = config.find((item)=>{
+				return item.id == oneSelectID
+			});
+			$("#twoSelect").empty();
+			if(_oneselect.name == "temp"){
+				initImage(_oneselect)
+			}
+			else if(_oneselect.children){
+				_oneselect.children.forEach((item)=>{
+					$("#twoSelect").append("<option value='"+item.id+"'>"+item.name+"</option>");
+				})
+				twoSelectValue = _oneselect.children[0];
+				initImage(twoSelectValue)
+			}
+
+		}
+		function initImage(datas){
+			$("#imagelist").empty();
+			let _children = datas.children;
+			_children.forEach((item)=>{
+					$("#imagelist").append("<img src='"+item.url+"' id='"+item.codeId+"' onclick='imgclick(this);'/>");
+			})
+		}
+		$("#twoSelect").on('change',threeImage)
+		function threeImage(e){
+			console.log(e.target.value)
+			let _id = Number(e.target.value)
+			let _oneselect = config.find((item)=>{
+				return item.id == oneSelectID
+			});
+			let _twoselect = _oneselect.children.find((item)=>{
+				return item.id == _id;
+			})
+			console.log(_twoselect)
+			initImage(_twoselect)
+
+		}
+
+		function imgclick(e){
+			console.log(e);
+			drawPlot.setPlotCode(e.id);
+			
+		}
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+syntax = "proto3";
+package pbufWeather; 
+message wpGeoRegion 
+{ 
+   int32 SubCount = 1;
+   repeated int32 SubPntCounts = 2;
+   repeated double xArray = 3;
+   repeated double yArray = 4;
+   repeated double zArray = 5;
+   double Value = 6;
+}

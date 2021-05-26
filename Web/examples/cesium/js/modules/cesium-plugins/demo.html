@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <script src="src/Cesium-1.65/Build/Cesium/Cesium.js"></script>
+    <link rel="stylesheet" href="src/Cesium-1.65/Build/Cesium/Widgets/widgets.css">
+    <title>Document</title>
+</head>
+<style>
+
+</style>
+
+<body>
+    <div id="cesiumContainer" style="height: 100%;width: 100%;"></div>
+
+    <button style="position: absolute;width: auto;height: 30px;top: 10px; left: 10px;" onclick="createMeasureLineTool()">
+        测量长度
+    </button>
+    <button style="position: absolute;width: auto;height: 30px;top: 10px; left: 90px;" onclick="createMeasureAreaTool()">
+        测量面积
+    </button>
+    <button style="position: absolute;width: auto;height: 30px;top: 10px; left: 170px;" onclick="clearMeasureResult()">
+        清除结果
+    </button>
+
+    <button style="position: absolute;width: auto;height: 30px;top: 60px; left: 10px;" onclick="addFlyCtrlPoint()">
+        加控制点
+    </button>
+    <button style="position: absolute;width: auto;height: 30px;top: 60px; left: 90px;" onclick="startFly()">
+        开始飞行
+    </button>
+    <button style="position: absolute;width: auto;height: 30px;top: 60px; left: 170px;" onclick="pauseFly()">
+        暂停飞行
+    </button>
+    <button style="position: absolute;width: auto;height: 30px;top: 60px; left: 250px;" onclick="resumeFly()">
+        继续飞行
+    </button>
+    <button style="position: absolute;width: auto;height: 30px;top: 60px; left: 330px;" onclick="stopFly()">
+        停止飞行
+    </button>
+    <button style="position: absolute;width: auto;height: 30px;top: 60px; left: 410px;" onclick="clearFlyPath()">
+        清除路径
+    </button>
+
+    <button style="position: absolute;width: auto;height: 30px;top: 110px; left: 10px;" onclick="createMarkerTool()">
+        开始标注
+    </button>
+    <button style="position: absolute;width: auto;height: 30px;top: 110px; left: 90px;" onclick="destroyMarkerTool()">
+        结束标注
+    </button>
+</body>
+<script src="measure.js"></script>
+<script src="flyManager.js"></script>
+<script src="markerManager.js"></script>
+<script>
+
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+        shadows: true,
+        shouldAnimate: true, // Enable animations
+        geocoder: false,
+        homeButton: false,
+        sceneModePicker: false,
+        baseLayerPicker: false,
+        navigationHelpButton: false,
+        animation: false,
+        //timeline: false,
+        fullscreenButton: false,
+        
+        imageryProvider: new Cesium.UrlTemplateImageryProvider({
+            url: "https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}"
+        })
+    });
+    viewer.scene.globe.depthTestAgainstTerrain = true;
+    viewer._cesiumWidget._creditContainer.style.display = "none";
+    var tileset = new Cesium.Cesium3DTileset({
+        url: 'src/data/pajiangBuilds/tileset.json'
+    });
+
+    tileset.readyPromise.then(function (tileset) {
+        viewer.scene.primitives.add(tileset);
+        viewer.zoomTo(tileset, new Cesium.HeadingPitchRange(0.0, -0.5, tileset.boundingSphere.radius * 2.0));
+        //viewer.flyTo(tileset,{duration:3})
+    }).otherwise(function (error) {
+        console.log(error);
+    });
+
+
+    // 测量工具
+    var measureTool = new MeasureTool({
+        viewer: viewer,
+        target: 'measure'
+    });
+    function createMeasureLineTool() {
+        measureTool.measureLine();
+    }
+    function createMeasureAreaTool() {
+        measureTool.measureArea();
+    }
+    function clearMeasureResult() {
+        measureTool.clearResult();
+    }
+
+
+    // 飞行路径
+    var flyPath = new FlyPath(viewer);
+    function addFlyCtrlPoint() {
+        flyPath.addCameraPoint();
+    }
+    function startFly() {
+        flyPath.startFly();
+    }
+    function pauseFly() {
+        flyPath.pauseFly();
+    }
+    function resumeFly() {
+        flyPath.resumeFly();
+    }
+    function stopFly() {
+        flyPath.stopFly();
+    }
+    function clearFlyPath() {
+        flyPath.clearPoints();
+    }
+
+
+    // 点标绘工具
+    function selectMarkerHandler(marker) {
+        if (marker != null) {
+            var text = "label: " + marker.text + "\n" +
+                "image: " + marker.image + "\n" +
+                "video: " + marker.video;
+            alert(text);
+        }
+    }
+    var markerTool = new MarkerTool(viewer);
+    markerTool.selectHandler = selectMarkerHandler;
+    function createMarkerTool() {
+        markerTool.setEnable(true);
+    }
+    function destroyMarkerTool() {
+        markerTool.setEnable(false);
+    }
+
+</script>
+
+</html>

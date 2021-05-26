@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>标绘</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            border: 1px solid #ccc;
+            background-color: #e1e1e159;
+        }
+        #toolbar .cesium-button:hover {
+            background-color: rgba(0, 60, 136, .7);
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        .ol-legend ul {
+            margin-bottom: 5px;
+        }
+        .ol-legend ul li {
+            overflow: visible;
+            text-align: right;
+        }
+        .ol-attribution {
+            right: 7em !important;
+        }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<link href="./js/lib/ol-ex/ol-ext.css" rel="stylesheet" />
+<script src="js/lib/ol-ex/ol-ext.js"></script>
+<script src="js/lib/Drawtool_dynamic_arcgisController.js"></script>
+
+
+<script>
+    var PagerInfo={
+        property:{
+            point_drawdynamic: 10,//点的大小
+            pointColorId: '#ff0000',//点的颜色
+            circle_borderWidthId:2,//圆的边框粗细
+            circle_borderColorId:'#2EC1FD',//圆的边框颜色
+            circle_fillColorId:'#2EC1FD',//圆的填充颜色
+            circle_isFillId:false,//是否进行填充
+            ellipse_borderWidthId:2,//椭圆的边框粗细
+            ellipse_borderColorId:'#2EC1FD',//椭圆的边框颜色
+            ellipse_fillColorId:'#2EC1FD',//椭圆的填充颜色
+            ellipse_isFillId:false,//是否进行填充
+            rectangle_borderWidthId:2,//矩形的边框粗细
+            rectangle_borderColorId:'#2EC1FD',//矩形的边框颜色
+            rectangle_fillColorId:'#2EC1FD',//矩形的填充颜色
+            rectangle_isFillId:false,//是否进行填充
+            polygon_borderWidthId:2,//椭圆的边框粗细
+            polygon_borderColorId:'#2EC1FD',//椭圆的边框颜色
+            polygon_fillColorId:'#2EC1FD',//椭圆的填充颜色
+            polygon_isFillId:false,//是否进行填充
+            line_drawdynamic:3,//线的粗细
+            lineColorId:'#2EC1FD',//线的颜色
+            txt_drawdynamic:24,//文本的大小
+            txtColorId:'#000',//文本的颜色
+            chk_txt_fill:false,//文本是否加粗
+        },
+        plotting:new plottingHelper({}),
+        //增加ol-ex扩展
+        interaction : new ol.interaction.Transform ({
+            enableRotatedTransform: false,
+            /* Limit interaction inside bbox * /
+            condition: function(e, features) {
+              return ol.extent.containsXY([-465960, 5536486, 1001630, 6514880], e.coordinate[0], e.coordinate[1]);
+            },
+            /* */
+            addCondition: ol.events.condition.shiftKeyOnly,
+            // filter: function(f,l) { return f.getGeometry().getType()==='Polygon'; },
+            // layers: [vector],
+            hitTolerance: 2,
+            translateFeature:true,
+            scale: true,
+            rotate: true,
+            keepAspectRatio:ol.events.condition.always,// undefined,
+            translate: true,
+            stretch: true
+        }),
+        init:function(map){
+            let _this=this;
+            PagerInfo.plotting.toInit();
+            _this.plotting._map=map.map;
+            _this.plotting.initContextMenu();//初始化右键菜单
+            //增加ol-ex扩展
+            _this.plotting._map.addInteraction(_this.interaction);
+            // Style handles
+            _this.setHandleStyle();
+            // Events handlers
+            var startangle = 0;
+            var d=[0,0];
+
+            // Handle rotate on first point
+            var firstPoint = false;
+            _this.interaction.on (['select'], function(e) {
+                if (firstPoint && e.features && e.features.getLength()) {
+                    _this.interaction.setCenter(e.features.getArray()[0].getGeometry().getFirstCoordinate());
+                }
+            });
+
+            _this.interaction.on (['rotatestart','translatestart'], function(e){
+                // Rotation
+                startangle = e.feature.get('angle')||0;
+                // Translation
+                d=[0,0];
+            });
+            _this.interaction.on('rotating', function (e){
+                $('#info').text("rotate: "+((e.angle*180/Math.PI -180)%360+180).toFixed(2));
+                // Set angle attribute to be used on style !
+                e.feature.set('angle', startangle - e.angle);
+            });
+            _this.interaction.on('translating', function (e){
+                d[0]+=e.delta[0];
+                d[1]+=e.delta[1];
+                $('#info').text("translate: "+d[0].toFixed(2)+","+d[1].toFixed(2));
+                if (firstPoint) {
+                    _this.interaction.setCenter(e.features.getArray()[0].getGeometry().getFirstCoordinate());
+                }
+            });
+            _this.interaction.on('scaling', function (e){
+                $('#info').text("scale: "+e.scale[0].toFixed(2)+","+e.scale[1].toFixed(2));
+                if (firstPoint) {
+                    _this.interaction.setCenter(e.features.getArray()[0].getGeometry().getFirstCoordinate());
+                }
+            });
+            _this.interaction.on(['rotateend', 'translateend', 'scaleend'], function (e) {
+                $('#info').text("");
+            });
+
+            //增加监听事件
+            document.getElementById('point').addEventListener('click',function () {
+                let com=this;
+                PagerInfo.plotting.cycleChangeHandler(com,"点");
+            }, false);
+            document.getElementById('circle').addEventListener('click',function () {
+                let com=this;
+                PagerInfo.plotting.cycleChangeHandler(com,"圆");
+
+            }, false);
+            document.getElementById('ellipse').addEventListener('click',function () {
+                 let com=this;
+                PagerInfo.plotting.cycleChangeHandler(com,"椭圆");
+
+            }, false);
+            document.getElementById('rectangle').addEventListener('click',function () {
+                let com=this;
+                PagerInfo.plotting.cycleChangeHandler(com,"矩形");
+            }, false);
+            document.getElementById('polygon').addEventListener('click',function () {
+                let com=this;
+                PagerInfo.plotting.cycleChangeHandler(com,"多边形");
+            }, false);
+            document.getElementById('line').addEventListener('click',function () {
+                let com=this;
+                PagerInfo.plotting.cycleChangeHandler(com,"线");
+            }, false);
+            document.getElementById('text').addEventListener('click',function () {
+                let com=this;
+                PagerInfo.plotting.cycleChangeHandler(com,"文本");
+            }, false);
+            document.getElementById('frameSel').addEventListener('click',function () {
+                let com=this;
+                PagerInfo.plotting.cycleChangeHandler(com,"框选");
+            }, false);
+            document.getElementById('clear').addEventListener('click',function () {
+                let com=this;
+                PagerInfo.plotting.cycleChangeHandler(com,"删除");
+            }, false);
+            document.getElementById('stop').addEventListener('click',function () {
+                let com=this;
+                PagerInfo.plotting.cycleChangeHandler(com,"请选择");
+            }, false);
+        },
+        getToolButton:function(){
+            var toolbar = document.getElementById('toolbar');
+            toolbar.innerHTML =
+                '<button style="float: left;line-height: normal;border: 2px solid #ccc; border-radius: 2px; color: #fff;" type="button" class="cesium-button"  id="point">点</button>' +
+                '<button style="float: left;line-height: normal;border: 2px solid #ccc; border-radius: 2px;  color: #fff;" type="button" class="cesium-button" id="circle">圆</button>' +
+                '<button style="float: left;line-height: normal;border: 2px solid #ccc; border-radius: 2px;  color: #fff;" type="button" class="cesium-button" id="ellipse">㮋圆</button>' +
+                '<button style="float: left;line-height: normal;border: 2px solid #ccc; border-radius: 2px;  color: #fff;" type="button" class="cesium-button" id="rectangle">矩形</button>' +
+                '<button style="float: left;line-height: normal;border: 2px solid #ccc; border-radius: 2px;  color: #fff;" type="button" class="cesium-button" id="polygon">多边形</button>' +
+                '<button style="float: left;line-height: normal;border: 2px solid #ccc; border-radius: 2px;  color: #fff;" type="button" class="cesium-button" id="line">线</button>' +
+                '<button style="float: left;line-height: normal;border: 2px solid #ccc; border-radius: 2px;  color: #fff;" type="button" class="cesium-button" id="text">文本</button><br>'+
+                '<button style="float: left;line-height: normal;border: 2px solid #ccc; border-radius: 2px;  color: #fff;" type="button" class="cesium-button" id="frameSel">框选</button>' +
+                '<button style="float: left;line-height: normal;border: 2px solid #ccc; border-radius: 2px;  color: #fff;" type="button" class="cesium-button" id="clear">清除</button>' +
+                '<button style="float: left;line-height: normal;border: 2px solid #ccc; border-radius: 2px;  color: #fff;" type="button" class="cesium-button" id="stop">停止绘制</button>';
+        },
+        setHandleStyle:function(){
+            let _this=this;
+            if (!_this.interaction instanceof ol.interaction.Transform) return;
+            if (true) {
+                // Style the rotate handle
+                var circle = new ol.style.RegularShape({
+                    fill: new ol.style.Fill({color:[255,255,255,0.01]}),
+                    stroke: new ol.style.Stroke({width:1, color:[0,0,0,0.01]}),
+                    radius: 8,
+                    points: 10
+                });
+                _this.interaction.setStyle ('rotate',
+                    new ol.style.Style({
+                        text: new ol.style.Text ({
+                            text:'\u21BB',
+                            font:"16px Fontawesome",
+                            textAlign: "left",
+                            fill:new ol.style.Fill({color:'red'})
+                        }),
+                        image: circle
+                    }));
+                // Center of rotation
+                _this.interaction.setStyle ('rotate0',
+                    new ol.style.Style({
+                        text: new ol.style.Text ({
+                            text:'\u21BB',
+                            font:"20px Fontawesome",
+                            fill: new ol.style.Fill({ color:[255,255,255,0.8] }),
+                            stroke: new ol.style.Stroke({ width:2, color:'red' })
+                        }),
+                    }));
+                // Style the move handle
+                _this.interaction.setStyle('translate',
+                    new ol.style.Style({
+                        text: new ol.style.Text ({
+                            text:'\u2744',
+                            font:"20px Fontawesome",
+                            fill: new ol.style.Fill({ color:[255,255,255,0.8] }),
+                            stroke: new ol.style.Stroke({ width:2, color:'red' })
+                        })
+                    }));
+                // Style the strech handles
+                /* uncomment to style * /
+                _this.interaction.setStyle ('scaleh1',
+                  new ol.style.Style({
+                    text: new ol.style.Text ({
+                    text:'\uf07d',
+                    font:"bold 20px Fontawesome",
+                    fill: new ol.style.Fill({ color:[255,255,255,0.8] }),
+                    stroke: new ol.style.Stroke({ width:2, color:'red' })
+                  })
+                }));
+                _this.interaction.style.scaleh3 = _this.interaction.style.scaleh1;
+                _this.interaction.setStyle('scalev',
+                  new ol.style.Style({
+                    text: new ol.style.Text ({
+                      text:'\uf07e',
+                      font:"bold 20px Fontawesome",
+                      fill: new ol.style.Fill({ color:[255,255,255,0.8] }),
+                      stroke: new ol.style.Stroke({ width:2, color:'red' })
+                    })
+                  }));
+                _this.interaction.style.scalev2 = _this.interaction.style.scalev;
+                /**/
+            } else {
+                _this.interaction.setDefaultStyle ();
+            }
+            // Refresh
+            _this.interaction.set('translate', _this.interaction.get('translate'));
+        },
+    }
+    //初始化底图
+    var map = new PIE.Map(
+        {
+            type: 2
+        }
+    );
+    //设置视图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 4,
+        center: [116, 39],
+    });
+
+    //添加矢量瓦片图层
+    var BaiduLayer = new PIE.BaiduLayer();
+    map.on("load", function () {
+        map.add(BaiduLayer);
+
+        PagerInfo.getToolButton();
+        //
+        PagerInfo.init(map);
+    });
+
+</script>
+</body>
+</html>

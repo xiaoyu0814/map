@@ -1,0 +1,9 @@
+syntax = "proto3";
+import "wpGeoRegion.proto";
+package pbufWeather;
+message wpIsoSurfaceRenderData
+{
+   double StartValue = 1;
+   double EndValue = 2;
+   repeated wpGeoRegion wpGeoRegionArray = 3;
+}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>投影转换</title>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/status.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        .btnstyle {
+            position: absolute;
+            left: 0;
+            margin: 15px 30px;
+            background: black;
+            border-radius: 4px;
+            padding: 12px 15px;
+            cursor: pointer;
+            outline: none;
+            border: 1px solid;
+            box-shadow: 3px 3px 10px #000;
+            color: white;
+            z-index: 100;
+            width: 100px;
+        }
+    </style>
+    <link href="js/PIE.css" rel="stylesheet"/>
+</head>
+<body>
+<div id="map"></div>
+<button class="btnstyle" onclick="change(4326, this)" style="background: #007dff">WGS 84</button>
+<button class="btnstyle" style="top:100px" onclick="change(3857, this)">墨卡托</button>
+<button class="btnstyle" style="top:200px" onclick="change(2700, this)">兰伯特</button>
+<script src="js/lib/dat.gui.min.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    //初始化底图
+    var map = new PIE.Map({
+        type: 2
+    });
+    //设置视图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 4,
+        projection: "EPSG:4326",
+        center: [0, 0]
+    });
+
+  
+
+    // graphicsLayer.add(polygonGrap);
+    var testFillLayer = new PIE.MetoStyle.FillLayer({
+        data: "data/worldPolyGon.geojson",
+        color: "rgba(243, 236, 236, 1)",
+        id: "measure-points",
+        opacity: 0.2,
+        visible: true
+    });
+    //将图层添加到底图里
+    // map.add(testFillLayer);
+    var state = new Status(map);
+    document.body.appendChild(state.dom);
+    testFillLayer.addEventListener("load", function () {
+        var testLineLayer = new PIE.MetoStyle.LineLayer({
+            data: "data/countries-110m.geojson",
+            color: "rgba(0, 0, 0, 1)",
+            id: "measure-Line",
+            opacity: 1,
+            visible: true
+        });
+        // map.add(testLineLayer);
+    });
+
+    function change(code, item) {
+        $(item).css("background",  "#007dff").siblings(".btnstyle").css("background","black")
+        var _code = "EPSG:"+code;
+        map.projectionModes(_code)
+    };
+    var grid = new PIE.GridTileLayer({
+        //url: 'http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}'
+        url: path.PIEGrid.GlobalDarkMap,
+    });
+    map.add(grid);    //将几何体图层添加到地图里
+</script>
+</body>
+</html>

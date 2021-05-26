@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>栅格图层</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #map2 { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="../build/turf.js"></script>
+<script src="js/WMTSImageryProvider.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+proj4.defs('Fy4A_84_f', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees"); 
+var sphere84_f = PIE.ol.proj.get('Fy4A_84_f');
+sphere84_f.setExtent([32.7 ,-72 , 176.7 , 72]);
+    var map = new PIE.Map({
+        type:3
+    });
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:2,
+        projection: 'EPSG:3857',
+        center:[107.971532,23.382439],
+       
+    });
+    var grid ;
+    var fy4;
+    map.on("load",function () {
+            var grid = new PIE.GridTileLayer({
+                projection: "EPSG:3857",
+                //url: 'https://tiles.windy.com/tiles/v9.0/darkmap/{z}/{x}/{y}.png',
+                url: path.windy.darkmap,
+                id:"ditu"
+            });
+           
+            /*var isoLineLayer = new PIE.MetoStyle.IsoLineLayer({
+                    data :'./data/IsoLineData.json',
+                    id :"isoline",
+                    opacity:1.0
+                })
+            isoLineLayer.addEventListener("load", function () {
+                map.add(isoLineLayer)
+            })*/
+
+            fy4 = new PIE.MetoStyle.FY4GridTileLayer({
+               //url:"http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NOMChannel01/20191021000000/jpg/{z}/{y}/{x}.png",
+               //http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NatureColor_NoLit/20191107031500/jpg/0/0/0.png
+               //url:"http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NatureColor_NoLit/20190813030000/jpg/{z}/{y}/{x}.png",
+               url: path.PIEGrid.swapQuery,
+                region : [32.7 ,-72 , 176.7 , 72],
+                bounds:[3339584.723798167,-9608371.509933542,2.0037508342789E7,9608371.509933542],
+                opacity:0.5,
+            })
+
+    //addOLFY4()
+            //map.add(fy4);
+ map.add(grid);			
+            testFillLayer = new PIE.MetoStyle.FillLayer({
+            data: "data/worldPolyGon.geojson",
+            color: "rgba(243, 236, 236, 0.1)",
+            id: "measure-Fill",
+            opacity: 1,
+            visible: true
+            });
+           // map.add(testFillLayer);
+
+    
+     
+     
+    });
+
+
+    function addMapFY4(){
+
+
+       var layer = {
+            "id": "fy4-layer",
+            "type": "raster",
+            "source": {
+                "type":"raster",
+                //"tiles": ["http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NatureColor_NoLit/20191107031500/jpg/{z}/{y}/{x}.png"],
+                "tiles": [path.PIEGrid.swapQuery3],
+               // "bounds":[3640147.3489400023,-1.1753184615338312E7,1.96701540231712E7,1.1753184615338312E7],
+                "tileSize":450,
+                "tileBounds":[3640147.3489400023,-1.1753184615338312E7,1.96701540231712E7,1.1753184615338312E7]
+            },
+            'paint':{"raster-opacity":1}
+        };
+
+        map.map.addLayer(layer);
+    }
+var x;
+    function addCesFY4(){
+
+        x= new PIE.MetoStyle.FY4GridTileLayer({
+            //url :"http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NatureColor_NoLit/20191108043000/jpg/{z}/{y}/{x}.png",
+            url: path.PIEGrid.swapQuery4,
+            id:"fy4-ces",
+        })
+        map.add(x);
+
+          
+    }
+
+function addAdditionalLayerOption(name, imageryProvider, alpha, show) {
+    var layer = map.map._cesiumViewer.imageryLayers.addImageryProvider(imageryProvider);
+    layer.alpha = Cesium.defaultValue(alpha, 0.5);
+    layer.show = Cesium.defaultValue(show, true);
+    layer.name = name;
+    Cesium.knockout.track(layer, ['alpha', 'show', 'name']);
+}
+function addCESF(){
+
+
+			function getNum(num){
+				
+				typeof num == "string" ? num = Number(num) : ''
+				console.log(num.toString(16)) //a8
+				let r = num.toString(16)
+				let ll = _pad(r);
+				return ll;
+			}
+			function _pad(num,n=8){
+				let len=num.toString().length;
+					while(len < n){
+						num ="0" + num;
+						len++;
+					}
+					return num;
+			}
+        let  cesLayer = new Cesium.UrlTemplateImageryProvider({
+                //url : "http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NOMChannel12/20190813030000/jpg/{Time}/{Timey}/{Timex}.png",
+                //url : " http://125.69.82.40:15440/Tiles/Guizhou/Guizhou_Density_bt/{zz}/{yy}/{xx}.png",
+                url: path.PIEGrid.Guizhou_Density_bt,
+                customTags : {       
+                   zz:function(imageryProvider, x, y, level){
+                        var x = level < 10 ? "0" + level : level;
+                        return  "L"+x;
+                   },
+				    yy:function(imageryProvider, x, y, level){
+                       //R0000006f/C000000c9
+					   //R000001b2/C0000032a
+					    let _y = getNum(y)
+                        return "R"+_y;
+                   },
+				    xx:function(imageryProvider, x, y, level){
+                        let _x = getNum(x)
+                        return "C"+_x;
+                   }
+               },
+                hasAlphaChannel:true,
+                alpha:1,
+               // rectangle:Cesium.Rectangle.fromDegrees(32.7 ,-72 , 176.7 , 72),
+                
+            });
+			
+			map.map._cesiumViewer.imageryLayers.addImageryProvider(cesLayer);
+}
+
+function addOL(){
+  var GridTileLayer = new PIE.ol.layer.Tile({
+                source: new PIE.ol.source.XYZ({
+                    //url: "http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/full_disk/NatureColor/20191108130000/jpg/{z}/{y}/{x}.png",
+                    url: path.PIEGrid.swapQuery3,
+                    projection:"Fy4A_84_f",
+                }),})
+
+                 GridTileLayer.id = "rsapp";
+            map.map.addLayer(GridTileLayer);
+}
+  function addOLFY4(){
+   /* x= new PIE.MetoStyle.FY4GridTileLayer({
+            //url :"http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NatureColor_NoLit/20191107031500/jpg/{z}/{y}/{x}.png",
+            url: path.PIEGrid.swapQuery3,
+            id:"fy4-ces",
+        })
+        map.add(x);*/
+
+       // http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/full_disk/NatureColor/20191108130000/jpg/0/0/0.png
+     var resolutions = [0.3198294243070362 ,0.1599147121535181, 0.0799573560767591, 0.0399786780383795 , 0.0199893390191898 , 0.0099946695095949 , 0.0049973347547974 , 0.0024986673773987];
+     var tileGrid = new PIE.ol.tilegrid.TileGrid({
+                                //extent:  [32.7 ,-72 , 176.7 , 72],
+                                extent:  [3640147.348940046,-11753184.615338454,19670154.023171436,11753184.615338454],
+                                //resolutions:[0.32, 0.16 ,0.08 , 0.04, 0.02 , 0.01, 0.005 , 0.0025 ],
+                                //resolutions:[52236.37606817089, 26118.188034085444 ,13059.094017042722 , 6529.547008521361, 3264.7735042606805 , 1632.3867521303403,816.1933760651701 , 408.09668803258506 ],
+                                //resolutions:[35622.23705384754, 17811.11852692377 ,8905.559263461884 ,4452.779631730942, 2226.389815865471 , 1113.1949079327355,556.5974539663678 , 278.2987269831839 ],
+                                resolutions:[111319.49079327354, 27829.872698318384 ,13914.936349159192 ,6957.468174579596, 3478.734087289798 , 1739.367043644899,869.6835218224495 , 434.84176091122475 ],
+                                tileSize: [450,659.88],
+								//tileSizes:[450,900,1800,3600,7200,14400]
+                            });
+             var GridTileLayer = new PIE.ol.layer.Tile({
+                source: new PIE.ol.source.XYZ({
+                    //url: "http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NatureColor_NoLit/20191107031500/jpg/{z}/{y}/{x}.png",
+                    url: path.PIEGrid.swapQuery3,
+                    projection:"EPSG:3857",
+                    //tileSize:[256,256],
+                    //resolutions: resolutions ,
+                    tileGrid:tileGrid,
+                    tileUrlFunction:function(src,t,r){
+                        //console.log(r)
+                           var pow = Math.pow(2 , src[0]);
+                            var y = -1- src[2]  ;
+                            var z = src[0];
+                            var x = src[1];
+                            if(y < 0 ){
+                                y = y + pow;
+                            }else if(y > pow){
+                                y = y - pow;
+                            } 
+                            // 需要加入动画的图层产品  --首页
+                          //return "http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NatureColor_NoLit/20191107031500/jpg/"+z+"/"+y+"/"+x+".png"
+                          return path.PIEGrid.swapQuery2 + z + "/" + y + "/" + x + ".png"
+                
+                    }
+                }),
+                //extent: [32.7 ,-72 , 176.7 , 72],
+                extent: [3339584.723798167,-9608371.509933542,2.0037508342789E7,9608371.509933542],
+				//extent:  [3640147.348940046,-11753184.615338454,19670154.023171436,11753184.615338454],
+                //zIndex: 10
+            });
+            GridTileLayer.id = "rsapp";
+            //map.map.addLayer(GridTileLayer);
+			var GridTileLayerw = new PIE.ol.layer.Tile({
+                source: new PIE.ol.source.XYZ({
+                    //url: "https://tiles.windy.com/tiles/v9.0/darkmap/{z}/{x}/{y}.png",
+                    url: path.windy.darkmap,
+                }),})
+
+              var _layer = new PIE.ol.layer.Image({
+				  source: new PIE.ol.source.ImageStatic({
+					  //url: "http://rsapp.nsmc.org.cn/swapQuery/public/tileServer/getTile/fy-4a/prj_gll/NatureColor_NoLit/20191107031500/jpg/0/0/0.png",
+                      url: path.PIEGrid.swapQuery,
+                      projection: "EPSG:4326",
+					  imageExtent: [3339584.723798167,-9606071,2.0037508342789E7,9606071]
+				  })
+			  });
+			  map.map.addLayer(_layer);
+            map.map.addLayer(GridTileLayerw);
+           // map.add(testFillLayer);
+		
+  }
+
+
+</script>
+<script src ="js/lib/MapTool.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Ol3 select</title>
+    <style type="text/css">
+        body, #map {
+            border: 0px;
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+            font-size: 13px;
+        }
+
+        .form-inline {
+            position: absolute;
+            top: 10pt;
+            right: 10pt;
+            z-index: 99;
+        }
+    </style>
+    <script type="text/javascript" src="../build/PIE.js"></script>
+    <script type="text/javascript" src="./js/lib/jquery-2.1.0.js"></script>
+    <script src="./js/show/path.js"></script>
+    <script type="text/javascript">
+        var map;
+        function init() {
+            map = new PIE.Map({
+                type: 2
+            });
+            //设置地图样式
+            var view = new PIE.MapView({
+                map: map,
+                container: "map",
+                zoom: 3,
+                center: [110, 0],
+            });
+
+            //底图加载成功后对底图编辑
+            map.on("load", function () {
+                var testFillLayer = new PIE.GridTileLayer({
+                    //url: "http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+                    url: path.PIEGrid.GlobalDarkMap,
+                    id: "darkmap"
+                });
+                map.add(testFillLayer);
+
+                var vectorSource = new PIE.ol.source.Vector({
+                    format: new PIE.ol.format.GeoJSON(),
+                    url: function(extent) {
+                        //显示格网值
+                        // return  'http://211.154.196.250:8081/geoserver/zhaojiawei/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=zhaojiawei:AlwaysPolyline&maxFeatures=50&outputFormat=application%2Fjson';
+                        //return path.PIEVector.AlwaysPolyline;
+                        //城市点数据
+                        // return 'http://211.154.196.250:8081/geoserver/zhaojiawei/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=zhaojiawei:CityPoint-WGS84&maxFeatures=50&outputFormat=application%2Fjson';
+                        //return path.PIEVector.CityPoint;
+                        //基础底图
+                        // return  'http://211.154.196.250:8081/geoserver/zhaojiawei/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=zhaojiawei:BaseMap-WGS1984&maxFeatures=50&outputFormat=application%2Fjson';
+                        //return path.PIEVector.BaseMap;
+                         //ChinaProvince 线
+                        //return 'http://211.154.196.250:8081/geoserver/zhaojiawei/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=zhaojiawei:ChinaProvince-WGS1984&maxFeatures=50&outputFormat=application%2Fjson';
+                        return path.PIEVector.ChinaProvince;
+                    },
+                    strategy: PIE.ol.loadingstrategy.bbox
+                });
+
+                var vector = new PIE.ol.layer.Vector({
+                    source: vectorSource,
+                    style: new PIE.ol.style.Style({
+                        stroke: new PIE.ol.style.Stroke({
+                            color: 'rgba(0, 0, 255, 1.0)',
+                            width: 2
+                        }),
+
+                        fill: new PIE.ol.style.Fill({ //矢量图层填充颜色，以及透明度
+                            color: 'rgba(255,113,252,0.6)'
+                        }),
+
+                        text: new PIE.ol.style.Text({ //文本样式
+                            font: '12px Calibri,sans-serif',
+                            fill: new PIE.ol.style.Fill({
+                                color: '#000'
+                            }),
+                            stroke: new PIE.ol.style.Stroke({
+                                color: '#fff',
+                                width: 3
+                            })
+                        }),
+
+                        image: new PIE.ol.style.Circle({//点的半径及颜色
+                            radius: 5,
+                            fill: new PIE.ol.style.Fill({
+                                color: '#f0ff14'
+                            })
+                        }),
+                    })
+                });
+
+                map.map.addLayer(vector); //不能直接添加
+                console.log(vector);
+            });
+
+
+            // // generate a GetFeature request
+            // var featureRequest = new PIE.ol.format.WFS().writeGetFeature({
+            //     srsName: 'EPSG:4326',
+            //     featureNS: 'http://openstreemap.org',
+            //     featurePrefix: 'osm',
+            //     featureTypes: ['water_areas'],
+            //     outputFormat: 'application/json',
+            //     filter: PIE.ol.format.filter.and(
+            //         PIE.ol.format.filter.like('name', 'Mississippi*'),
+            //         PIE.ol.format.filter.equalTo('waterway', 'riverbank')
+            //     )
+            // });
+            //
+            // // then post the request and add the received features to a layer
+            // fetch('https://ahocevar.com/geoserver/wfs', {
+            //     method: 'POST',
+            //     body: new XMLSerializer().serializeToString(featureRequest)
+            // }).then(function (response) {
+            //     return response.json();
+            // }).then(function (json) {
+            //     console.log(json);
+            //     var testLineLayer = new PIE.MetoStyle.LineLayer({
+            //         data: json,
+            //         width: 2,
+            //         color: "#22f"
+            //     });
+            //     //将线图层添加到底图里
+            //     map.add(testLineLayer)
+            // });
+        }
+    </script>
+</head>
+<body onLoad="init()">
+<div id="map">
+</div>
+</body>
+</html>

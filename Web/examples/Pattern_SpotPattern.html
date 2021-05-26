@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>色斑图</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src ="js/lib/status.js"></script>
+<!-- 动态流线数据 -->
+<script type="text/javascript" src="data/dynamicflow.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({//新建一个map对象
+        type:1,
+        baseMap:""
+    });
+    var view = new PIE.MapView({//新建视图
+        map:map,
+        container:"map",
+        zoom:3,
+        center:[110,30]
+    });
+    var date = new Date();
+    var tempdate = date.getFullYear() + "-" + (date.getMonth()+1) +"-"+ date.getDate() + " "+ date.getHours();
+    map.on("load",function () {//添加监听事件，在加载的时候添加图层
+        var state = new Status(map);
+        document.body.appendChild(state.dom);
+        
+        var testTextLayer = new PIE.GridTileLayer({
+            id:'tempgrid',
+            //url:"http://211.154.196.250:8082/VIS-Web/getNumerical/getPubsurf/{z}/{x}/{y}.png?params=data:"+tempdate+",modelType:ECMWF_HR_C1D,feature:thag,level:0",
+            url: path.PIEWeb.getPubsurf +  "?params=data:"+tempdate+",modelType:ECMWF_HR_C1D,feature:thag,level:0",
+        });
+        map.add(testTextLayer);
+        
+        //定义一个栅格瓦片图层
+        var grid = new PIE.GridTileLayer({
+            id:'testgrid',
+            //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+            url: path.PIEGrid.GlobalDarkMap,
+        });
+        map.add(grid);
+    })
+
+
+</script>
+<script src ="js/lib/MapTool.js"></script>
+</body>
+</html>

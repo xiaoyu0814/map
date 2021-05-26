@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>image</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <script src="../src/ol.js"></script>
+    <!--<script src="../src/OpenLayer/openLayer.js"></script>-->
+    <!--<script src="../src/ol.js"></script>-->
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .infobox {
+            z-index: 11;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #5A83BC;
+            opacity: 0.8;
+            border: solid 1px white;
+            border-radius:8px;
+            padding: 5px;
+        }
+        p {
+            color: white;
+        }
+        .infobt{
+            z-index: 8001;
+            position: relative;
+            float: left;
+            margin-left: 30px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div class="infobox">
+    <p id="p1txt"></p>
+    <p id="p2txt"></p>
+    <p id="p3txt"></p>
+    <p id="p4txt"></p>
+    <button onclick="show()" class="infobt">图层显示/隐藏
+    </button>
+</div>
+<script>
+
+    //初始化底图
+    var map = new ol.Map({
+        target: 'map',
+        layers: [
+             new ol.layer.Tile({
+                 source: new ol.source.OSM()
+             }),
+
+        ],
+
+        view: new ol.View({
+            center: ol.proj.fromLonLat([110, 0]),
+            zoom: 2,
+            minZoom:1,
+            maxZoom:12,
+            projection: "EPSG:3857",
+        })
+    });
+//转换openlayer图层坐标格式
+    var a = ol.proj.fromLonLat([30, -75]);
+    var b = ol.proj.fromLonLat([180, 75]);
+    var extent =a.concat(b);
+let aa = new ol.layer.Image({
+    source: new ol.source.ImageStatic({
+        url : "./image/201901170530_FY2E_Roundel_VIS.png",
+        projection: "EPSG:3857",
+        imageExtent: extent
+    })
+});
+ map.addLayer(aa);
+
+
+</script>
+
+</body>
+</html>

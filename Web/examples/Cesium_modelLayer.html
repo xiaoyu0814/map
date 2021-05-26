@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <!-- 如果要用沙盒里的东西的话加上这个 -->
+    <script src="../examples/data/Sandcastle/Sandcastle-header.js"></script>
+    <!-- 一定要加上这个css样式 -->
+    <link rel="stylesheet" href="../examples/data/Sandcastle/templates/bucket.css">
+    <title>白膜数据</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+
+        }
+
+        html,
+        body,
+        #map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #remove {
+            position: absolute;
+            top: 260px;
+            left: 0;
+            width: 100px;
+            height: 30px;
+            background: #fff;
+            text-align: center;
+            color: black;
+            line-height: 30px;
+        }
+
+        #add {
+            position: absolute;
+            top: 300px;
+            left: 0;
+            width: 100px;
+            height: 30px;
+            background: #fff;
+            text-align: center;
+            color: black;
+            line-height: 30px;
+        }
+
+        #start {
+            position: absolute;
+            top: 340px;
+            left: 0;
+            width: 100px;
+            height: 30px;
+            background: #fff;
+            text-align: center;
+            color: black;
+            line-height: 30px;
+        }
+
+        #end {
+            position: absolute;
+            top: 380px;
+            left: 0;
+            width: 100px;
+            height: 30px;
+            background: #fff;
+            text-align: center;
+            color: black;
+            line-height: 30px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div onclick="model('移除')" id="remove">移除</div>
+<div onclick="model('添加')" id="add">添加</div>
+<div onclick="model('开始')" id="start">开始</div>
+<div onclick="model('停止')" id="end">停止</div>
+<div id="toolbar" style="position: absolute;top: 0;">
+    <!-- 这是Demo需要的侧边栏 -->
+    <table class="infoPanel">
+        <tbody>
+        <tr>
+            <td>点击键盘操作</td>
+        </tr>
+        <tr>
+            <td>上下角度: <span id="heading"></span>°</td>
+        </tr>
+        <tr>
+            <td>← 向左/→ 向右</td>
+        </tr>
+        <tr>
+            <td>左右角度: <span id="pitch"></span>°</td>
+        </tr>
+        <tr>
+            <td>↑ 向上/↓ 向下</td>
+        </tr>
+        <tr>
+            <td>翻转角度: <span id="roll"></span>°</td>
+        </tr>
+        <tr>
+            <td>← + ⇧ 左翻/→ + ⇧ 右翻</td>
+        </tr>
+        <tr>
+            <td>速度: <span id="speed"></span>m/s</td>
+        </tr>
+        <tr>
+            <td>↑ + ⇧ 加速/↓ + ⇧ 减速</td>
+        </tr>
+        <tr>
+            <td>相机跟随
+                <input id="fromBehind" type="checkbox">
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+</body>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/dat.gui.min.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<!--<script src="js/lib/gethtml.js"></script>-->
+<script>
+    var map;
+    var view;
+    var entity;
+    var modelHave = false;
+    var ModelLayer,ModelLayer1;
+    var controls = new function () { // dat.gui.js// 定义一个变量 给这个变量添加你需要的属性
+        this.modelColor = "White";
+        this.modelOpacity = 1;
+        this.colorBlendMode = "Mix";
+        this.colorBlendAmount = 0.5;
+        this.silhouetteColor = "White";
+        this.silhouetteOpacity = 1;
+        this.silhouetteSize = 0;
+    }
+    init();
+
+    //初始化底图
+    function init() {
+        map = new PIE.Map({
+            type: 3
+        }); //初始化底图
+        //设置视图
+        view = new PIE.MapView({
+            map: map,
+            container: "map"
+        });
+        var grid = new PIE.GridTileLayer({
+            //url: "http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+            url: path.PIEGrid.GFTile,
+            id: 'tilelayer1'
+        });
+        map.add(grid);
+        ModelLayer = new PIE.MetoStyle.ModelLayer({
+            id: "test_ModelLayer",
+            url: 'data/CesiumAir/Cesium_Air.glb',
+            height: 5000.0,
+            lat: 116.59781455993652,
+            lon: 40.06388417471974,
+            color: controls.modelColor,
+            opacity: controls.modelOpacity,
+            colorBlendMode: controls.colorBlendMode,
+            colorBlendAmount: controls.colorBlendAmount,
+            silhouetteColor: controls.silhouetteColor,
+            silhouetteOpacity: controls.silhouetteOpacity,
+            silhouetteSize: controls.silhouetteSize
+        })
+
+        ModelLayer1 = new PIE.MetoStyle.ModelLayer({
+            id: "test_ModelLayer2",
+            url: 'data/CesiumAir/Cesium_Air.glb',
+            height: 5000.0,
+            lat: 118.59781455993652,
+            lon: 40.06388417471974,
+            color: controls.modelColor,
+            opacity: controls.modelOpacity,
+            colorBlendMode: controls.colorBlendMode,
+            colorBlendAmount: controls.colorBlendAmount,
+            silhouetteColor: controls.silhouetteColor,
+            silhouetteOpacity: controls.silhouetteOpacity,
+            silhouetteSize: controls.silhouetteSize
+        })
+
+        map.add(ModelLayer)
+    
+
+        var gui = new dat.GUI();
+        gui.add(controls, 'modelColor', ['White', 'Red', 'Green', 'Blue', 'Yellow', 'Gray']).name("模型颜色").onChange(function (value) {
+            ModelLayer.setColor(value, controls.modelOpacity);
+        });
+        gui.add(controls, 'modelOpacity', 0, 1).name("模型透明度").onChange(function (value) {
+            ModelLayer.setColor(controls.modelColor, value);
+        });
+        gui.add(controls, 'colorBlendMode', ['Highlight', 'Replace', 'Mix']).name("模型皮肤设置").onChange(function (value) {
+            ModelLayer.setColorBlendMode(value);
+        });
+        gui.add(controls, 'colorBlendAmount', 0, 1).name("皮肤透明度").onChange(function (value) {
+            ModelLayer.setColorBlendAmount(value);
+        });
+        gui.add(controls, 'silhouetteColor', ['White', 'Red', 'Green', 'Blue', 'Yellow', 'Gray']).name("外边框颜色").onChange(function (value) {
+            ModelLayer.setSilhouetteColor(value, controls.silhouetteOpacity);
+        });
+        gui.add(controls, 'silhouetteOpacity', 0, 1).name("外边框透明度").onChange(function (value) {
+            ModelLayer.setSilhouetteColor(controls.silhouetteColor, value);
+        });
+        gui.add(controls, 'silhouetteSize', 0, 10).name("外边框宽度").onChange(function (value) {
+            ModelLayer.setSilhouetteSize(value);
+        });
+    }
+
+    function model(item) {
+        switch (item) {
+            case "移除":
+                if(modelHave){
+                    map.remove(ModelLayer1)
+                    modelHave = false;
+                }else{
+                    alert("请先添加")
+                }
+                
+                break;
+            case "添加":
+                if(modelHave){
+                    alert("只能添加一个")
+                }else{
+                    map.add(ModelLayer1)
+                    modelHave = true;
+                }
+                
+                break;
+
+            case "开始":
+                // map.modelAnimate(ModelLayer,true)
+                ModelLayer.speed = 10
+                ModelLayer.move(ModelLayer)
+                break;
+
+            case "停止":
+                // map.modelAnimate(ModelLayer,false)
+                ModelLayer.speed = 0
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    var deltaRadians = Cesium.Math.toRadians(3.0)
+    document.addEventListener('keydown', function (e) {
+        switch (e.keyCode) {
+            case 40:
+                if (e.shiftKey) {
+                    // 按住shift加下箭头减速
+                    ModelLayer.speed = Math.max(--ModelLayer.speed, 0);
+                } else {
+                    // 直接按下箭头降低角度
+                    ModelLayer.hpRoll.pitch -= deltaRadians;
+                    if (ModelLayer.hpRoll.pitch < -Cesium.Math.TWO_PI) {
+                        ModelLayer.hpRoll.pitch += Cesium.Math.TWO_PI;
+                    }
+                }
+                break;
+            case 38:
+                if (e.shiftKey) {
+                    // 按住shift加上箭头加速
+                    ModelLayer.speed = Math.min(++ModelLayer.speed, 1000);
+                } else {
+                    // 直接按上箭头抬高角度
+                    ModelLayer.hpRoll.pitch += deltaRadians;
+                    if (ModelLayer.hpRoll.pitch > Cesium.Math.TWO_PI) {
+                        ModelLayer.hpRoll.pitch -= Cesium.Math.TWO_PI;
+                    }
+                }
+                break;
+            case 39:
+                if (e.shiftKey) {
+                    // 飞机本身向右旋转
+                    ModelLayer.hpRoll.roll += deltaRadians;
+                    if (ModelLayer.hpRoll.roll > Cesium.Math.TWO_PI) {
+                        ModelLayer.hpRoll.roll -= Cesium.Math.TWO_PI;
+                    }
+                } else {
+                    // 向右飞行
+                    ModelLayer.hpRoll.heading += deltaRadians;
+                    if (ModelLayer.hpRoll.heading > Cesium.Math.TWO_PI) {
+                        ModelLayer.hpRoll.heading -= Cesium.Math.TWO_PI;
+                    }
+                }
+                break;
+            case 37:
+                if (e.shiftKey) {
+                    // 飞机本身向左旋转
+                    ModelLayer.hpRoll.roll -= deltaRadians;
+                    if (ModelLayer.hpRoll.roll < 0.0) {
+                        ModelLayer.hpRoll.roll += Cesium.Math.TWO_PI;
+                    }
+                } else {
+                    // 向左飞行
+                    ModelLayer.hpRoll.heading -= deltaRadians;
+                    if (ModelLayer.hpRoll.heading < 0.0) {
+                        ModelLayer.hpRoll.heading += Cesium.Math.TWO_PI;
+                    }
+                }
+                break;
+            default:
+        }
+    });
+</script>
+
+</html>

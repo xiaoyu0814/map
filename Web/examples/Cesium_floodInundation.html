@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>line</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+        .measureCur
+        {
+            cursor: url(./image/measure.cur), auto;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/floodInundation.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({
+       type:3
+    }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map"
+    });
+    var grid = new PIE.GridTileLayer({
+        //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+        url:path.PIEGrid.GFTile,
+        id: 'tilelayer1'
+    });
+    map.add(grid);
+
+    map.on("load",function () {
+        //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+        map.map._cesiumViewer.terrainProvider=Cesium.createWorldTerrain();
+        map.map._cesiumViewer.scene.globe.depthTestAgainstTerrain = true;
+        var handler = new Cesium.ScreenSpaceEventHandler(map.map._cesiumViewer.canvas);
+        getToolButton();
+
+        //定义目标位置
+        var destination=Cesium.Rectangle.fromDegrees(118.39037712999183,29.854291959512913,118.41337712999183,29.860921830807358);
+        var  heading=Cesium.Math.toRadians(0.0);//朝北
+        var  pitch=Cesium.Math.toRadians(-15);
+        var  roll=Cesium.Math.toRadians(0);
+        var  duration=3;
+        //实例化洪水模拟类
+        var floodHelper1=new floodHelper({viewer:map.map._cesiumViewer,handler:handler});
+        //定位到目标位置
+        floodHelper1.flyTo(destination,heading,pitch,roll,duration);
+
+        //增加按钮事件
+        document.getElementById('btnDrawFlood').addEventListener('click', function() {//绘制淹没范围
+            floodHelper1.drawPolygon();
+        }, false);
+        document.getElementById('btnClearFlood').addEventListener('click', function() {//清除淹没效果
+            floodHelper1.clearAll();
+        }, false);
+        document.getElementById('btnStartFlood').addEventListener('click', function() {//开始
+            var height_min=$("#height_min").val();
+            var height_max=$("#height_max").val();
+            var step=$("#height_step").val();
+            var speed=$("#height_speed").val();
+            floodHelper1.startFlood({height_min:height_min,height_max:height_max,step:step,speed:speed});
+        }, false);
+        document.getElementById('btnPickUp').addEventListener('click', function() {//拾取
+            floodHelper1.pickUp();
+        }, false);
+
+    });
+
+    function getToolButton() {
+        var toolbarDiv = document.getElementById('toolbar');
+             toolbarDiv.innerHTML = '<div id="hud" style="color: white"></div>' +
+            '<label style="color: #fff;float: left">最小高度:<input type="number" style="width: 60px;height: 15px; margin-top: 4px;" value="100" id="height_min"/></input></label>' +
+            '<label style="color: #fff;float: left">最大高度:<input type="number" style="width: 60px;height: 15px; margin-top: 4px;" value="300" id="height_max"/></input></label>' +
+            '<label style="color: #fff;float: left">上涨间隔:<input type="number" style="width: 60px;height: 15px; margin-top: 4px;"  value="5" id="height_step"/></input></label>' +
+            '<label style="color: #fff;float: left">淹没速度:<input type="number" style="width: 60px;height: 15px; margin-top: 4px;" value="1" id="height_speed"/></input></label></br>' +
+            '<button style="float: left;line-height: normal;top:4px;" type="button" class="cesium-button" id="btnDrawFlood">绘制淹没范围</button>' +
+            '<button style="float: left;line-height: normal;top:4px;" type="button" class="cesium-button" id="btnClearFlood">清除淹没效</button>' +
+            '<button style="float: left;line-height: normal;top:4px;" type="button" class="cesium-button" id="btnStartFlood">开始</button>' +
+            '<button style="float: left;line-height: normal;top:4px;" type="button" class="cesium-button" id="btnPickUp">拾取</button>';
+        toolbarDiv.style.visibility = "visible";
+        toolbarDiv.setAttribute('style', 'background: rgba(42,42,42,0.9); border-radius: 5px;height:67px');
+    }
+</script>
+</body>
+</html>

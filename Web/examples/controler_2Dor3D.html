@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>2D/3D</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #map2 {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .abcd {
+            position: absolute;
+            top: 10px;
+            left: 60px;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div class="abcd">
+        <button onclick="change2d()">2D</button>
+        <button onclick="change3d()">3D</button>
+    </div>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script src="js/WMTSImageryProvider.js"></script>
+    <script src="js/compare-js.js"></script>
+    <script src="./js/show/path.js"></script>
+    <link href="js/compare-css.css" rel="stylesheet" />
+    <script>
+        var map = new PIE.Map({
+            type: 1
+        });
+
+        var view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 2,
+            projection: 'EPSG:4326',
+            center: [107.971532, 23.382439],
+
+        });
+
+        var controller = new PIE.controller({
+            map: map,
+            container: "map",
+            change2D3D: {
+                type_2D: "mapbox"
+            },
+        });
+        console.log(controller)
+        var grid;
+        map.on("load", function () {
+            var xyz = new PIE.GridTileLayer({
+                // url: path.GoogleURL.xyz,
+                url: path.GoogleURL.satellite,
+                id: "xyz",
+            });
+
+            // goly = new PIE.GridTileLayer({
+            //     url: "https://tiles.windy.com/tiles/v9.0/grayland/{z}/{x}/{y}.png",
+            //     id: "goly",
+            // });
+
+            map.add(xyz);
+            // map.add(goly);
+            map.on('click', function (e) {
+                console.log('A click event has occurred at ', e);
+            });
+
+        });
+
+        function change2d() {
+            controller.change2D(1)
+        }
+
+        function change3d() {
+            controller.change3D()
+        }
+    </script>
+
+</body>
+
+</html>

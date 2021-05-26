@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>wgs84</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<div id="toolTip" style="z-index: 9999; position: absolute; top: 250px; left: 20px; width:45px"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/WMTSImageryProvider.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({
+            type:3
+        }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map"
+    });
+
+    var grid = new PIE.GridTileLayer({
+        //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+        //url:path.PIEGrid.GFTile,
+        //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+        url: path.PIEGrid.GlobalDarkMap,
+        id: 'tilelayer1'
+    });
+    map.add(grid);
+
+
+    map.on("load",function () {
+        //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+        // map.map._cesiumViewer.terrainProvider=Cesium.createWorldTerrain();
+        var globe = map.map._cesiumViewer.scene.globe;
+
+        var tms = new Cesium.UrlTemplateImageryProvider({
+            url :'./data/NaturalEarthII/{z}/{x}/{reverseY}.jpg',
+            credit : '© Analytical Graphics, Inc.',
+            tilingScheme : new Cesium.GeographicTilingScheme(),
+            maximumLevel : 5
+        });
+        map.map._cesiumViewer.imageryLayers.addImageryProvider(tms);
+
+
+        var newImageLayer1= new Cesium.WebMapTileServiceImageryProvider({
+            //url:"http://piecloud.piesat.cn/seis/v3/wmts/service/1144/3?service=WMTS&request=GetTile&version=1.0.0&layer=&style=&tilematrixSet=GoogleCRS84Quad&format=image%2Fpng&transparent=1&width=256&height=256&opacity=1&mgt_token=7be49279ea411a18dd6aface64ede5a2&srs=EPSG%3A4326",
+            url: path.seis.wmts2,
+            layer: "1220",
+            style: "default",
+            tileMatrixSetID: "GoogleCRS84Quad",
+            tileMatrixLabels : ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21'],
+            //minimumLevel:0,
+            tilingScheme : new Cesium.GeographicTilingScheme(),
+            maximumLevel:21,
+            format: "image/png",
+        });
+
+        map.map._cesiumViewer.imageryLayers.addImageryProvider(newImageLayer1);
+
+        // 4. Fly to a position with an orientation using heading, pitch and roll.
+        map.map._cesiumViewer.camera.flyTo({
+            destination : Cesium.Rectangle.fromDegrees(73, 3, 137, 54),
+            duration:0
+        });
+    });
+</script>
+</body>
+</html>

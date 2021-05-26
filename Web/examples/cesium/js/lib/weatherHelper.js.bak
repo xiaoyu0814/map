@@ -1,0 +1,190 @@
+﻿var _snowSystem=null;
+var _rainSystem=null;
+var rainSnowFall = function (options) {
+    var _self=this;
+    this._viewer = options.viewer;
+    this._options = options;
+    this._viewer.scene.globe.depthTestAgainstTerrain = true;
+    //相机移动位置的监听事件
+    this._viewer.scene.camera.moveEnd.addEventListener(function () {
+       if (options.boundRectangle != null) {
+           //相机的高度会变化，从而导致粒子发射器半径变化
+           options.snowRadius =options.viewer.camera.positionCartographic.height;
+           //重新初始化粒子系统
+         PageInfo.getChange();
+
+       }
+    });
+}
+rainSnowFall.prototype.getSnow = function () {
+    var _self = this;
+    //粒子发射器的模型矩阵
+    var emitterModelMatrix = new Cesium.Matrix4.fromTranslation(this._viewer.scene.camera.position);
+    if(_snowSystem!=null){
+        this._viewer.scene.primitives.remove(_snowSystem);
+    }
+
+    // snow
+    var minimumSnowImageSize = 0;//雪花大小
+    var maximumSnowImageSize = 0;//雪花大小
+    var emissionRate = 0;//下雪速率
+    if (this._options.snowSize == "0")//小雪
+    {
+        emissionRate = 1000;
+        var snowParticleSize = this._viewer.scene.drawingBufferWidth / 150.0;
+        minimumSnowImageSize = new Cesium.Cartesian2(snowParticleSize * 1.0, snowParticleSize * 1.0);
+        maximumSnowImageSize = new Cesium.Cartesian2(snowParticleSize * 1.5, snowParticleSize * 1.5);
+
+    } else if (this._options.snowSize == "1")//中雪
+    {
+        emissionRate = 1500;
+        var snowParticleSize = this._viewer.scene.drawingBufferWidth / 100.0;
+        minimumSnowImageSize = new Cesium.Cartesian2(snowParticleSize, snowParticleSize);
+        maximumSnowImageSize = new Cesium.Cartesian2(snowParticleSize * 2.0, snowParticleSize * 2.0);
+    } else //大雪
+    {
+        emissionRate = 3000;
+        var snowParticleSize = this._viewer.scene.drawingBufferWidth / 100.0;
+        minimumSnowImageSize = new Cesium.Cartesian2(snowParticleSize * 2, snowParticleSize * 2);
+        maximumSnowImageSize = new Cesium.Cartesian2(snowParticleSize * 4, snowParticleSize * 4);
+    }
+
+    //以下根据相机与粒子的距离求粒子的显隐
+    var snowGravityScratch = new Cesium.Cartesian3();
+    var snowUpdate = function (particle, dt) {
+        // console.log(_self._viewer.scene.camera.position);
+        snowGravityScratch = Cesium.Cartesian3.normalize(particle.position, snowGravityScratch);
+        Cesium.Cartesian3.multiplyByScalar(snowGravityScratch, Cesium.Math.randomBetween(-30.0, -300.0), snowGravityScratch);
+        particle.velocity = Cesium.Cartesian3.add(particle.velocity, snowGravityScratch, particle.velocity);
+
+
+        var distance = Cesium.Cartesian3.distance(_self._viewer.scene.camera.position, particle.position);
+        if (distance > _self._options.snowRadius) {
+            particle.endColor.alpha = 0.0;
+        } else {
+            particle.endColor.alpha = _snowSystem.endColor.alpha / (distance / _self._options.snowRadius + 0.1);
+        }
+
+    };
+
+    _snowSystem= new Cesium.ParticleSystem({
+        modelMatrix: emitterModelMatrix,
+        //emitterModelMatrix:emitterModelMatrix,
+        minimumSpeed: -1.0,
+        maximumSpeed: 0.0,
+        lifetime: 25.0,
+        emitter: new Cesium.SphereEmitter(this._options.snowRadius),
+        startScale: 0.5,
+        endScale: 1.0,
+        image:_self._options.snowImg,
+        startColor: Cesium.Color.WHITE.withAlpha(0.0),
+        endColor: Cesium.Color.WHITE.withAlpha(1.0),
+        emissionRate: emissionRate,
+        minimumImageSize: minimumSnowImageSize,
+        maximumImageSize: maximumSnowImageSize,
+        updateCallback: snowUpdate
+    });
+
+    this._viewer.scene.primitives.add(_snowSystem);
+}
+
+rainSnowFall.prototype.getRain = function () {
+    var _self = this;
+    //粒子发射器的模型矩阵
+    var emitterModelMatrix = new Cesium.Matrix4.fromTranslation(this._viewer.scene.camera.position);
+    if(_rainSystem!=null){
+        this._viewer.scene.primitives.remove(_rainSystem);
+    }
+
+    // snow
+    var minimumSnowImageSize = 0;//雨大小
+    var maximumSnowImageSize = 0;//雨大小
+    var emissionRate = 0;//下雨速率
+    if (this._options.snowSize == "0")//小雨
+    {
+        emissionRate = 1000;
+        var snowParticleSize = this._viewer.scene.drawingBufferWidth / 150.0;
+        minimumSnowImageSize = new Cesium.Cartesian2(snowParticleSize * 1.0, snowParticleSize * 1.0);
+        maximumSnowImageSize = new Cesium.Cartesian2(snowParticleSize * 1.5, snowParticleSize * 1.5);
+
+    } else if (this._options.snowSize == "1")//中雨
+    {
+        emissionRate = 1500;
+        var snowParticleSize = this._viewer.scene.drawingBufferWidth / 100.0;
+        minimumSnowImageSize = new Cesium.Cartesian2(snowParticleSize, snowParticleSize);
+        maximumSnowImageSize = new Cesium.Cartesian2(snowParticleSize * 2.0, snowParticleSize * 2.0);
+    } else //大雪
+    {
+        emissionRate = 3000;
+        var snowParticleSize = this._viewer.scene.drawingBufferWidth / 100.0;
+        minimumSnowImageSize = new Cesium.Cartesian2(snowParticleSize * 2, snowParticleSize * 2);
+        maximumSnowImageSize = new Cesium.Cartesian2(snowParticleSize * 4, snowParticleSize * 4);
+    }
+
+    //以下根据相机与粒子的距离求粒子的显隐
+    var snowGravityScratch = new Cesium.Cartesian3();
+    var rainUpdate = function (particle, dt) {
+        // console.log(_self._viewer.scene.camera.position);
+        snowGravityScratch = Cesium.Cartesian3.normalize(particle.position, snowGravityScratch);
+        snowGravityScratch =Cesium.Cartesian3.multiplyByScalar(snowGravityScratch,-1050.0, snowGravityScratch);
+        particle.position = Cesium.Cartesian3.add(particle.position,snowGravityScratch, particle.position);
+
+        var distance = Cesium.Cartesian3.distance(_self._viewer.scene.camera.position, particle.position);
+        if (distance > _self._options.snowRadius) {
+            particle.endColor.alpha = 0.0;
+        } else {
+            particle.endColor.alpha = _rainSystem.endColor.alpha / (distance / _self._options.snowRadius + 0.1);
+        }
+    };
+
+    _rainSystem= new Cesium.ParticleSystem({
+        modelMatrix: emitterModelMatrix,
+        speed : -1.0,
+        lifetime : 15.0,
+        emitter: new Cesium.SphereEmitter(this._options.snowRadius),
+        startScale : 1.0,
+        endScale : 0.0,
+        image:_self._options.rainImg,
+        startColor :new Cesium.Color(0.27, 0.5, 0.70, 0.0),
+        endColor : new Cesium.Color(0.27, 0.5, 0.70, 0.98),
+        emissionRate: emissionRate,
+        minimumImageSize: minimumSnowImageSize,
+        maximumImageSize: maximumSnowImageSize,
+        updateCallback : rainUpdate
+    });
+
+    this._viewer.scene.primitives.add(_rainSystem);
+}
+
+rainSnowFall.prototype.convertDegreeArrayToCartographicArray = function (degreeArray) {
+        //把经纬度坐标的数组转制图坐标的数组
+        var cartographics = [];
+        for (var i = 0; i < degreeArray.length; i++) {
+            var cartographic = Cesium.Cartographic.fromDegrees(degreeArray[i][0], degreeArray[i][1]);
+            cartographics.push(cartographic);
+        }
+        return cartographics;
+
+}
+
+ //定位
+rainSnowFall.prototype.flyTo = function (destination, head, pitch, roll, duration, call) {
+    var _self = this;
+    _self._viewer.camera.flyTo({
+            destination: destination,    //Cartesian3 | Rectangle
+            orientation: {
+                heading: head,
+                pitch: pitch,
+                roll: roll,
+            },
+            duration: duration,
+            complete: function ()//飞行完毕后执行的动作
+            {
+                if (call)//如果有回调函数
+                {
+                    call();
+                }
+            }
+
+        });
+    }

@@ -1,0 +1,76 @@
+{
+  "name": "PIE",
+  "version": "0.0.1",
+  "description": "JavaScript 3D library",
+  "main": "build/PIE.js",
+  "repository": "mrdoob/PIE.js",
+  "jsnext:main": "build/PIE.module.js",
+  "module": "build/PIE.module.js",
+  "files": [
+    "package.json",
+    "bower.json",
+    "LICENSE",
+    "README.md",
+    "build/PIE.js",
+    "build/PIE.min.js",
+    "build/PIE.module.js",
+    "src",
+    "examples/js",
+    "examples/fonts"
+  ],
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "eslintConfig": {
+    "extends": "mdcs"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "build-test": "rollup -c test/rollup.unit.config.js -w",
+    "release": "rollup -c && uglifyjs build/PIE-module/PIEWEB.js -cm --preamble \"//license\" >build/js/PIEWEB.min.js",
+    "build-uglify": "rollup -c && uglifyjs build/PIE.module/PIEWEB.js -cm --preamble \"// threejs.org/license\" > build/PIEWEB.min.js",
+    "build-closure": "rollup -c && java -jar node_modules/google-closure-compiler/compiler.jar --warning_level=VERBOSE --jscomp_off=globalThis --jscomp_off=checkTypes --externs utils/build/externs.js --language_in=ECMASCRIPT5_STRICT --js build/PIE.js --js_output_file build/PIE.min.js",
+    "dev": "concurrently --names \"ROLLUP,HTTP\" -c \"bgBlue.bold,bgGreen.bold\" \"rollup -c -w -m inline\" \"serve --port 8081\"",
+    "start": "npm run dev",
+    "lint": "eslint src",
+    "test": "qunit test/unit/PIE.source.unit.js",
+    "editor": "electron ./editor/main.js",
+    "docs": "yuidoc -c yuidoc.json"
+  },
+  "keywords": [
+    "PIE",
+    "PIE.js",
+    "3d",
+    "webgl"
+  ],
+  "author": "yuqiangqiang",
+  "license": "MIT",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "devDependencies": {
+    "@babel/core": "^7.5.4",
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1",
+    "concurrently": "^3.5.0",
+    "electron": "1.7.8",
+    "eslint": "^4.1.1",
+    "eslint-config-mdcs": "^4.2.2",
+    "google-closure-compiler": "^20170521.0.0",
+    "gulp-babel": "^7.0.1",
+    "gulp-uglify": "^3.0.2",
+    "qunitjs": "^2.4.0",
+    "rollup": "^0.51.8",
+    "rollup-watch": "^4.0.0",
+    "serve": "^6.3.1",
+    "uglify-js": "^3.0.23"
+  },
+  "dependencies": {
+    "babel-loader": "^7.1.5",
+    "global": "^4.4.0",
+    "http-server": "^0.11.1"
+  }
+}

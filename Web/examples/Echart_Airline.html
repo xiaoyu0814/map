@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+    <title>Echart飞机航线</title>
+    <style>
+        /*.echartMap div {
+            position: absolute;
+            overflow: auto;
+        }*/
+    </style>
+</head>
+
+<body style="height: 100%; margin: 0">
+  <div id="map" style="height: 100%"></div>
+    <script src="../build/PIE.js"></script>
+    <link href="js/PIE.css" rel="stylesheet" />
+    <script type="text/javascript" src="./js/lib/echarts-all-3.js"></script>
+    <script type="text/javascript" src="./js/lib/EchartsLayer.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script src="./js/show/path.js"></script>
+    <script type="text/javascript">
+        $.get('./data/flights.json', function (data) {
+            function getAirportCoord(idx) {
+                return [data.airports[idx][3], data.airports[idx][4]];
+            }
+            var routes = data.routes.map(function (airline) {
+                return [
+                    getAirportCoord(airline[1]),
+                    getAirportCoord(airline[2])
+                ];
+            });
+
+            var map = new PIE.Map({
+                baseMap:""
+            });
+            //设置地图样式
+            var view = new PIE.MapView({
+                map:map,
+                container:"map",
+                zoom:1,
+                center:[110,0],
+                sprite:"http://127.0.0.1:8081/examples/sprite/Weather"
+            });
+        
+            map.on('load', function () {
+            var grid = new PIE.GridTileLayer({
+                // url: 'http://service.piesat.cn:10000/service/v1/tile?map=ChinaVector&x={x}&y={y}&z={z}'
+                //url: path.PIEservice.ChinaVector,
+                //url: "http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+                url: path.PIEGrid.GlobalDarkMap,
+            });
+            map.add(grid); //增加瓦片底图
+
+                var echartslayer=new EchartsLayer(map.map);
+                echartslayer.chart.setOption(option = {
+                    title: {
+                        text: 'World Flights',
+                        left: 'center',
+                        textStyle: {
+                            color: '#eee'
+                        }
+                    },
+
+                    tooltip: {
+                        formatter: function (param) {
+                            var route = data.routes[param.dataIndex];
+                            return data.airports[route[1]][1] + ' > ' + data.airports[route[
+                                2]][1];
+                        }
+                    },
+                    GLMap: {
+                        roam: true
+                    },
+                    series: [{
+                        type: 'lines',
+                        coordinateSystem: 'GLMap',
+                        data: routes,
+                        large: true,
+                        largeThreshold: 100,
+                        lineStyle: {
+                            normal: {
+                                opacity: 0.05,
+                                width: 1,
+                                curveness: 1
+                            }
+                        },
+                        // 设置混合模式为叠加
+                        blendMode: 'lighter'
+                    }]
+                });
+
+
+            })
+
+
+
+        });;
+       
+    </script>
+</body>
+
+</html>

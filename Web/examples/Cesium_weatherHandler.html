@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>line</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet"/>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .measureCur {
+            cursor: url(./image/measure.cur), auto;
+        }
+    </style>
+    <script src="js/lib/measureHelper.js"></script>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<div id="toolTip" style="z-index: 9999; position: absolute; top: 250px; left: 20px; width:45px"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/weatherHelper.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({
+            type: 3
+        }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map"
+    });
+    var grid = new PIE.GridTileLayer({
+        //url: "http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+        url:path.PIEGrid.GFTile,
+        id: 'tilelayer1'
+    });
+    map.add(grid);
+
+    var PageInfo = {
+        snowImg: './image/snowflake_particle.png',
+        rainImg: './image/circular_particle.png',
+        snowSize: 1,//0:小雨；1：中雨；2：大雨；3：暴雨；4：大暴雨；5：特大暴雨
+        boundRectangle: null,//获得给定行政区域的边界
+        weatherHelper: null,
+        getToolButton: function () {//增加测试按钮
+            var toolbar = document.getElementById('toolbar');
+            toolbar.innerHTML = '<div id="hud" style="color: white"></div>' +
+                '<select id="weatherType" style="float: left" class="cesium-button" onchange="PageInfo.getChange()">' +
+                '<option value="雪">雪</option>' +
+                '<option value="雨">雨</option>' +
+                '<option value="雨加雪">雨加雪</option></select></br></br>' +
+                '<input type="radio" value="0" name="snow" onclick="PageInfo.getRadioValue(this.value)" /><label id="lblSmall" style="color: #fff;">小</label>' +
+                '<input type="radio" value="1" name="snow" onclick="PageInfo.getRadioValue(this.value)" checked/><label id="lblMiddle"  style="color: #fff;">中</label>' +
+                '<input type="radio" value="2" name="snow" onclick="PageInfo.getRadioValue(this.value)" /><label id="lblBig" style="color: #fff;">大</label>'+
+                '<input type="radio" value="3" name="snow" onclick="PageInfo.getRadioValue(this.value)" /><label id="lblStrom" style="color: #fff;">暴雪</label>' +
+                '<input type="radio" value="4" name="snow" onclick="PageInfo.getRadioValue(this.value)" /><label id="lblBigStrom" style="color: #fff;">大暴雪</label>' +
+                '<input type="radio" value="5" name="snow" onclick="PageInfo.getRadioValue(this.value)" /><label id="lblHeavyStom" style="color: #fff;">特大暴雪</label></br></br>' +
+                '<button  style="float: left;margin-top:-10px;line-height: normal" type="button" class="cesium-button" id="shandong">山东</button>';
+
+            toolbar.setAttribute('style', 'background: rgba(42,42,42,0.9); border-radius: 5px;');
+
+            var hud = document.getElementById('hud');
+            var cartographic = new Cesium.Cartographic();
+            map.map._cesiumViewer.clock.onTick.addEventListener(function (clock) {
+                map.map._cesiumViewer.scene.mapProjection.ellipsoid.cartesianToCartographic(map.map._cesiumViewer.scene.camera.positionWC, cartographic);
+                hud.innerHTML =
+                    'Lon: ' + Cesium.Math.toDegrees(cartographic.longitude).toFixed(3) + ' 度<br/>' +
+                    'Lat: ' + Cesium.Math.toDegrees(cartographic.latitude).toFixed(3) + ' 度<br/>' +
+                    'Alt: ' + (cartographic.height * 0.001).toFixed(1) + ' km';
+            });
+        },
+        getChange: function () {//判断是否下雪/雨
+            var wType = document.getElementById("weatherType").value;
+            PageInfo.changeTxt(wType);//更换字体
+
+            if (PageInfo.boundRectangle == null) {
+                alert("请先选择下雨/雪的区域");
+                return;
+            }
+
+            if(PageInfo.weatherHelper._rainSystem!=null){
+                map.map._cesiumViewer.scene.primitives.remove(PageInfo.weatherHelper._rainSystem);
+                PageInfo.weatherHelper._rainSystem=null;
+            }
+            if(PageInfo.weatherHelper._snowSystem!=null){
+                map.map._cesiumViewer.scene.primitives.remove(PageInfo.weatherHelper._snowSystem);
+                PageInfo.weatherHelper._snowSystem=null;
+            }
+
+            if (wType == "雪") {
+                PageInfo.weatherHelper.getSnow();
+            } else if (wType == "雨") {
+                PageInfo.weatherHelper.getRain();
+            } else {
+                PageInfo.weatherHelper.getSnow();
+                PageInfo.weatherHelper.getRain();
+            }
+        },
+        changeTxt:function(value){
+         var t1=document.getElementById("lblStrom");
+         t1.innerText="暴"+value;
+
+        var t2=document.getElementById("lblBigStrom");
+        t2.innerText="大暴"+value;
+
+        var t3=document.getElementById("lblHeavyStom");
+        t3.innerText="特大暴"+value;
+        },
+        getRadioValue: function (value) {
+            if (PageInfo.boundRectangle == null) {
+                PageInfo.snowSize = value;
+                alert("请先选择下雨/雪的区域");
+                return;
+            }
+
+            PageInfo.snowSize=value;
+            PageInfo.weatherHelper._options.snowSize = value;
+            PageInfo.getChange();
+        },
+        convertDegreeArrayToCartographicArray: function (degreeArray) {//把经纬度坐标的数组转制图坐标的数组
+            var cartographics = [];
+            for (var i = 0; i < degreeArray.length; i++) {
+                var cartographic = Cesium.Cartographic.fromDegrees(degreeArray[i][0], degreeArray[i][1]);
+                cartographics.push(cartographic);
+            }
+            return cartographics;
+        }
+
+    }
+
+    map.on("load", function () {
+        //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+        map.map._cesiumViewer.terrainProvider = Cesium.createWorldTerrain();
+        var handler = new Cesium.ScreenSpaceEventHandler(map.map._cesiumViewer.canvas);
+        //获得面板框
+        PageInfo.getToolButton();
+
+        //初始化雨雪类
+        PageInfo.weatherHelper= new rainSnowFall({
+            viewer: map.map._cesiumViewer,
+            snowSize: PageInfo.snowSize,
+            snowImg: PageInfo.snowImg,
+            rainImg: PageInfo.rainImg
+        });
+
+        //相机移动位置的监听事
+        map.map._cesiumViewer.scene.camera.moveEnd.addEventListener(function () {
+           if (PageInfo.boundRectangle!= null) {
+               PageInfo.getChange();
+           }
+        });
+
+        document.getElementById('shandong').addEventListener('click', function () {
+            //山东省行政边界
+           // PageInfo.boundRectangle = new Cesium.Rectangle(Cesium.Math.toRadians(114.3327), Cesium.Math.toRadians(34.3827), Cesium.Math.toRadians(122.7203), Cesium.Math.toRadians(38.3869));
+
+            PageInfo.boundRectangle =Cesium.Cartesian3.fromDegrees(114.3327,34.3827,300);
+            var heading = Cesium.Math.toRadians(0.0);
+                var pitch = Cesium.Math.toRadians(-90);
+                var roll = Cesium.Math.toRadians(0);
+                var duration =3;
+                var fn = function () {
+                    setTimeout(function () {
+                        map.map._cesiumViewer.scene.camera.setView({
+                            orientation : {
+                                pitch:Cesium.Math.toRadians(-15)
+                            }
+                        });
+                    },1000)
+
+            };
+            PageInfo.weatherHelper.flyTo(PageInfo.boundRectangle, heading, pitch, roll, duration,fn);
+
+        }, false);
+
+    });
+
+</script>
+</body>
+</html>

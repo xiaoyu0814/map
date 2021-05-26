@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>符号库</title>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+            height: 100%;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 310px;
+            right: 0;
+        }
+
+        #map2 {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #plotting_box {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 310px;
+            padding: 5px;
+            background-color: #fff;
+        }
+
+        #tab_title {
+            width: 100%;
+            height: 30px;
+            background-color: #E0ECFF;
+            padding: 0 2px;
+            padding-top: 5px;
+            text-align: left;
+        }
+
+        #tab_title ul {
+            height: 100%;
+        }
+
+        #tab_title li {
+            vertical-align: bottom;
+            /* height: calc(100% - 7px); */
+            display: inline-block;
+            border: 1px solid #95B8E7;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            padding: 3px 5px;
+            border-bottom: none;
+            background-color: #E0ECFF;
+            cursor: pointer;
+        }
+
+        #tab_title .selection {
+            background-color: #fff;
+        }
+
+        .tab_content {
+            padding: 5px;
+            height: calc(100% - 25px);
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="js/easyui.css">
+    <link rel="stylesheet" type="text/css" href="js/icon.css">
+    <!-- <link rel="stylesheet" type="text/css" href="js/demo.css"> -->
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="plotting_box">
+        <div id="tab_title">
+            <ul>
+                <li class="selection" onclick="changeList('符号面板')">符号面板</li>
+                <li onclick="changeList('属性面板')">属性面板</li>
+            </ul>
+        </div>
+        <div class="tab_content" id="symbol_panel" style="visibility: visible;">
+            <div>
+                <select>
+                    <option value="基本标号">基本标号</option>
+                    <option value="航线对象">航线对象</option>
+                    <option value="箭头标号">箭头标号</option>
+                    <option value="军标标号">军标标号</option>
+                </select>
+            </div>
+            <ul>
+                <li></li>
+            </ul>
+        </div>
+        <div id="property_panel" style="visibility: hidden;height: 100%;">
+            <table id="pg" class="easyui-propertygrid" style="width:300px" data-options="
+				url:'js/propertygrid_data1.json',
+				method:'get',
+				showGroup:true,
+				scrollbarSize:0
+			">
+            </table>
+        </div>
+    </div>
+    <script src="../build/PIE.js"></script>
+    <link href="js/PIE.css" rel="stylesheet" />
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script src="js/WMTSImageryProvider.js"></script>
+    <script src="js/compare-js.js"></script>
+    <link href="js/compare-css.css" rel="stylesheet" />
+    <script>
+        var map = new PIE.Map({
+            type: 1
+        });
+
+        var view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 4,
+            center: [107.971532, 33.382439],
+            // projection: 'EPSG:4326'
+        });
+
+        var grid;
+        map.on("load", function () {
+            grid = new PIE.GridTileLayer({
+                // http://10.1.6.110:6080/arcgis/rest/services/chinanew/MapServer/tile/{z}/{y}/{x}
+                // url:'https://tiles.windy.com/tiles/v9.0/darkmap/{z}/{x}/{y}.png',
+                // http://t0.tianditu.gov.cn/vec_c/wmts?tk=c1d6b49adb2ba817109873dbc13becb4&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=c&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles
+                // http://t0.tianditu.gov.cn/vec_w/wmts?tk=c1d6b49adb2ba817109873dbc13becb4&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles
+                // url: "http://www.google.cn/maps/vt?lyrs=s@800&x={x}&y={y}&z={z}",
+                url: "http://mt2.google.cn/vt/lyrs=y&hl=zh-CN&gl=CN&src=app&x={x}&y={y}&z={z}&g={g}",
+                // url: "https://t3.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}&tk=01648a46241de4244d518d8e151b3528",
+                // url: "https://t1.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}&tk=01648a46241de4244d518d8e151b3528",
+                // url: "https://t4.tianditu.gov.cn/ter_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ter&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}&tk=01648a46241de4244d518d8e151b3528",
+                id: "rr",
+            });
+            map.add(grid);
+            // map.mapRotateEnable()
+        });
+    </script>
+    <script type="text/javascript">
+        function changeList(value) {
+            var e = window.event
+            console.log(e)
+            var lis = document.getElementById("tab_title").getElementsByTagName("li");
+            for (var i = 0; i < lis.length; i++) {
+                lis[i].classList.remove('selection')
+            }
+            e.target.classList.add('selection');
+            var symbol = document.getElementById("symbol_panel");
+            var property = document.getElementById("property_panel");
+            switch (value) {
+                case "符号面板":
+                    symbol.style.display = "block";
+                    property.style.display = "none";
+                    break;
+
+                case "属性面板":
+                    property.style.visibility = "visible";
+                    symbol.style.display = "none";
+                    property.style.display = "block";
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        console.log($.fn)
+        $.extend($.fn.propertygrid.defaults.editors, {
+            colorpicker: {
+                // colorpicker就是你要自定义editor的名称
+                init: function (container, options) {
+                    var input = $('<input>').appendTo(container);
+                    input.ColorPicker({
+                        color: '#0000ff',
+                        onShow: function (colpkr) {
+                            $(colpkr).fadeIn(500);
+                            return false;
+                        },
+                        onHide: function (colpkr) {
+                            $(colpkr).fadeOut(500);
+                            return false;
+                        },
+                        onChange: function (hsb, hex, rgb) {
+                            input.css('backgroundColor', '#' + hex);
+                            input.val('#' + hex);
+                        }
+                    });
+                    return input;
+                },
+                getValue: function (target) {
+                    return $(target).val();
+                },
+                setValue: function (target, value) {
+                    $(target).val(value);
+                    $(target).css('backgroundColor', value);
+                    $(target).ColorPickerSetColor(value);
+                },
+                resize: function (target, width) {
+                    var input = $(target);
+                    if ($.boxModel == true) {
+                        input.width(width - (input.outerWidth() - input.width()));
+                    } else {
+                        input.width(width);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Station</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/config.js"></script>
+<script src="js/ImagePlay.js"></script>
+<script src="js/lib/RenderLonLatGrid.js"></script>
+<script src="js/lib/gethtml.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    //初始化底图
+    var map = new PIE.Map({
+        baseMap:""
+    });
+    //设置地图样式
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:1,
+        center:[110,0],
+        sprite:"http://127.0.0.1:8080/examples/sprite/Weather"
+    });
+    var grid;
+    //添加矢量瓦片图层
+    //添加矢量瓦片图层
+    var vectorTileLayer  = new PIE.VectorTileLayer({
+        //url:"http://service.piesat.cn:10002/styles/basic.json"
+        url:path.PIEservice.basic,
+    });
+    var bbox=[56.02,-4.96,150.97,59.97];
+    var imgUrl ,i=0;
+    map.add(vectorTileLayer);
+    var temp;
+    //底图加载成功后对底图编辑
+    map.on("load",function () {
+       // temp = new ImagePlay(map);
+        //temp.getImageDatas();
+        addimage();
+
+
+
+        map.map.addLayer({
+            'id': 'wms-test-layer1',
+            'type': 'raster',
+            'source': {
+                'type': 'raster',
+                'tiles': [
+                    'http://localhost:8060/geoserver/lzk/wms?service=WMS&version=1.1.0&request=GetMap&layers=lzk:overLine&styles=&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&TRANSPARENT=true'
+                ],
+                'tileSize': 256
+            },
+            'paint': {}
+        });
+        //addImages()
+    });
+    function animat() {
+       // requestAnimationFrame(animat,200);
+       // ;
+        i++;
+        if(map.getLayer("img"+(i-10))){
+            map.remove(map.getLayer("img"+(i-2)));
+        }
+        var img = new PIE.MetoStyle.RasterLayer({
+            url:"data/"+imgUrl[i%10].imagePath,
+            coordinates:[[bbox[0],bbox[3]],[bbox[2],bbox[3]],[bbox[2],bbox[1]],[bbox[0],bbox[1]]],
+            id:"img"+i,
+            opacity:0.8,
+        });
+
+        map.add(img);
+    }
+
+    function addImages(){
+        $.ajax({
+            async : false,
+            type : "POST",
+            dataType : "json",
+            //url : "http://10.1.6.84:8060/PIE-Web/groundLive/getGroundLiveDataCoutour?params=date:2018-01-02,type:liveInfo_ground,span:5.0,level:500,element:pressure",
+            url : path.PIEWeb.getGroundLiveDataCoutour, 
+            success : function(rs) {
+                if (!rs || rs.length == 0) {
+                    return;
+                }
+                console.log(rs);
+                testTextLayer2 = new PIE.MetoStyle.LineLayer({data:rs,text:"value",color:"#fd0"});
+                //将线图层添加到底图里
+                map.add(testTextLayer2);
+
+            },
+        })
+    }
+    function addimage(){
+        $.ajax({
+            async : false,
+            type : "POST",
+            dataType : "json",
+            url : "http://127.0.0.1:8060/PIE-Web/typhoon/getTypImg",
+            success : function(rs) {
+                if (!rs || rs.length == 0) {
+                    return;
+                }
+                console.log(rs.img);
+                var img = new PIE.MetoStyle.RasterLayer({
+                    url:"data:image/png;base64,"+rs.img,
+                    coordinates:[[rs.bbox[0],rs.bbox[3]],[rs.bbox[2],rs.bbox[3]],[rs.bbox[2],rs.bbox[1]],[rs.bbox[0],rs.bbox[1]]],
+                    id:"img",
+                    opacity:1,
+                });
+
+                map.add(img);
+            },
+        })
+    }
+
+</script>
+</body>
+</html>

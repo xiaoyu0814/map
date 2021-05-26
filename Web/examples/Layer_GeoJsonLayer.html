@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GeoJson数据</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .btnstyle {
+            position: absolute;
+            left: 0;
+            margin: 15px 30px;
+            background: #000;
+            border-radius: 4px;
+            padding: 12px 15px;
+            cursor: pointer;
+            outline: none;
+            border: 1px solid;
+            box-shadow: 3px 3px 10px #000;
+            color: white;
+            z-index: 100;
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<button class="btnstyle" style="top:10px;background: #007dff" onclick="change(this,'FillLayer')">FillLayer</button>
+<button class="btnstyle" style="top:70px" onclick="change(this,'LineLayer')">LineLayer</button>
+<button class="btnstyle" style="top:130px" onclick="change(this,'TextLayer')">TextLayer</button>
+<button class="btnstyle" style="top:190px" onclick="change(this,'IconLayer')">IconLayer</button>
+
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/status.js"></script>
+<script>
+
+ proj4.defs('EPSG:2788', '+proj=aea +lat_1=25 +lat_2=47 +lat_0=30 +lon_0=105 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs'); 
+ proj4.defs('EPSG:2798', '+proj=aea +lat_1=25 +lat_2=47 +lat_0=0 +lon_0=105 +x_0=0 +y_0=0 +ellps=krass +units=m +no_defs'); 
+
+    var num =  window.location.href.lastIndexOf('/');
+    var url =  window.location.href.substr(0, num)
+    var testFillLayer;
+    var testLineLayer;
+    var testTextLayer;
+    var testIconLayer;
+    //初始化底图
+    var map = new PIE.Map({
+        type:2
+    });
+    //设置视图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 1,
+		projection:"EPSG:2798",
+        center: [110, 0],
+        sprite: url + "/sprite/Weather",
+    });
+   //加载地图
+    map.on("load", function () {
+        testFillLayer = new PIE.MetoStyle.FillLayer({
+            data: "data/worldPolyGon.geojson",
+            color: "rgba(243, 236, 236, 1)",
+            id: "measure-Fill",
+            opacity: 1,
+            visible: true
+        });
+        map.add(testFillLayer);
+        testFillLayer.addEventListener("load", function () {
+            var state = new Status(map);
+            document.body.appendChild(state.dom);
+            testLineLayer = new PIE.MetoStyle.LineLayer({
+                url: "data/worldLine.geojson",
+                color: "rgba(0, 0, 0, 1)",
+                id: "measure-Line",
+                opacity: 1,
+                visible: true
+            });
+            testTextLayer = new PIE.MetoStyle.TextLayer({
+                url:'sprite/windspeed.json',
+                id:"measure-Text",
+                text:"WindDirection",
+                color:"#00f",
+                visible: true
+            });
+            testIconLayer = new PIE.MetoStyle.IconLayer({
+                url: "sprite/windspeed.json",
+                iconUrl: "WindSpeed",
+                rotate: "WindDirection",
+                imageName: "WIND",
+                id: "measure-Icon",
+                opacity:0.5,
+            });
+        });
+    });
+    //切换事件
+    function change(item,layer) {
+        switch (layer) {
+            case "FillLayer":
+                if(map.getLayer("measure-Fill")){
+                    $(item).css("background", "black")
+                    map.remove(testFillLayer)
+                }else{
+                    $(item).css("background", "#007dff")
+                    map.add(testFillLayer)
+                }
+                break;
+            case "LineLayer":
+                if(map.getLayer("measure-Line")){
+                    $(item).css("background", "black")
+                    map.remove(testLineLayer)
+                }else{
+                    $(item).css("background", "#007dff")
+                    map.add(testLineLayer)
+                }
+                break;
+            case "TextLayer":
+                if(map.getLayer("measure-Text")){
+                    $(item).css("background", "black")
+                    map.remove(testTextLayer)
+                }else{
+                    $(item).css("background", "#007dff")
+                    map.add(testTextLayer)
+                }
+                break;
+            case "IconLayer":
+                if(map.getLayer("measure-Icon")){
+                    $(item).css("background", "black")
+                    map.remove(testIconLayer)
+                }else{
+                    $(item).css("background", "#007dff")
+                    map.add(testIconLayer)
+                }
+                break;
+            default:
+                break;
+        }
+    }
+</script>
+<script src ="js/lib/MapTool.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GetFeatures</title>
+    <script src="./js/show/jquery.min.3.2.1.js"></script>
+    <script src="../build/PIE.js"></script>
+    <script src="./js/show/path.js"></script>
+</head>
+<style>
+    html,
+    body,
+    #map {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+</style>
+<body>
+<div id="map" class="map"></div>
+<script>
+    
+    var map = new PIE.Map({
+        type: 1
+    });
+
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 4,
+        center: [110, 35]
+    });
+
+    //底图部分
+    var GridLayer = new PIE.GridTileLayer({
+        url: PIE.path.GoogleURL.satelliteTag,
+    });
+
+    var WFSFilterLayer = new PIE.WFSFilterLayer({
+        id:"WFSFilterLayer",
+        queryType:2,
+        featureTypes: ['ChinaProvince-WGS1984'],
+    });
+
+    map.on("load", function () {
+        map.add(GridLayer);
+        map.add(WFSFilterLayer);
+    });
+
+    
+    // var raster = new PIE.ol.layer.Tile({
+    //     source: new PIE.ol.source.OSM()
+    // });
+
+    // var vectorSource = new PIE.ol.source.Vector();
+    // var vecLayer = new PIE.ol.layer.Vector({
+    //     source: vectorSource,
+    //     style: function (feature, resolution) {
+    //         return new PIE.ol.style.Style({
+    //             stroke: new PIE.ol.style.Stroke({
+    //                 color: 'yellow',
+    //                 width: 5
+    //             })
+    //         });
+    //     }
+    // });
+
+    // var selectInteraction = new PIE.ol.interaction.Select({
+    //     wrapX: false,
+    //     style: new PIE.ol.style.Style({
+    //         stroke: new PIE.ol.style.Stroke({
+    //             color: 'yellow',
+    //             width: 4
+    //         })
+    //     }),
+    //     hitTolerance: 10
+    // });
+    // var map = new PIE.ol.Map({
+    //     interactions: PIE.ol.interaction.defaults().extend([selectInteraction]),
+    //     layers: [raster, vecLayer],
+    //     target: 'map',
+    //     view: new PIE.ol.View({
+    //         center: [110, 35],
+    //         projection: 'EPSG:4326',
+    //         zoom: 4
+    //     })
+    // });
+    // selectInteraction.on("select", function (evt) {
+    //     console.log(evt.selected);
+    // });
+
+    // var featureRequest = new PIE.ol.format.WFS().writeGetFeature({
+    //     srsName: 'EPSG:4326',//坐标系
+    //     featureTypes: ['ChinaProvince-WGS1984'],//所要访问的图层
+    //     maxFeatures: 5000,
+    //     outputFormat: 'application/json',
+    //     filter: PIE.ol.format.filter.like('COLORID', '4')
+    // });
+
+    // // 发送请求
+    // //fetch('http://211.154.196.250:8081/geoserver/wfs', {
+    // fetch( path.PIEVector.wfs , {
+    //     method: 'POST',
+    //     body: new XMLSerializer().serializeToString(featureRequest)
+    // }).then(function (response) {
+    //     return response.json();
+    // }).then(function (json) {
+    //     var features = new PIE.ol.format.GeoJSON().readFeatures(json);
+    //     vectorSource.addFeatures(features);
+    // });
+</script>
+</body>
+</html>

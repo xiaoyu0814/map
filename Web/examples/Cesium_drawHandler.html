@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>line</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .measureCur {
+            cursor: url(./image/measure.cur), auto;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<div id="toolTip" style="z-index: 9999; position: absolute; top: 250px; left: 20px; width:45px"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/cesium_drawHandler.js"></script>
+<script src="./js/show/path.js"></script>
+<script src="js/lib/turf.min.js"></script>
+<script src="js/lib/proj4js-combined.js"></script>
+<script src="js/lib/geoUtils.js"></script>
+
+<script>
+    var PagerInfo={
+        viewer:null,
+        MouseEvent:null,
+        getToolButton:function(){
+            var toolbar = document.getElementById('toolbar');
+            toolbar.innerHTML =
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="point">点</button>' +
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="line">线</button>' +
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="rectangle">矩形</button>' +
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="circle">圆</button>' +
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="polygon">多边形</button>' +
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="stop">停止绘制</button>' +
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="btn_Clear">清除</button><br>'+
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="translate">平移</button>' +
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="rotate">旋转</button>' +
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="scale">缩放</button>';
+            toolbar.setAttribute('style', 'background: rgba(42,42,42,0.9); border-radius: 5px;');
+        },
+        getPoint: function (fn) {
+            var _self = this;
+            _self.MouseEvent.clearMouseEvent();
+            //注册停止绘制功能
+            _self.MouseEvent._handler.setInputAction(function (event) {
+                var cartesian3;
+                var ray = _self.viewer.scene.camera.getPickRay(event.position);
+                if (ray)
+                    cartesian3 = _self.viewer.scene.globe.pick(ray, _self.viewer.scene);
+                if (Cesium.defined(cartesian3)) {
+                    let pointObj={
+                        color:Cesium.Color.RED,
+                        size:10
+                    }
+                    var point = _self.MouseEvent.createPoint(cartesian3,pointObj);
+                    _self.MouseEvent.EntityArr.push(point);
+                    if (fn) {
+                        var data = Cesium.Cartographic.fromCartesian(cartesian3);
+                        fn({ longitude: Cesium.Math.toDegrees(data.longitude), latitude: Cesium.Math.toDegrees(data.latitude), height: data.height });
+                    }
+                }
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+            _self.MouseEvent._handler.setInputAction(function (event) {
+                _self.MouseEvent.clearMouseEvent();
+            }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+        },
+        getPolygon: function (isFill, fn) {
+            // Zoom in to an area with mountains
+            var _self = this;
+            this.MouseEvent.clearMouseEvent();
+            var drawingMode = "polygon"
+            this.MouseEvent.drawPolygon(drawingMode, isFill);
+            //注册停止绘制功能
+            _self.MouseEvent._handler.setInputAction(function (event) {
+                if (fn) {
+                    var dataArray = [];
+                    _self.MouseEvent.activeShapePoints.forEach(function (value, index, array) {
+                        var data = Cesium.Cartographic.fromCartesian(value);
+                        dataArray.push({ longitude: Cesium.Math.toDegrees(data.longitude), latitude: Cesium.Math.toDegrees(data.latitude), height: data.height });
+                    })
+                    if (dataArray.length > 1) {//把首个点加到最后，形成闭环
+                        var d = Cesium.Cartographic.fromCartesian(_self.MouseEvent.activeShapePoints[0]);
+                        dataArray.push({ longitude: Cesium.Math.toDegrees(d.longitude), latitude: Cesium.Math.toDegrees(d.latitude), height: d.height });
+                    }
+
+                    fn(dataArray);
+                }
+                _self.MouseEvent.terminateShape(drawingMode, isFill);
+            }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+        },
+        getRectangle: function (fn) {
+            var _self = this;
+
+            this.MouseEvent.drawRectangle();
+            //注册停止绘制功能
+            _self.MouseEvent._handler.setInputAction(function (event) {
+                if (fn) {
+                    var westnorth = Cesium.Cartographic.fromCartesian(_self.MouseEvent.activeShapePoints[0]);
+                    var southeast = Cesium.Cartographic.fromCartesian(_self.MouseEvent.activeShapePoints[1]);
+                    fn({ westnorth: { lon: Cesium.Math.toDegrees(westnorth.longitude), lat: Cesium.Math.toDegrees(westnorth.latitude), height: westnorth.height }, southeast: { lon: Cesium.Math.toDegrees(southeast.longitude), lat: Cesium.Math.toDegrees(southeast.latitude), height: southeast.height } })
+                }
+                _self.MouseEvent.terminateShape("rectangle");
+            }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+        },
+        getCircle: function (fn) {
+            var _self = this;
+
+            this.MouseEvent.drawCircle();
+            //注册停止绘制功能
+            _self.MouseEvent._handler.setInputAction(function (event) {
+                if (fn) {
+                    var center = Cesium.Cartographic.fromCartesian(_self.MouseEvent.activeShapePoints[0]);
+                    var radius = _self.MouseEvent.activeRadius;
+                    fn({ center: { lon: Cesium.Math.toDegrees(center.longitude), lat: Cesium.Math.toDegrees(center.latitude), height: center.height }, radius: radius })
+                }
+                _self.MouseEvent.terminateShape("circle");
+            }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+        },
+        getLine: function (fn) {//绘制线
+            var _self = this;
+            // Zoom in to an area with mountains
+            this.MouseEvent.clearMouseEvent();
+            var drawingMode = "line"
+            this.MouseEvent.drawPolygon(drawingMode);
+            //注册停止绘制功能
+            _self.MouseEvent._handler.setInputAction(function (event) {
+                if (fn) {
+                    var dataArray = [];
+                    _self.MouseEvent.activeShapePoints.forEach(function (value, index, array) {
+                        var data = Cesium.Cartographic.fromCartesian(value);
+                        dataArray.push({ longitude: Cesium.Math.toDegrees(data.longitude), latitude: Cesium.Math.toDegrees(data.latitude), height: data.height });
+                    })
+                    fn(dataArray);
+                }
+                _self.MouseEvent.terminateShape(drawingMode);
+            }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+        },
+        getStop:function(){
+            this.MouseEvent.clearMouseEvent();
+        },
+        clearShape: function () {//清除实体
+            this.MouseEvent.ClearShape();
+        },
+    }
+    var map = new PIE.Map({
+            type:3
+        }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map"
+    });
+    var grid = new PIE.GridTileLayer({
+        //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+        //url:path.PIEGrid.GFTile,
+        //url:"http://www.google.cn/maps/vt?lyrs=s@800&x={x}&y={y}&z={z}",
+        url:path.GoogleURL.s,
+        id: 'tilelayer1'
+    });
+    map.add(grid);
+    map.on("load",function () {
+        //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+        map.map._cesiumViewer.terrainProvider=Cesium.createWorldTerrain();
+        // map.map._cesiumViewer.terrainProvider=new Cesium.EllipsoidTerrainProvider({});
+        // map.map._cesiumViewer.extend(Cesium.viewerCesiumInspectorMixin);
+
+        PagerInfo.getToolButton();
+        var handler = new Cesium.ScreenSpaceEventHandler(map.map._cesiumViewer.canvas);
+        //定义目标位置
+        var destination=Cesium.Rectangle.fromDegrees(118.30037712999183,29.854291959512913,118.50337712999183,29.869921830807358);
+        var  heading=Cesium.Math.toRadians(0.0);//朝北
+        var  pitch=Cesium.Math.toRadians(-15);
+        var  roll=Cesium.Math.toRadians(0);
+        var  duration=0;
+        //实例化测量类
+        PagerInfo.viewer=map.map._cesiumViewer;
+        PagerInfo.MouseEvent=new MouseEvent(map.map._cesiumViewer);
+        //定位到目标位置
+        //PagerInfo.MouseEvent.flyTo(destination,heading,pitch,roll,duration);
+        //增加监听事件
+        document.getElementById('point').addEventListener('click',function () {
+            PagerInfo.getPoint();
+        }, false);
+        document.getElementById('line').addEventListener('click',function () {
+            PagerInfo.getLine();
+        }, false);
+        document.getElementById('rectangle').addEventListener('click',function () {
+            PagerInfo.getRectangle();
+        }, false);
+        document.getElementById('circle').addEventListener('click',function () {
+            PagerInfo.getCircle();
+        }, false);
+        document.getElementById('polygon').addEventListener('click',function () {
+            PagerInfo.getPolygon();
+        }, false);
+        document.getElementById('stop').addEventListener('click',function () {
+            PagerInfo.getStop();
+        }, false);
+        document.getElementById('btn_Clear').addEventListener('click',function () {
+            PagerInfo.clearShape();
+        }, false);
+        document.getElementById('translate').addEventListener('click',function () {
+            //注册平移、旋转、缩放，相关方法
+            PagerInfo.MouseEvent.translate();
+        }, false);
+        document.getElementById('rotate').addEventListener('click',function () {
+            PagerInfo.MouseEvent.rotate();
+        }, false);
+        document.getElementById('scale').addEventListener('click',function () {
+            PagerInfo.MouseEvent.scale();
+        }, false);
+
+
+    });
+
+
+</script>
+</body>
+</html>

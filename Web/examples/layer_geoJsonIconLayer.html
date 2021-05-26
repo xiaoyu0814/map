@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>图标显示</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/status.js"></script>
+    <link href="js/PIE.css" rel="stylesheet" />
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script src="./js/show/path.js"></script>
+    <script>
+        //初始化底图
+        var map = new PIE.Map();
+        // var _urla=window.location.href.substr(0,window.location.href.indexOf(window.location.hash));
+        // console.log(window.location.href);
+        // var _urlb=_urla.substr(0,_urla.lastIndexOf("/")) + "sprite/Weather";
+        // console.log(_urlb);
+
+        // var _url=window.location.href.substr(0,window.location.href.indexOf("/",7));
+        var _num = window.location.href.indexOf("//");
+        var _numb = window.location.href.indexOf("/", _num + 2);
+        var _url = window.location.href.substr(0, _numb);
+        // console.log(_url);
+        // console.log(_num);
+        // console.log(_numb);
+        //设置视图
+        var view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 1,
+            sprite: _url + "/examples/sprite/Weather",
+            center: [110, 0],
+
+        });
+
+        //底图加载成功后对底图编辑
+        map.on("load", function () {
+            var state = new Status(map);
+            document.body.appendChild(state.dom);
+            //定义一个fill图层
+            var testFillLayer = new PIE.GridTileLayer({
+                //url:'http://service.piesat.cn:10000/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}'
+                url: path.PIEservice.GFImage,
+            });
+            //将图层添加到底图里
+            map.add(testFillLayer);
+            // testFillLayer.addEventListener("load", function () {
+            //     getWind();
+            // })
+            setTimeout(function(){
+                getWind();
+            },10)
+        });
+        var testLineLayer;
+        var testWindLayer;
+        // map.on('zoomend',addWind);
+        //map.on('moveend',addWind);
+        /*map.off('zoomend',getWind);
+        map.off('moveend',getWind);*/
+        function getWind() {
+            var a = map.getBounds();
+            var b = map.getZoom();
+            console.log(a, b);
+            //定义一个
+            testWindLayer = new PIE.MetoStyle.IconLayer({
+                url: "sprite/windspeed.json",
+                iconUrl: "WindSpeed",
+                rotate: "WindDirection",
+                imageName: "WIND",
+                id: "testIcon"
+            });
+            testWindLayer.addEventListener('load', function () {
+                if (map.getLayer("testIcon")) {
+                    map.remove(map.getLayer("testIcon"));
+                    console.log("5555");
+                }
+                console.log("dddd");
+                // map.add(testLineLayer);
+                map.add(testWindLayer);
+            });
+            var testLineLayer
+            map.on('zoomend', addWind);
+            map.on('moveend', addWind);
+            /*map.off('zoomend',getWind);
+            map.off('moveend',getWind);*/
+            function getWind() {
+                var a = map.getBounds();
+                var b = map.getZoom();
+                console.log(a, b);
+                //定义一个
+                testLineLayer = new PIE.MetoStyle.IconLayer({
+                    //url: "http://10.1.6.71:8060/PIE-Web/showPrd/getDigitalWindVectorData?params=date:2018-01-02,hour:8,fcstHour:12,modelType:" + 511 + ",feature:wind,level:500&bounds=" + a + "&zoom=" + b,
+                    url: path.PIEWeb.getDigitalWindVectorData + "?params=date:2018-01-02,hour:8,fcstHour:12,modelType:" + 511 + ",feature:wind,level:500&bounds=" + a + "&zoom=" + b,
+                    iconUrl: "WindSpeed",
+                    rotate: "WindDirection",
+                    imageName: "WIND",
+                    id: "testIcon"
+                });
+                testLineLayer.addEventListener('load', function () {
+                    if (map.getLayer("testIcon")) {
+                        map.remove(map.getLayer("testIcon"));
+                    }
+                    console.log("dddd");
+                    map.add(testLineLayer)
+                });
+            }
+
+            function addWind() {
+                var a = map.getBounds();
+                var b = map.getZoom();
+                console.log(a, b);
+                map.getLayer("testIcon").setSource(
+                    //"http://10.1.6.71:8060/PIE-Web/showPrd/getDigitalWindVectorData?params=date:2018-01-02,hour:8,fcstHour:12,modelType:" + 511 + ",feature:wind,level:500&bounds=" + a + "&zoom=" + b
+                    path.PIEWeb.getDigitalWindVectorData + "?params=date:2018-01-02,hour:8,fcstHour:12,modelType:" + 511 + ",feature:wind,level:500&bounds=" + a + "&zoom=" + b)
+            }
+        }
+    </script>
+</body>
+
+</html>

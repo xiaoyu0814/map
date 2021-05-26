@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Point</title>
+        <link href="js/PIE.css" rel="stylesheet" />
+        <style>
+            body {
+                font: 14px Verdana;
+                overflow:hidden;
+                padding: 0px;
+                margin: 0px;
+            }
+            #map { position:absolute; top:0; bottom:0; width:100%; }
+        </style>
+    </head>
+    <body>
+    <div id="map"></div>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script>
+        //初始化底图
+        var map = new PIE.Map();
+        //设置视图
+        var view = new PIE.MapView({
+            map:map,
+            container:"map",
+            zoom:1,
+            center:[110,0]
+        });
+        // 定义点位置
+        var point = new PIE.Point(10,10);
+        var index = 0
+        var linePath = [[]]
+        var PointID = "point_test"+index
+        var LineID = "line_test"+index
+        var FillID = "fill_test"+index
+        map.doubleClickZoomDisable()
+        // 底图加载成功后对底图编辑
+        map.on("load",function () {
+            // 定义一个fill图层
+            var testFillLayer = new PIE.MetoStyle.FillLayer({
+                data:"data/worldPolyGon.geojson",// 地图数据源
+                color:"rgba(243, 236, 236, 1)", // 陆地颜色
+                id:"measure-Map",// 此图层ID
+                opacity:1,// 透明度
+                visible:true // 是否显示陆地
+            });
+            // 将图层添加到底图里
+            map.add(testFillLayer);
+            // 定义一个绘制图层
+            var pointGrap = new PIE.Graphics({
+                geometry:point,// 绘制类型
+                symbol:new PIE.MarketSymbol({color:"#66ccff",size:5})// 设置样式
+            });
+            map.add(pointGrap);// 将定义的图层添加到底图上
+            function getPointData(linePath) {
+                var data ={
+                    "type": "FeatureCollection",
+                    "features": []
+                };
+                for(var i =0 ;i<linePath.length;i++){
+                    var dataset = {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [linePath[i][0], linePath[i][1]]
+                        },
+                        "properties":{
+                            "index":i
+                        }
+                    };
+                    data.features.push(dataset);
+                }
+                console.log(data);
+                return data;
+            }
+
+            function getLineData(linePath) {
+                var dataLine ={
+                    "type": "FeatureCollection",
+                    "features": []
+                };
+                var dataLineset = {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": linePath
+                    }
+                };
+                dataLine.features.push(dataLineset);
+                return dataLine;
+            }
+
+            function getFillData(linePath) {
+                var dataLine ={
+                    "type": "FeatureCollection",
+                    "features": []
+                };
+                var dataLineset = {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [linePath]
+                    }
+                };
+                dataLine.features.push(dataLineset);
+                return dataLine;
+            }
+            
+            function draw() {
+                if(linePath[index].length>0){
+                    if(map.getLayer(PointID)){
+                        map.addLayer(map.getLayer(PointID),PointID)
+                    }else{
+                        points = new PIE.MetoStyle.PointLayer({data:getPointData(linePath[index]),id:PointID});
+                        map.add(points);
+                    }
+                }
+                if(linePath[index].length>1){
+                    if(map.getLayer(LineID)){
+                        map.addLayer(map.getLayer(LineID),LineID)
+                    }else{
+                        lines = new PIE.MetoStyle.LineLayer({data:getLineData(linePath[index]),id:LineID,color:"#ff0000",width:2});
+                        map.add(lines);
+                    }
+                }
+                if(linePath[index].length>2){
+                    if(map.getLayer(FillID)){
+                        map.getLayer(FillID).setSource(getFillData(linePath[index]))
+                    }else{
+                        fills = new PIE.MetoStyle.FillLayer({data:getFillData(linePath[index]),id:FillID,color:"#00ff00",opacity:0.5});
+                        map.add(fills);
+                    }
+                }
+            }
+
+            testFillLayer.addEventListener('load',function(){
+                // 移动图层（testFillLayer图层在后，pointGrap图层在前）
+                map.moveLayer(testFillLayer,pointGrap)
+                
+                map.on("click",function (e) {
+                    newPoint = [e.lngLat.lng,e.lngLat.lat];
+                    if(linePath[index].length ==2){
+                        linePath[index].unshift(linePath[index][linePath[index].length-1])
+                    }
+                    if(linePath[index].length>2){
+                        linePath[index].splice(1, 0, newPoint)
+                    }else{
+                        linePath[index].unshift(newPoint);
+                    }
+                    console.log(linePath[index])
+                    draw();
+                });
+
+                map.on("dblclick",function (e) {
+                    index += 1
+                    linePath[index] = []
+                    PointID = "point_test"+index
+                    LineID = "line_test"+index
+                    FillID = "fill_test"+index
+                });
+
+                map.on("mousemove",function (e) {
+                    if(selectObject){
+                        if((selectObject[0].properties.index == 0)|| (selectObject[0].properties.index==(linePath[index-1].length-1))){
+                            linePath[index-1][0][0] = e.lngLat.lng;
+                            linePath[index-1][0][1] = e.lngLat.lat;
+                            linePath[index-1][linePath[index].length-1][0] = e.lngLat.lng;
+                            linePath[index-1][linePath[index].length-1][1] = e.lngLat.lat;
+                        }else{
+                            linePath[index-1][selectObject[0].properties.index][0] = e.lngLat.lng;
+                            linePath[index-1][selectObject[0].properties.index][1] = e.lngLat.lat;
+                        }
+                        draw();
+                    }
+                });
+
+                map.on("mousedown","point_test"+index,function (e) {
+                    var features = map.queryRenderedFeatures(e.point,points);
+                    // console.log(features);
+                    if(features)
+                    {
+                        map.mapMoveDisable()
+                        selectObject =  features;
+                    }
+                    // console.log(e.lngLat);
+                });
+
+
+            })
+            
+        });
+
+    </script>
+    <script src="js/lib/gethtml.js"></script>
+    </body>
+</html>

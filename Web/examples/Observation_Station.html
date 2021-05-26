@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>站点数据</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="groudLive_viewMenu4Div_tab_list"></div>
+<div id="groudLive_viewMenu4Div_list" class="brand_list brand_col"></div>
+<script src="../build/PIE.js"></script>
+<script src="./js/show/path.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script>
+    //初始化底图
+    var map = new PIE.Map({
+        type:1,
+        baseMap:""
+    });
+    var _url = window.location.href.substr(0,window.location.href.lastIndexOf('/'));
+    //设置地图样式
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:1,
+        center:[110,0],
+        sprite: _url + "/sprite/Weather",
+    });
+   var stationLayer
+    //底图加载成功后对底图编辑
+    map.on("load",function () {
+        var testFillLayer = new PIE.GridTileLayer({
+                //url :"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+                url: path.PIEGrid.GlobalDarkMap,
+                id:"darkmap"
+        });
+        //将图层添加到底图里
+        map.add(testFillLayer);
+
+        //定义站点图层
+        stationLayer = new PIE.MetoStyle.StationLayer({
+            data: "./data/groundstation.json",
+            id: "station"
+        });
+        stationLayer.addEventListener('load',function(){
+              map.add(stationLayer);
+        })
+      
+    });  
+</script>
+<script src ="js/lib/MapTool.js"></script>
+</body>
+</html>

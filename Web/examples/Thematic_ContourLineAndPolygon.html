@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>等值线面图</title>
+    <link href="js/PIE.css" rel="stylesheet" />
+
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/PieVectorProvider.js"></script>
+<script src="js/lib/protobuf.js"></script>
+<script>
+    //初始化底图
+    var map = new PIE.Map();
+    //设置视图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 1,
+        center: [110, 0]
+    });
+    // new一个pbf对象
+    var pbffer = new PieParseProtoBuffer();
+    // 底图加载成功后对底图编辑
+    var polygonPBF;
+    var LinePBF;
+    var PointPBF;
+    var colorMap = {
+        "28": "#020C64",
+        "29": "#2657B3",
+        "30": "#6196E0",
+        "31": "#99CDD0",
+        "32": "#97E8AD",
+        "33": "#EADB70",
+        "34": "#F19303",
+        "35": "#EE581F",
+        "36": "#B50109",
+    }
+    map.on("load", function () {
+        // 定义一个fill图层
+        var testFillLayer = new PIE.MetoStyle.FillLayer({
+            data: "data/worldPolyGon.geojson", // 地图数据源
+            color: "rgba(243, 236, 236, 1)", // 陆地颜色
+            id: "measure-Map", // 此图层ID
+            opacity: 1, // 透明度
+            visible: true // 是否显示陆地
+        });
+        // 给底图添加监听，等地图加载完毕后执行其他操作
+        testFillLayer.addEventListener('load', function () {
+            var url__poly2 = "data/pbf/GLB_0_F_PSAL_B_Z_177301-200801_AL_OI_";
+            processPbfData("", pbffer, url__poly2);
+            //处理PBF数据
+            function processPbfData(res, pieProtoBuffer, url) {
+                /**
+                 *调取解析的probug.js处理相应的数据
+                 */
+                var geojsonPolygon;
+                var pbdataPolygon;
+                var geojsonLine;
+                var pbdataLine;
+                var callbackPolygon = function(data){
+                    geojsonPolygon = getGeoJsonData(data);
+                    var colorIndex = []
+                    for (var i = 0; i < geojsonPolygon.features.length; i++) {
+                        if (colorIndex.indexOf(geojsonPolygon.features[i].properties.colorIndex) == -1) {
+                            colorIndex.push(geojsonPolygon.features[i].properties.colorIndex)
+                        }
+                    }
+                    polygonPBF = new PIE.MetoStyle.FillLayer({
+                        data: geojsonPolygon, // 地图数据源
+                        id: "measure-polygonPBF", // 此图层ID
+                        opacity: 1,
+                        visible: true,
+                        colorPath: colorMap,
+                    });
+                    // 添加数据源
+                    map.add(polygonPBF)
+                    map.moveLayer(polygonPBF, LinePBF) // 移动图层（testFillLayer图层在后，pointGrap图层在前）
+                    map.add(testFillLayer);
+                }
+                var callbackLine = function(data){
+                    geojsonLine = getGeoJsonData(data);
+                    var data = {
+                        "type": "FeatureCollection",
+                        "features": []
+                    };
+                    for (var i = 0; i < geojsonLine.features.length; i++) {
+                        var Middle = parseInt(geojsonLine.features[i].geometry.coordinates.length /
+                            2)
+                        var point = {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    geojsonLine.features[i].geometry.coordinates[
+                                        Middle][0],
+                                    geojsonLine.features[i].geometry.coordinates[
+                                        Middle][1]
+                                ]
+                            },
+                            "properties": geojsonLine.features[i].properties
+                        }
+                        data.features.push(point)
+                    }
+                    LinePBF = new PIE.MetoStyle.LineLayer({
+                        data: geojsonLine, // 数据源
+                        id: "measure-LinePBF", // 此图层ID
+                        opacity: 1,
+                        visible: true
+                    });
+                    // 添加数据源
+                    map.add(LinePBF)
+                    PointPBF = new PIE.MetoStyle.TextLayer({
+                        data: data, // 数据源
+                        id: "measure-PointPBF", // 此图层ID
+                    });
+                    // 添加数据源
+                    map.add(PointPBF)
+                }
+                pbdataPolygon = pieProtoBuffer.requestData(url + "poly2", "isv", callbackPolygon);
+                pbdataLine = pieProtoBuffer.requestData(url + "Line2", "isoline", callbackLine);
+            }
+        })
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>change</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/gethtml.js"></script>
+<script>
+    var selectObject = false;
+    var index = 0;
+    var linePath = [[]];
+    var PointID = "point_test" + index;
+    var LineID = "line_test" + index;
+    var FillID = "fill_test" + index;
+    var click = 0;
+    var map = new PIE.Map({
+        baseMap: ""
+    });
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 1,
+        center: [110, 0],
+    });
+    map.doubleClickZoomDisable();
+
+    function getPointData(linePath) {
+        var data = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        for (var i = 0; i < linePath.length; i++) {
+            var dataset = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [linePath[i][0], linePath[i][1]]
+                },
+                "properties": {
+                    "index": i
+                }
+            };
+            data.features.push(dataset);
+        }
+        return data;
+    }
+
+    function getLineData(linePath) {
+        var dataLine = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        var dataLineset = {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": linePath
+            }
+        };
+        dataLine.features.push(dataLineset);
+        return dataLine;
+    }
+
+    function getFillData(linePath) {
+        var dataLine = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        var dataLineset = {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [linePath]
+            }
+        };
+        dataLine.features.push(dataLineset);
+        return dataLine;
+    }
+
+    var points = [];
+    var lines = [];
+    var fills = [];
+
+    function draw(oldIndex) {
+        let newIndex = "";
+        if (oldIndex != undefined) {
+            newIndex = oldIndex
+        } else {
+            newIndex = index
+        }
+        if (linePath[newIndex].length > 0) {
+            if (map.getLayer("point_test" + newIndex)) {
+                map.getLayer("point_test" + newIndex).setSource(getPointData(linePath[newIndex]))
+            } else {
+                let _Points = new PIE.MetoStyle.PointLayer({data: getPointData(linePath[newIndex]), id: PointID})
+                points.push(_Points);
+                map.add(points[newIndex]);
+            }
+        }
+        if (linePath[newIndex].length > 1) {
+            if (map.getLayer("line_test" + newIndex)) {
+                map.getLayer("line_test" + newIndex).setSource(getLineData(linePath[newIndex]))
+            } else {
+                let _Lines = new PIE.MetoStyle.LineLayer({
+                    data: getLineData(linePath[newIndex]),
+                    id: LineID,
+                    color: "#ff0000",
+                    width: 2
+                });
+                lines.push(_Lines);
+                map.add(lines[newIndex]);
+            }
+        }
+        if (linePath[newIndex].length > 2) {
+            if (map.getLayer("fill_test" + newIndex)) {
+                map.getLayer("fill_test" + newIndex).setSource(getFillData(linePath[newIndex]))
+            } else {
+                let _Fills = new PIE.MetoStyle.FillLayer({
+                    data: getFillData(linePath[newIndex]),
+                    id: FillID,
+                    color: "#00ff00",
+                    opacity: 0.5
+                });
+                fills.push(_Fills);
+                map.add(fills[newIndex]);
+            }
+        }
+    }
+
+    map.on("load", function () {
+        var testFillLayer = new PIE.MetoStyle.FillLayer({
+            data: "data/worldPolyGon.geojson",// 地图数据源
+            color: "rgba(243, 236, 236, 1)", // 陆地颜色
+            id: "measure-Map",// 此图层ID
+            opacity: 1,// 透明度
+            visible: true // 是否显示陆地
+        });
+        // 将图层添加到底图里
+        map.add(testFillLayer);
+    });
+
+    function addEvent() {
+        map.on("mousedown", PointID, function (e) {
+            // console.log(event.button);
+            if (event.button == 0) {
+                console.log(linePath);
+                console.log("6767"+e.features[0].layer.id.substr(10))
+                let _index = e.features[0].layer.id.substr(10);
+                // console.log(points)
+                var features = map.queryRenderedFeatures(e.point, points[_index]);
+                // console.log(features);
+                if (features && features.length > 0) {
+                    map.mapMoveDisable();
+                    selectObject = features;
+                    console.log(selectObject);
+                }
+                // console.log(e.lngLat);
+            }
+        });
+    }
+
+    map.on("mouseup", function (e) {
+        map.mapMoveEnable();
+        console.log(selectObject)
+        if (selectObject) {
+            let _index = selectObject[0].properties.index;
+            let _sourceIdNum = Number(selectObject[0].layer.id.substr(10));
+            linePath[_sourceIdNum][_index][0] = e.lngLat.lng;
+            linePath[_sourceIdNum][_index][1] = e.lngLat.lat;
+            // selectObject[0].geometry.coordinates = linePath[selectObject[0].properties.index];
+            draw(_sourceIdNum);
+            selectObject = false;
+        }
+    });
+
+    map.on("mousemove", function (e) {
+        // console.log(selectObject)
+        if (selectObject) {
+            let _sourceIdNum = Number(selectObject[0].layer.id.substr(10));
+            let _index = selectObject[0].properties.index;
+            linePath[_sourceIdNum][_index][0] = e.lngLat.lng;
+            linePath[_sourceIdNum][_index][1] = e.lngLat.lat;
+            draw(_sourceIdNum);
+        }
+    });
+
+    map.on("click", function (e) {
+        click = 0;
+        newPoint = [e.lngLat.lng, e.lngLat.lat];
+        if (linePath[index].length == 2) {
+            linePath[index].unshift(linePath[index][linePath[index].length - 1])
+        }
+        if (linePath[index].length > 2) {
+            linePath[index].splice(1, 0, newPoint)
+        } else {
+            linePath[index].unshift(newPoint);
+        }
+        // console.log(linePath[index])
+        draw();
+    });
+
+    map.on("mousedown", function (e) {
+        if (event.button == 2) {
+            addEvent()
+            removePoint = [e.lngLat.lng, e.lngLat.lat];
+            for (var i = 0; i < linePath[index].length; i++) {
+                if (linePath[index][i][0] == removePoint[0] && linePath[index][i][1] == removePoint[1]) {
+                    linePath[index].splice(i, 1);
+                }
+            }
+            draw();
+            addEvent();
+        }
+    });
+</script>
+</body>
+</html>

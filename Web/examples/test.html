@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" http-equiv="Access-Control-Allow-Oringin" content="http://localhost">
+    <link rel="stylesheet" href="http://172.16.10.132/v4.6.4/css/ol.css" type="text/css">
+    <script src="http://172.16.10.132/v4.6.4/build/ol.js"></script>
+    <style>
+        .map { height: 400px; width: 100%;}
+    </style>
+    <script type="text/javascript" src="./js/lib/jquery-2.1.0.js"></script>
+    <script src="./js/show/path.js"></script>
+    <title>OpenLayers example</title>
+</head>
+<body>
+<div id="map" class="map"></div>
+<input type="button" name="home" value="home" onclick="select_home()">
+<input type="button" name="road" value="road" onclick="select_road()">
+<div id="info"></div>
+<script>
+    function wfs(name){
+        var wfsParams = {
+            service : 'WFS',
+            version : '1.0.0',
+            request : 'GetFeature',
+            typeName : name,  //图层名称
+            outputFormat : 'text/javascript',  //重点，不要改变
+            format_options : 'callback:loadFeatures'  //回调函数声明
+        };
+
+        var vectorSource = new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            loader: function(extent, resolution, projection) {  //加载函数
+                //var url = 'http://211.154.196.250:8081/geoserver/web/';
+                var url = path.PIEVector.web;
+                $.ajax({
+                    url: url,
+                    data : $.param(wfsParams),   //传参
+                    type : 'GET',
+                    dataType: 'jsonp',   //解决跨域的关键
+                    jsonpCallback:'loadFeatures'  //回调
+                });
+            },
+            strategy: ol.loadingstrategy.tile(new ol.tilegrid.createXYZ({
+                maxZoom: 25
+            })),
+            projection: 'EPSG:4326'
+        });
+        //回调函数使用
+        window.loadFeatures = function(response) {
+            vectorSource.addFeatures((new ol.format.GeoJSON()).readFeatures(response));  //载入要素
+        };
+        var vectorLayer = new ol.layer.Vector({
+            source: vectorSource
+        });
+        return vectorLayer;
+    }
+
+    var wfs_layer = null;
+
+    function clcall(){
+        if(wfs_layer){
+            map.removeLayer(wfs_layer);
+            wfs_layer = null;
+        }
+    }
+
+    function select_home(){
+        debugger;
+        var name = 'zhaojiawei:BaseMap-Lambert';
+        clcall();
+        wfs_layer = wfs(name);
+        map.addLayer(wfs_layer);
+    }
+
+    function select_road(){
+        var name = 'map:road';
+        clcall();
+        wfs_layer = wfs(name);
+        map.addLayer(wfs_layer);
+    }
+
+    var baseLayer = new ol.layer.Tile({
+        source: new ol.source.OSM()
+    });
+
+    var map = new ol.Map({
+        layers: [baseLayer],
+        target: document.getElementById('map'),
+        view: new ol.View({
+            center: [114.3, 30.6],
+            projection: 'EPSG:4326',
+            maxZoom: 19,
+            zoom: 12
+        })
+    });
+
+    //实现高亮显示
+    var featureOverlay = new ol.layer.Vector({
+        source: new ol.source.Vector(),
+        map: map,
+        style: new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 5,
+                fill: null,
+                stroke: new ol.style.Stroke({color: 'red', width: 1})
+            })
+        })
+    });
+
+    var highlight;
+    var displayFeatureInfo = function(pixel) {
+
+        var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
+            return feature;
+        });
+
+        var info = document.getElementById('info');
+        if (feature) {
+            info.innerHTML = feature.getId() + '<br>';
+            var keys = feature.getKeys();
+            var properties = feature.getProperties();
+            for (var i = 0;i<keys.length;i++)
+            {
+                info.innerHTML += keys[i] + ' ： ';
+                info.innerHTML += properties[keys[i]] + '<br>';
+            }
+        } else {
+            info.innerHTML = ' ';
+        }
+
+        if (feature !== highlight) {
+            if (highlight) {
+                featureOverlay.getSource().removeFeature(highlight);
+            }
+            if (feature) {
+                featureOverlay.getSource().addFeature(feature);
+            }
+            highlight = feature;
+        }
+
+    };
+
+    // map.on('pointermove', function(evt) {
+    //   if (evt.dragging) {
+    //     return;
+    //   }
+    //   var pixel = map.getEventPixel(evt.originalEvent);
+    //   displayFeatureInfo(pixel);
+    // });
+
+    map.on('click', function(evt) {
+        displayFeatureInfo(evt.pixel);
+    });
+
+</script>
+</body>
+</html>

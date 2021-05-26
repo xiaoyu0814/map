@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Use correct character set. -->
+    <meta charset="utf-8">
+    <!-- Tell IE to use the latest, best version. -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>距离量算</title>
+    <script src="../build/PIE.js"></script>
+    <script src="./js/modules/cesium-plugins/measure.js"></script>
+    <script src="./js/modules/cesium-plugins/Measure/SpaceLineMeasure.js"></script>
+    <script src="./js/show/jquery.min.3.2.1.js"></script>
+    <script src="./js/lib/echarts-all-3.js"></script>
+    <script src="./js/show/path.js"></script>
+    <style>
+
+        @import url(./css/show/widgets.css);
+        
+        html,
+        body,
+        #cesiumContainer {
+            width:100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="cesiumContainer"></div>
+    <div id="credit"></div>
+    <div style="position: absolute; top: 5%; left: 10px;">
+        <div style="margin-bottom: 6px;">
+            <span style="color: cyan;">地表测量</span>
+            <button onclick="createMeasureLineTool()">测量地表距离</button>
+            <button onclick="clearMeasureResult()">清除地表测量结果</button>
+        </div>
+        <div style="margin-bottom: 6px;">
+            <span style="color: cyan;">空间测量</span>
+            <button onclick="measureLine()">测量空间距离</button>
+            <button onclick="spaceMeasureClean()">清除空间测量结果</button>
+        </div>
+    </div>
+
+    <script>
+        //Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5ZjkxMTcwNi05ZjI4LTQ0MDAtYTA2OS05NWY1ZTlhYzg5YmIiLCJpZCI6MjM2NjcsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1ODM4MTM4NTR9.F0WbCArpRjS5hUYped0Eutfn3hKPdC7-YGlCBOW7lvY';
+        // eslint-disable-next-line no-undef
+
+        var map = new PIE.Map({
+            type:3
+            }
+        );//初始化底图
+        var view = new PIE.MapView({
+            map: map,
+            container: "cesiumContainer"
+        });
+        var grid = new PIE.GridTileLayer({
+            //url:"https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}",
+            url:path.GoogleURL.satellite,
+            id: 'tilelayer1'
+        });
+        map.add(grid);
+        var viewer = map.map._cesiumViewer;
+        viewer.scene.skyBox.show = false;
+        //viewer.scene.backgroundColor = Cesium.Color.BLUE.withAlpha(0);
+        viewer.scene.sun.show = false;
+        viewer.scene.moon.show = false;
+
+        // viewer.scene.skyBox.show = false;
+        // viewer.scene.backgroundColor = new Cesium.Color(0.0, 0.0, 0.0, 0.0);
+        viewer.useDefaultRenderLoop = true;
+        viewer.scene.globe.depthTestAgainstTerrain = true;
+        viewer.scene.pickTranslucentDepth = true;
+
+        // 地表测量
+        var measureTool = new MeasureTool({
+            viewer: viewer,
+            target: 'measure'
+        });
+        function createMeasureLineTool() {
+            measureTool.measureLine();
+        }
+        function clearMeasureResult() {
+            measureTool.clearResult();
+        }
+
+        // 空间测量
+        var spaceMeasureTool = new SpaceMeasureTool(viewer)
+        function measureLine() {
+            spaceMeasureTool.measureLineSpace()
+        }
+        function spaceMeasureClean() {
+            spaceMeasureTool.clean();
+        }
+
+        var beijingTileset;
+        var beijingPrimitive;
+
+        addBeijing();
+        function addBeijing(){
+            beijingTileset = new Cesium.Cesium3DTileset({
+                url: './data/SampleData/data/beijingbuildings3Dtiles1/tileset.json'
+            });
+            beijingPrimitive = viewer.scene.primitives.add(beijingTileset);
+            beijingTileset.readyPromise.then(function (tileset) {
+                tileset._modelMatrix = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, 0));
+                tileset.show = false;
+            }).otherwise(function (error) {
+                console.log(error);
+            });
+        }
+        viewer.zoomTo(beijingPrimitive);
+    </script>
+</body>
+
+</html>

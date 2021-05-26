@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>line</title>
+    <link href="js/PIE.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script src="js/lib/gethtml.js"></script>
+    <script>
+        var map = new PIE.Map({type:2}); //初始化底图
+        var view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 7,
+            
+            projection:"EPSG:4326",
+            center: [-122.514426, 37.562984]
+        });
+        map.on("load", function () {
+            //定义一个fill图层
+            var testFillLayer = new PIE.MetoStyle.FillLayer({
+                data: "data/worldPolyGon.geojson",
+                color: "#0ff",
+                id: "measure-points"
+            });
+            //将图层添加到底图里
+           map.add(testFillLayer);
+            var grid = new PIE.GridTileLayer({
+                projection:"EPSG:3857",
+                url: 'http://cloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}',
+            });
+            map.add(grid);
+             
+            var video = new PIE.VideoLayer({
+                url:"./data/drone.mp4",
+                id:"tw",
+                region:[
+                [-122.51596391201019, 37.56238816766053],
+                [-122.51467645168304, 37.56410183312965],
+                [-122.51309394836426, 37.563391708549425],
+                [-122.51423120498657, 37.56161849366671]
+                ],
+                opacity:1
+            })
+            //map.add(video)
+        });
+    </script>
+</body>
+
+</html>

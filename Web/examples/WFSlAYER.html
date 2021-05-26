@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WFS</title>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <link rel="stylesheet" href="http://172.16.10.132/v4.6.4/css/ol.css" type="text/css">
+    <script src="http://172.16.10.132/v4.6.4/build/ol.js"></script>
+    <script src="./js/show/path.js"></script>
+</head>
+<body>
+<div id="map" class="map"></div>
+<script>
+    debugger;
+    var vectorSource = new ol.source.Vector({
+        format: new ol.format.GeoJSON(),
+        url: function (extent) {
+            //显示格网值
+            // return  'http://211.154.196.250:8081/geoserver/zhaojiawei/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=zhaojiawei:AlwaysPolyline&maxFeatures=50&outputFormat=application%2Fjson';
+            //return path.PIEVector.AlwaysPolyline;
+            //线图层
+            //return 'http://211.154.196.250:8081/geoserver/zhaojiawei/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=zhaojiawei:GlobalRiversLine-Lambert&maxFeatures=50&outputFormat=application%2Fjson';
+            return path.PIEVector.GlobalRiversLine;
+
+            //return 'http://211.154.196.250:8081/geoserver/zhaojiawei/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=zhaojiawei:ProvincePoint-Lambert&maxFeatures=50&outputFormat=application%2Fjson';
+            return path.PIEVector.ProvincePoint;
+            //return 'http://211.154.196.250:8081/geoserver/zhaojiawei/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=zhaojiawei:GlobalIslandRegion-Lambert&maxFeatures=50&outputFormat=application%2Fjson';
+            return path.PIEVector.GlobalIslandRegion;
+
+//	ChinaProvince-Lambert
+            //return 'http://211.154.196.250:8081/geoserver/zhaojiawei/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=zhaojiawei:ChinaProvince-Lambert&maxFeatures=50&outputFormat=application%2Fjson';
+            return path.PIEVector.ChinaProvince_Lambert;
+            //城市名称//
+            //return 'http://211.154.196.250:8081/geoserver/zhaojiawei/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=zhaojiawei:CityPoint-Lambert&maxFeatures=50&outputFormat=application%2Fjson';
+            return path.PIEVector.CityPoint_Lambert;
+        },
+        strategy: ol.loadingstrategy.bbox
+    });
+
+
+    var vector = new ol.layer.Vector({
+        source: vectorSource,
+        style: new ol.style.Style({
+            stroke: new ol.style.Stroke({ //线图层的
+                color: 'rgba(0, 0, 255, 1.0)',
+                width: 2
+            }),
+
+            fill: new ol.style.Fill({ //矢量图层填充颜色，以及透明度
+                color: 'rgba(255,113,252,0.6)'
+            }),
+
+            text: new ol.style.Text({ //文本样式
+                font: '12px Calibri,sans-serif',
+                fill: new ol.style.Fill({
+                    color: '#000'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#fff',
+                    width: 3
+                })
+            }),
+
+            image: new ol.style.Circle({//点的半径及颜色
+                radius: 5,
+                fill: new ol.style.Fill({
+                    color: '#60ff24'
+                })
+            }),
+        })
+    });
+
+    console.log(vector);
+    var raster = new ol.layer.Tile({
+        source: new ol.source.BingMaps({
+            imagerySet: 'Aerial',
+            key: 'Your Bing Maps Key from http://www.bingmapsportal.com/ here'
+        })
+    });
+
+    var map = new ol.Map({
+        layers: [raster, vector],
+        target: document.getElementById('map'),
+        view: new ol.View({
+            center: [110, 0],
+            // maxZoom: 22,
+            zoom: 2
+        })
+    });
+
+    map.on('pointermove', function (event) {
+        //先移除样式
+        var total = vector.getSource().getFeatures();
+        console.log(total);
+        for (var i in total) {
+            total[i].setStyle(new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'blue',
+                    width: 1
+                })
+            }));
+        }
+        //获得鼠标移动上的feature
+        map.forEachFeatureAtPixel(event.pixel, function (feature) {
+            //设置高亮显示填充颜色
+            feature.setStyle(new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    width: 3,
+                }),
+                fill: new ol.style.Fill({
+                    color: 'red'
+                })
+
+            }));
+        });
+    });
+</script>
+</body>
+</html>

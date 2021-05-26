@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>GeoJson线数据</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <link href="js/PIE.css" rel="stylesheet" />
+    <script src="./js/show/path.js"></script>
+    <script>
+        //初始化底图
+        var map = new PIE.Map({
+            baseMap: ""
+        });
+        //设置地图样式
+        var view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 1,
+            center: [110, 0]
+        });
+        var grid;
+        var testTextLayer2
+        //底图加载成功后对底图编辑
+        map.on("load", function () {
+            grid = new PIE.GridTileLayer({
+                id: "testRaster",
+                //url: 'http://10.1.6.71:8060/PIE-Web/showPrd/surf/{z}/{x}/{y}.png?params=date:2018-01-02,hour:8,fcstHour:12,modelType:' + 511 + ',feature:temp,level:500'
+                url: path.PIEWeb.surf3 + "?params=date:2018-01-02,hour:8,fcstHour:12,modelType:" + 511 + ",feature:temp,level:500"
+            });
+            map.add(grid);
+            //定义一个线图层
+            var testLineLayer = new PIE.MetoStyle.LineLayer({
+                data: "data/line-samples.geojson",
+                width: 2,
+                color: "#444"
+            });
+            //将线图层添加到底图里
+            map.add(testLineLayer);
+            
+            testTextLayer2 = new PIE.MetoStyle.LineLayer({
+                //data: 'http://127.0.0.1:8060/PIE-Web/showPrd/getDigitalData?params=date:2018-03-20,hour:8,fcstHour:12,modelType:' + 511 + ',feature:pressure,level:500',
+                data: path.PIEWeb.getDigitalData + "?params=date:2018-03-20,hour:8,fcstHour:12,modelType:" + 511 + ",feature:pressure,level:500",
+                text: "prop1",
+                color: "#fd0"
+            });
+            //将线图层添加到底图里
+            map.add(testTextLayer2);
+
+        });
+    </script>
+</body>
+
+</html>

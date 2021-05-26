@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>框选查询</title>
+    <script src="./js/show/jquery.min.3.2.1.js"></script>
+    <script src="../build/PIE.js"></script>
+    <script src="./js/show/path.js"></script>
+</head>
+<style>
+    html,
+    body,
+    #map {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+</style>
+<body>
+    <div style="position: absolute;z-index: 9999">
+        <label>几何图形类型：&nbsp;</label>
+        <select id="type">
+            <option value="None">无</option>
+            <option value="Point">点</option>
+            <option value="LineString">线</option>
+            <option value="Polygon">多边形</option>
+            <option value="Circle">圆</option>
+            <option value="Square">正方形</option>
+            <option value="Box">长方形</option>
+        </select>
+        <button onclick="btnClick()">查询</button>
+    </div>
+    <div id="map"></div>
+    <script>
+        var map = new PIE.Map({
+            type: 2
+        });
+
+        var view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 5,
+            center: [110, 35]
+        });
+        //底图部分
+        var GridLayer = new PIE.GridTileLayer({
+            url: PIE.path.GoogleURL.satelliteTag,
+        });
+
+        var WFSFilterLayer = new PIE.WFSFilterLayer({
+            id: "WFSFilterLayer",
+            queryType: 5,
+        });
+
+        map.on("load", function () {
+            map.add(GridLayer);
+            map.add(WFSFilterLayer);
+        });
+
+        //绘制图形
+        var draw;
+        var num = 10; //用于删除之前的框，表示号，随便取一个
+        var selectnum = 10; //相交的number
+        function btnClick() {
+            WFSFilterLayer.geometry = WFSFilterLayer.olSource.getFeatures()[0].getGeometry();
+            var typeValue = typeSelect.value;
+            if (typeValue === "Circle" || typeValue === "Point") {
+                //圆与点需要单独处理
+                WFSFilterLayer.geometry = drawCircle(typeValue, WFSFilterLayer.geometry);
+            }
+            console.log(WFSFilterLayer.geometry)
+            WFSFilterLayer.queryfilter = new PIE.QueryFilter.intersects("the_geom", WFSFilterLayer.geometry);
+            //设置查询参数与条件
+            WFSFilterLayer.featureRequest = new PIE.ol.format.WFS().writeGetFeature({
+                srsName: 'EPSG:3857', //坐标系
+                featureTypes: ['GlobalLakesRegion-WGS1984'], //所要访问的图层
+                maxFeatures: 5000,
+                outputFormat: 'application/json',
+                filter: WFSFilterLayer.queryfilter //前者是属性名，后者是对应值
+            });
+            console.log(WFSFilterLayer.featureRequest);
+            WFSFilterLayer.post(2, WFSFilterLayer.featureRequest);
+        }
+
+        var typeSelect = document.getElementById('type');
+        //用户更改绘制类型触发的事件
+        typeSelect.onchange = function (e) {
+            map.map.removeInteraction(draw); //移除绘制图形控件
+            addDraw(); //添加绘制图形控件
+        };
+
+        function addDraw() {
+            var typeValue = typeSelect.value; //绘制类型
+            if (typeValue !== 'None') {
+                var geometryFunction, maxPoints;
+                if (typeValue === 'Square') { //正方形
+                    typeValue = 'Circle'; //设置绘制类型为Circle
+                    //设置几何信息变更函数，即创建正方形
+                    geometryFunction = PIE.ol.interaction.Draw.createRegularPolygon(4);
+                    console.log("84" + geometryFunction)
+                } else if (typeValue === 'Box') { //长方形
+                    typeValue = 'LineString'; //设置绘制类型为LineString
+                    maxPoints = 2; //设置最大点数为2
+                    //设置几何信息变更函数，即设置长方形的坐标点
+                    console.log("89" + geometryFunction)
+                    geometryFunction = function (coordinates, geometry) {
+                        if (!geometry) {
+                            geometry = new PIE.ol.geom.Polygon(null); //多边形
+                        }
+                        var start = coordinates[0];
+                        var end = coordinates[1];
+                        console.log("96" + start)
+                        console.log("97" + end)
+                        geometry.setCoordinates([
+                            [
+                                start,
+                                [start[0], end[1]],
+                                end,
+                                [end[0], start[1]],
+                                start
+                            ]
+                        ]);
+                        return geometry;
+                    };
+                }
+
+                //实例化图形绘制控件对象并添加到地图容器中
+                draw = new PIE.ol.interaction.Draw({
+                    source: WFSFilterLayer.olSource,
+                    type: typeValue, //几何图形类型
+                    geometryFunction: geometryFunction, //几何信息变更时的回调函数
+                    maxPoints: maxPoints //最大点数
+                });
+                map.map.addInteraction(draw);
+
+                //删除之前draw的部分
+                draw.on('drawstart', function (evt) {
+                    //清空绘制的图形
+                    WFSFilterLayer.olSource.clear();
+                });
+                //绘图结束，处理选中部分
+                draw.on('drawend', function (e) {
+                    e.feature.setId(num);
+                });
+            } else {
+                //清空绘制的图形
+                WFSFilterLayer.olSource.clear();
+            }
+        }
+
+        //绘制圆时候，需要单独处理的情况
+        function drawCircle(typeValue, geometry) {
+            var center = geometry.getFirstCoordinate();
+            var last = geometry.getLastCoordinate();
+            // center = PIE.ol.proj.transform(center, "EPSG:3857" ,"EPSG:4326");
+            // last = PIE.ol.proj.transform(last, "EPSG:3857" ,"EPSG:4326");
+            var dx = center[0] - last[0];
+            var dy = center[1] - last[1];
+            var radius = Math.sqrt(dx * dx + dy * dy);
+            var circle = new PIE.ol.geom.Circle(center, radius);
+            polygon = PIE.ol.geom.Polygon.fromCircle(circle, 64);
+            geometry = polygon;
+            //当为点查询时候，点的起始坐标为同一个，半径为0
+            return geometry;
+        }
+
+
+
+        // var raster = new PIE.ol.layer.Tile({
+        //     source: new PIE.ol.source.OSM()
+        // });
+
+        // var vectorSource = new PIE.ol.source.Vector();
+        // var vecLayer = new PIE.ol.layer.Vector({
+        //     source: vectorSource,
+        //     style: function (feature, resolution) {
+        //         return new PIE.ol.style.Style({
+        //             fill: new PIE.ol.style.Fill({
+        //                 color: "rgba(0,0,0,0.5)"
+        //             }),
+        //             stroke: new PIE.ol.style.Stroke({
+        //                 color: 'red',
+        //                 width: 1
+        //             }),
+
+        //             text: new PIE.ol.style.Text({ //文本样式
+        //                 font: '12px Calibri,sans-serif',
+        //                 fill: new PIE.ol.style.Fill({
+        //                     color: '#000'
+        //                 }),
+        //                 stroke: new PIE.ol.style.Stroke({
+        //                     color: '#fff',
+        //                     width: 3
+        //                 })
+        //             }),
+
+        //             image: new PIE.ol.style.Circle({//点的半径及颜色
+        //                 radius: 5,
+        //                 fill: new PIE.ol.style.Fill({
+        //                     color: '#60ff24'
+        //                 })
+        //             }),
+        //         });
+        //     }
+        // });
+
+        // var map = new PIE.ol.Map({
+        //     layers: [raster, vecLayer],
+        //     target: 'map',
+        //     view: new PIE.ol.View({
+        //         center: [110, 35],
+        //         projection: 'EPSG:4326',
+        //         zoom: 5
+        //     })
+        // });
+
+        // //绘制图形
+        // var draw, geometry;
+        // var num = 10;//用于删除之前的框，表示号，随便取一个
+        // var selectnum = 10;//相交的number
+        // function btnClick() {
+        //     var geometry = vectorSource.getFeatures()[0].getGeometry();
+        //     var typeValue = typeSelect.value;
+        //     if (typeValue === "Circle" || typeValue === "Point") {
+        //         //圆与点需要单独处理
+        //         geometry = drawCircle(typeValue, geometry);
+        //     }
+
+        //     //设置查询参数与条件
+        //     var featureRequest = new PIE.ol.format.WFS().writeGetFeature({
+        //         srsName: 'EPSG:4326',//坐标系
+        //         featureTypes: ['GlobalLakesRegion-WGS1984'],//所要访问的图层
+        //         maxFeatures: 5000,
+        //         outputFormat: 'application/json',
+        //         filter: PIE.ol.format.filter.intersects("the_geom", geometry)//前者是属性名，后者是对应值
+        //     });
+
+        //     // 发送请求
+        //     //fetch('http://211.154.196.250:8081/geoserver/wfs', {
+        //     fetch( path.PIEVector.wfs , {
+        //         method: 'POST',
+        //         body: new XMLSerializer().serializeToString(featureRequest)
+        //     }).then(function (response) {
+        //         return response.json();
+        //     }).then(function (json) {
+        //         var features = new PIE.ol.format.GeoJSON().readFeatures(json);
+        //         vectorSource.addFeatures(features);
+        //         map.getView().fit(vectorSource.getExtent());//缩放到查询出的feature
+        //     });
+        // }
+
+        // var typeSelect = document.getElementById('type');
+        // //用户更改绘制类型触发的事件
+        // typeSelect.onchange = function (e) {
+        //     map.removeInteraction(draw);        //移除绘制图形控件
+        //     addDraw();                   //添加绘制图形控件
+        // };
+
+        // function addDraw() {
+        //     var typeValue = typeSelect.value;       //绘制类型
+        //     if (typeValue !== 'None') {
+        //         var geometryFunction, maxPoints;
+        //         if (typeValue === 'Square') {                 //正方形
+        //             typeValue = 'Circle';               //设置绘制类型为Circle
+        //             //设置几何信息变更函数，即创建正方形
+        //             geometryFunction = PIE.ol.interaction.Draw.createRegularPolygon(4);
+        //         } else if (typeValue === 'Box') {              //长方形
+        //             typeValue = 'LineString';           //设置绘制类型为LineString
+        //             maxPoints = 2;                      //设置最大点数为2
+        //             //设置几何信息变更函数，即设置长方形的坐标点
+        //             geometryFunction = function (coordinates, geometry) {
+        //                 if (!geometry) {
+        //                     geometry = new PIE.ol.geom.Polygon(null);       //多边形
+        //                 }
+        //                 var start = coordinates[0];
+        //                 var end = coordinates[1];
+        //                 geometry.setCoordinates([
+        //                     [
+        //                         start,
+        //                         [start[0], end[1]],
+        //                         end,
+        //                         [end[0], start[1]],
+        //                         start
+        //                     ]
+        //                 ]);
+        //                 return geometry;
+        //             };
+        //         } else if (typeValue === 'Box') {              //长方形
+        //             typeValue = 'LineString';           //设置绘制类型为LineString
+        //             maxPoints = 2;                      //设置最大点数为2
+        //             //设置几何信息变更函数，即设置长方形的坐标点
+        //             geometryFunction = function (coordinates, geometry) {
+        //                 if (!geometry) {
+        //                     geometry = new PIE.ol.geom.Polygon(null);       //多边形
+        //                 }
+        //                 var start = coordinates[0];
+        //                 var end = coordinates[1];
+        //                 geometry.setCoordinates([
+        //                     [
+        //                         start,
+        //                         [start[0], end[1]],
+        //                         end,
+        //                         [end[0], start[1]],
+        //                         start
+        //                     ]
+        //                 ]);
+        //                 return geometry;
+        //             };
+        //         }
+
+        //         //实例化图形绘制控件对象并添加到地图容器中
+        //         draw = new PIE.ol.interaction.Draw({
+        //             source: vectorSource,
+        //             type: typeValue,                                //几何图形类型
+        //             geometryFunction: geometryFunction,             //几何信息变更时的回调函数
+        //             maxPoints: maxPoints                            //最大点数
+        //         });
+        //         map.addInteraction(draw);
+
+        //         //删除之前draw的部分
+        //         draw.on('drawstart', function (evt) {
+        //             //该部分清除draw部分
+        //             // var featureAdd = vecLayer.getSource().getFeatureById(num);
+        //             // if (featureAdd != null) {
+        //             //     vecLayer.getSource().removeFeature(featureAdd);
+        //             // }
+
+        //             //清空绘制的图形
+        //             vectorSource.clear();
+        //         });
+        //         //绘图结束，处理选中部分
+        //         draw.on('drawend', function (e) {
+        //             e.feature.setId(num);
+        //         });
+        //     } else {
+        //         //清空绘制的图形
+        //         vectorSource.clear();
+        //     }
+        // }
+
+        // //绘制圆时候，需要单独处理的情况
+        // function drawCircle(typeValue, geometry) {
+        //     var center = geometry.getFirstCoordinate();
+        //     var last = geometry.getLastCoordinate();
+        //     var dx = center[0] - last[0];
+        //     var dy = center[1] - last[1];
+        //     var radius = Math.sqrt(dx * dx + dy * dy);
+        //     var circle = new PIE.ol.geom.Circle(center, radius);
+        //     polygon = PIE.ol.geom.Polygon.fromCircle(circle, 64);
+        //     geometry = polygon;
+        //     //当为点查询时候，点的起始坐标为同一个，半径为0
+        //     return geometry;
+        // }
+    </script>
+</body>
+
+</html>

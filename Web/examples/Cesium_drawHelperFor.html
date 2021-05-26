@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>drawForCesium</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <link href="./js/lib/layui/css/layui.css" rel="stylesheet" />
+    <style>
+        html, body, #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .twipsy {
+            display: block;
+            position: absolute;
+            visibility: visible;
+            max-width: 200px;
+            min-width: 100px;
+            padding: 5px;
+            font-size: 11px;
+            z-index: 1000;
+            opacity: 0.8;
+            -khtml-opacity: 0.8;
+            -moz-opacity: 0.8;
+            filter: alpha(opacity=80);
+        }
+        .twipsy.left .twipsy-arrow {
+            top: 50%;
+            right: 0;
+            margin-top: -5px;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid #000000;
+        }
+        .twipsy.right .twipsy-arrow {
+            top: 50%;
+            left: 0;
+            margin-top: -5px;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-right: 5px solid #000000;
+        }
+        .twipsy-inner {
+            padding: 3px 8px;
+            background-color: #000000;
+            color: white;
+            text-align: center;
+            max-width: 200px;
+            text-decoration: none;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+        }
+        .twipsy-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+
+        /*
+        css rules for the draw helper components
+        */
+
+        .toolbar {
+            margin: 0px;
+            padding: 0px;
+            background: white;
+        }
+
+        .toolbar > .button {
+            margin: 5px;
+            padding: 5px;
+            border: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .toolbar > .button:hover {
+            background: #eee;
+        }
+
+        /*
+        css rules for the infowindow
+        */
+
+        .infoWindow {
+            position: absolute;
+            min-width: 100px;
+            max-width: 300px;
+        }
+        .infoWindow #frame {
+            padding: 10px;
+            border: 1px solid black;
+            background: white;
+        }
+        .infoWindow #close {
+            float: right;
+            margin: 5px 2px;
+            font-size: small;
+            color: gray;
+            cursor: pointer;
+        }
+        .infoWindow #arrow {
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            margin-left: -10px;
+            border-right: 10px solid transparent;
+            border-left: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+    </style>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script type="text/javascript" src="../build/turf.js"></script>
+    <script type="text/javascript" src="./js/lib/layui/layui.all.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/plotUtil.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/algorithm.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobeTooltip.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobePolygonDrawer.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobePolylineDrawer.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobeRectangleDrawer.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobeCircleDrawer.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobePointDrawer.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobeBufferLineDrawer.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobePointMeasure.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobePolylineSpaceMeasure.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobePolylineStickMeasure.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobePolygonMeasure.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/PlotStraightArrowDrawer.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/PlotAttackArrowDrawer.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/PlotPincerArrowDrawer.js"></script>
+    <script type="text/javascript" src="./js/lib/cesium/GlobeTracker.js"></script>
+    <script type="text/javascript" src="./js/lib/Cesium_drawHelperFor.js"></script>
+    <script type="text/javascript" src="./js/show/path.js"></script>
+</head>
+<body oncontextmenu="return false;">
+<div id="map"></div>
+<div style="position:absolute;left:10px;top:10px;background-color:transparent;">
+    <input id="drawBufferLine" type="button" class="layui-btn layui-btn-sm layui-btn-normal" value="绘制缓冲区" />
+</div>
+<div style="position:absolute;left:10px;top:50px;background-color:transparent;">
+    <input id="editShape" type="button" class="layui-btn layui-btn-sm layui-btn-primary" value="编辑图形" />
+    <input id="deleteShape" type="button" class="layui-btn layui-btn-sm layui-btn-primary" value="删除图形" />
+</div>
+<script>
+    var center = [110.98, 30.83];
+    var viewer = null;
+    var tracker = null;
+    //图层名称
+    var layerId = "globeDrawerDemoLayer";
+    //全局变量，用来记录shape坐标信息
+    var shapeDic = {};
+    //编辑或删除标识,1为编辑，2为删除
+    var flag = 0;
+
+    var map = new PIE.Map({
+            type:3
+        }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map"
+    });
+    var grid = new PIE.GridTileLayer({
+        //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+        //url:path.PIEGrid.GFTile,
+        //url:"http://www.google.cn/maps/vt?lyrs=s@800&x={x}&y={y}&z={z}",
+        url:path.GoogleURL.s,
+        id: 'tilelayer1'
+    });
+    map.add(grid);
+    map.on("load",function () {
+        //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+        map.map._cesiumViewer.terrainProvider=Cesium.createWorldTerrain();
+
+        viewer=map.map._cesiumViewer;
+        initDrawHelper();
+        bindGloveEvent();
+
+    });
+</script>
+</body>
+</html>

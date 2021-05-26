@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>demo</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../../web/img/favicon.ico"/>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <script type="text/javascript" include="jquery,bootstrap,template,admin-lte,ace,i18n"
+            src="./js/show/include-web.js" from="editor"></script>
+    <link rel="stylesheet" href="./css/show/common.css">
+    <link rel="stylesheet" href="./css/show/header.css">
+    <link rel="stylesheet" href="./css/show/sideBar.css">
+    <link rel="stylesheet" href="./css/show/editor.css">
+    <style>
+			#nav{
+				background: linear-gradient(150deg,#7795f8 15%,#6772e5 70%,#555abf 94%);
+				height: 46px;
+				min-height: 46px;
+			}
+			#navbar-header,#nav-header-example{
+				background: none;
+				font-size: 14px;
+				line-height: 46px;
+			}
+			#nav-header-example>li{
+				height: 46px;
+			}
+			#nav>span{
+				position: absolute;
+				/* transform: skew(8deg); */
+				height: 30px;
+				width: 30px;
+				border-radius: 50%;
+			}
+			#nav>span:nth-child(2){
+				top: 3px;
+				left: 12.66666%;
+				background: hsla(0,0%,100%,.15);
+			}
+			#nav>span:nth-child(3){
+				top: 10px;
+				left: 12%;
+				background: hsla(0,0%,100%,.3);
+			}
+			#nav>span:nth-child(4){
+				top: -15px;
+    			right: 32%;
+				background: hsla(0,0%,100%,.4);
+				height: 40px;
+				width: 40px;
+			}
+			#nav>span:nth-child(5){
+				top: 8px;
+    			right: 15.66666%;
+				background: hsla(0,0%,100%,.2);
+				height: 35px;
+				width: 35px;
+			}
+			#nav>span:nth-child(6){
+				top: 28px;
+				right: 16.26666%;
+				background: hsla(0,0%,100%,.5);
+			}
+			#scrollSpy{
+				background: linear-gradient(150deg,#7795f8 15%,#6772e5 70%,#555abf 94%);
+				padding-top: 46px;
+			}
+			#sidebar-toggle{
+				/* background-color: #7795f8; */
+				background-color: rgba(255, 255, 255, 0.4);
+			}
+			#sidebar-menu > li > a:hover, #sidebar-menu > li > a:active, #sidebar-menu > li > a:focus,#scrollSpy .sidebar-menu > li:hover > a, #scrollSpy .sidebar-menu > li.active > a{
+				background: rgba(255, 255, 255, 0.4);
+			}
+			
+			#sidebar-menu li.active > .treeview-menu,#scrollSpy .sidebar-menu > li > .treeview-menu{
+				background: #555abf;
+			}
+			#scrollSpy .main-header .navbar .nav > li > a:hover, #scrollSpy .main-header .navbar .nav > li > a:active, #scrollSpy .main-header .navbar .nav > li > a:focus, #scrollSpy .main-header .navbar .nav .open > a, #scrollSpy .main-header .navbar .nav .open > a:hover, #scrollSpy .main-header .navbar .nav .open > a:focus, #scrollSpy .main-header .navbar .nav > .active > a{
+				background: rgba(255, 255, 255, 0.4);
+			}
+			#dropdown-menu{
+				background-color: #555abf;
+				font-size: 14px;
+				min-width: auto;
+			}
+			#dropdown-menu>li>a:hover{
+				background: rgba(255, 255, 255, 0.4);
+			}
+		</style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini sidebar-collapse">
+<!-- ./wrapper -->
+<div class="wrapper"></div>
+<script type="text/javascript" src="./js/show/utils.js"></script>
+<script>
+    $('.wrapper').load("./template/editor.html", function () {
+            utils.loadTemplate(".icl-header", "./template/header-examples.html", {});
+
+        var $body = $('body');
+        $body.append("<script type='text/javascript' src='./js/show/config.js'><\/script>");
+        //$body.append("<script type='text/javascript' src='./js/common.js'><\/script>");
+        $body.append("<script type='text/javascript' src='./js/show/sidebar.js'><\/script>");
+        $body.append("<script type='text/javascript' src='./js/show/editor.js'><\/script>");
+    })
+</script>
+<!-- ./wrapper end-->
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>绘制图形</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #PIEmap {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 80%;
+        }
+        
+        #code {
+            position: absolute;
+            top: 0;
+            right: 0px;
+            bottom: 0;
+            width: 20%;
+        }
+        .mapboxgl-ctrl-top-right {
+            top: 0;
+            right: 20%;
+        }
+    </style>
+</head>
+<body>
+<div id="PIEmap"></div>
+<div id='code'></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet"/>
+<link href="./css/mapbox-gl-draw.css" rel="stylesheet"/>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<script src='./js/mapbox-gl-draw.js'></script>
+<script src="./js/lib/ace/ace.js"></script>
+<script src="./js/lib/ace/ace_tools.js"></script>
+<script src="./js/lib/ace/EditAce.js"></script>
+<script>
+    var selectObject = false;// 初始为false
+    var index = 0;// 图层索引
+    var linePath = [[]];// 每个新图层添加
+    var PointID = "point_test" + index;
+    var LineID = "line_test" + index;
+    var FillID = "fill_test" + index;
+    var click = 0;
+    var setStatus = false;
+    var map = new PIE.Map({
+        baseMap: ""
+    });
+    var view = new PIE.MapView({
+        map: map,
+        container: "PIEmap",
+        zoom: 1,
+        center: [110, 0],
+    });
+    map.doubleClickZoomDisable();
+    let initEditor = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+    var editor = ace.edit('code');
+    let theme = "clouds"
+    let language = "javascript"
+            
+    editor.setTheme("ace/theme/" + theme);
+    editor.session.setMode("ace/mode/" + language);
+    ace.require("ace/ext/language_tools");
+    editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: true
+        });
+    editor.setShowPrintMargin(false);
+    editor.setFontSize(14);
+    editor.$blockScrolling = Infinity;
+    let initString = initStringByJSON(initEditor)
+    editor.setValue(initString)
+
+   
+    function updateGeojson(e){
+        if(e.features.length>0){
+            let _geojsons = draw.getAll();
+            editor.setValue(initStringByJSON(_geojsons));
+        }
+    }
+    function initStringByJSON(EditorJson){
+        setStatus = true;
+        return JSON.stringify(EditorJson,null,2);
+    }
+    // document.getElementById(editor.domId).onclick = function(e){ setStatus = false;}
+    editor.on('mousedown',function(e){setStatus = false;})
+    editor.getSession().on('change', function(e) {
+        console.log(e);
+        if(setStatus) return;
+       try{
+            let feature=JSON.parse(editor.getValue().replace(/\n/g,''));
+           
+            for(let i=0;i<feature.features.length;i++){
+                
+                if(feature.features[i].geometry.type == 'Polygon'){
+                    feature.features[i].geometry.coordinates[0][feature.features[i].geometry.coordinates[0].length-1] =feature.features[i].geometry.coordinates[0][0]; 
+                }
+            }
+            console.log(feature);
+           
+            if(e.action == 'remove')
+            {
+                if(feature.features[0].geometry.coordinates[0].length<1){
+                    return
+                }else{
+                    draw.set(feature)
+                }
+            }else{
+                draw.set(feature)
+                setStatus = true;
+                //editor.setValue(initStringByJSON(feature));
+                setTimeout(function(){ editor.moveCursorTo(e.end.row, e.end.column); setStatus = false;},300)
+               
+            }
+       }catch(e){
+           console.log(e.message)
+       }
+      
+      
+        
+    });
+    function getPointData(linePath) {
+        var data = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        for (var i = 0; i < linePath.length; i++) {
+            var dataset = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [linePath[i][0], linePath[i][1]]
+                },
+                "properties": {
+                    "index": i
+                }
+            };
+            data.features.push(dataset);
+        };
+        return data;
+    }
+
+
+    function getLineData(linePath) {
+
+        var dataLine = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        var dataLineset = {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": linePath
+            }
+        };
+        dataLine.features.push(dataLineset);
+        return dataLine;
+    }
+
+    function getFillData(linePath) {
+
+        var dataLine = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        var dataLineset = {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [linePath]
+            }
+        };
+        dataLine.features.push(dataLineset);
+        return dataLine;
+    }
+
+    var points = [];
+    var lines = [];
+    var fills = [];
+
+    var draw = new MapboxDraw();
+
+    map.on("load", function () {
+        var testFillLayer = new PIE.GridTileLayer({
+            url: path.PIEGrid.GlobalDarkMap,
+            id:"darkmap"
+         });
+        // 将图层添加到底图里
+        map.add(testFillLayer);
+      
+        map.map.addControl(draw);
+
+        map.map.on("draw.create", updateGeojson);
+        map.map.on("draw.delete", updateGeojson);
+        map.map.on("draw.update", updateGeojson);
+    });
+</script>
+</body>
+</html>

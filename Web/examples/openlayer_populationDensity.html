@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>人口密度</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        .ol-legend ul {
+            margin-bottom: 5px;
+        }
+        .ol-legend ul li {
+            overflow: visible;
+            text-align: right;
+        }
+        .ol-attribution {
+            right: 7em !important;
+        }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<link href="./js/lib/ol-ex/ol-ext.css" rel="stylesheet" />
+<script src="js/lib/ol-ex/ol-ext.js"></script>
+<script src="js/lib/Cesium_populationDensity.js"></script>
+
+<script>
+    //初始化底图
+    var map = new PIE.Map(
+        {
+            type: 2
+        }
+    );
+    //设置视图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 4,
+        center: [116, 39],
+    });
+
+    //添加矢量瓦片图层
+    var BaiduLayer = new PIE.BaiduLayer();
+    map.on("load", function () {
+        map.add(BaiduLayer);
+
+    });
+    var helperTool;
+    map.on("load", function () {
+       helperTool=new populationDensityTool({map:map.map})
+            helperTool.init({url:'./data/departements_test.geojson',copyright:"航天宏图—研究院-测试测试测试测试测试测试测试测试" });
+
+            //初始化图例
+       let legendList=[{ title:'2600', properties: { pop: 26000000 }, typeGeom: 'Point'},
+                        { title:'100', properties: { pop: 20000000 }, typeGeom: 'Point'},
+                        { title:'50', properties: { pop: 10000000 }, typeGeom: 'Point'}]
+            helperTool.initLegend({legendList:legendList,collapsible:false,margin:10,size:[40, 15]});
+
+    });
+</script>
+</body>
+</html>

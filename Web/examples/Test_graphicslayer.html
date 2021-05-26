@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GraphicsLayer</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/gethtml.js"></script>
+<script>
+    var selectObject = false;
+    var index = 0;
+    var layerindex = 0;
+    var linePath = [[]];
+    var onlyone = true;
+    var PointID = "point_test" + layerindex;
+    var LineID = "line_test" + layerindex;
+    var FillID = "fill_test" + layerindex;
+//定义一个map对象
+    var map = new PIE.Map();
+    //初始化视图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 1,
+        center: [110, 0],
+
+    });
+    map.doubleClickZoomDisable();
+    //底图初始加载
+    map.on("load", function () {
+        var testFillLayer = new PIE.MetoStyle.FillLayer({
+            data: "data/worldPolyGon.geojson",// 地图数据源
+            color: "rgba(243, 236, 236, 1)", // 陆地颜色
+            id: "measure-Map",// 此图层ID
+            opacity: 1,// 透明度
+            visible: true // 是否显示陆地
+        });
+        // 将图层添加到底图里
+        map.add(testFillLayer);
+    });
+    //获取鼠标位置
+    map.on("mousemove", function (e) {
+        console.log(selectObject)
+        if (selectObject) {
+            let _sourceIdNum = Number(selectObject[0].layer.id.substr(10));
+            let _index = selectObject[0].properties.index;
+            linePath[_sourceIdNum][_index][0] = e.lngLat.lng;
+            linePath[_sourceIdNum][_index][1] = e.lngLat.lat;
+            draw(_sourceIdNum);
+        }
+    });
+    //鼠标点击事件
+    map.on("click", function (e) {
+        onlyone = true;
+        newPoint = [e.lngLat.lng, e.lngLat.lat];
+        if (linePath[index].length == 2) {
+            linePath[index].unshift(linePath[index][linePath[index].length - 1])
+        }
+        if (linePath[index].length < 2){
+            linePath[index].unshift(newPoint);
+        } else {
+            linePath[index].splice(1,0,newPoint)
+        }
+        draw(index);
+    });
+    map.on("mousedown", function (e) {
+        if (onlyone == true){
+            if (event.button == 2) {
+            console.log("右键了");
+            layerindex += 1;
+            linePath[index] = [];
+            PointID = "point_test" + layerindex;
+            LineID = "line_test" + layerindex;
+            FillID = "fill_test" + layerindex;
+            onlyone=false;
+          }
+        }
+    });
+
+    var points = [];
+    var lines = [];
+    var fills = [];
+    function draw() {
+        if (linePath[index].length > 0) {//有点先绘制点图层
+            if(map.getLayer("point_test" + layerindex)){
+                map.getLayer("point_test" + layerindex).setSource(getPointData(linePath[index]))
+            }else {
+                let _Points = new PIE.MetoStyle.PointLayer({data: getPointData(linePath[index]), id: PointID});
+                points.push(_Points);
+                map.add(points[layerindex]);}
+        }
+        if (linePath[index].length > 1) {//多点进行连线，绘制连线图层
+            if (map.getLayer("line_test" + layerindex)) {
+                map.getLayer("line_test" + layerindex).setSource(getLineData(linePath[index]))
+            } else {
+                let _Lines = new PIE.MetoStyle.LineLayer({
+                    data: getLineData(linePath[index]),
+                    id: LineID,
+                    color: "#ff0000",
+                    width: 2
+                });
+                lines.push(_Lines)
+                map.add(lines[layerindex]);
+            }
+        }
+        if (linePath[index].length > 2) {
+            if (map.getLayer("fill_test" + layerindex)) {
+                map.getLayer("fill_test" + layerindex).setSource(getFillData(linePath[index]))
+            } else {
+                let _Fills = new PIE.MetoStyle.FillLayer({
+                    data: getFillData(linePath[index]),
+                    id: FillID,
+                    color: "#00ff00",
+                    opacity: 0.5
+                });
+                fills.push(_Fills);
+                map.add(fills[layerindex]);
+            }
+        }
+    }
+    //传入linePath，得到data
+    function getPointData(linePath) {
+        var pointdata = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+
+        for (var i = 0; i < linePath.length; i++) {
+            var dataset = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [linePath[i][0], linePath[i][1]]
+                },
+                "properties": {
+                    "index": i
+                }
+            };
+            pointdata.features.push(dataset);
+        }
+        return pointdata;
+    }
+    //传入linePath，得到dataLine
+    function getLineData(linePath) {
+        var dataLine = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        var dataLineset = {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": linePath
+            }
+        };
+        dataLine.features.push(dataLineset);
+        return dataLine;
+    }
+    //传入linePath，得到dataLine
+    function getFillData(linePath) {
+        var dataLine = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        var dataLineset = {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [linePath]
+            }
+        };
+        dataLine.features.push(dataLineset);
+        return dataLine;
+    }
+</script>
+</body>
+</html>

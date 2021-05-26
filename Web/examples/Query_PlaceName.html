@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>地名查询</title>
+    <script src="../build/PIE.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="./js/show/path.js"></script>
+</head>
+<body>
+<div id="map" class="map"></div>
+<div>
+    <div id="popup" title="属性面板"></div>
+</div>
+
+<script>
+
+var map = new PIE.Map({
+        type: 2
+    });
+
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 5,
+        center: [110, 35]
+    });
+
+    //底图部分
+    var GridLayer = new PIE.GridTileLayer({
+        url: PIE.path.GoogleURL.satelliteTag,
+    });
+
+    var WFSFilterLayer = new PIE.WFSFilterLayer({
+        id:"WFSFilterLayer",
+        queryType:4,
+    });
+
+    map.on("load", function () {
+        map.add(GridLayer);
+        map.add(WFSFilterLayer);
+    });
+
+    var selectInteraction = new PIE.ol.interaction.Select({
+        wrapX: false,
+        style: new PIE.ol.style.Style({
+            stroke: new PIE.ol.style.Stroke({
+                color: 'red',
+                width: 4
+            })
+        }),
+        hitTolerance: 10
+    });
+
+    map.map.addInteraction(selectInteraction);
+
+    var popup = new PIE.ol.Overlay({
+        element: document.getElementById('popup')
+    });
+
+    map.map.addOverlay(popup);
+
+
+    selectInteraction.on("select", function (evt) {
+        var element = popup.getElement();   // 获取充当弹窗的DOM元素
+        var coordinate = evt.mapBrowserEvent.coordinate;    // 获取鼠标点击处的坐标
+        // 将地理坐标格式化为半球、度、分和秒的形式
+        var hdms = PIE.ol.coordinate.toStringHDMS(PIE.ol.proj.toLonLat(coordinate));
+        var keys = evt.selected[0].getKeys().toString();
+        var pros = evt.selected[0].getProperties();
+        $(element).popover('destroy');
+        popup.setPosition(coordinate);  // 将弹窗位置设置为鼠标点击处
+
+        $(element).popover({
+            placement: 'top',
+            animation: false,
+            html: true,
+            content: '<a>经纬度：</a><code>' + coordinate + '</code>' +
+                '<br><a>地物名称：</a><code>' + pros.NAME + '</code>' +
+                '<br><a>详细字段名：</a><code>' + keys + '</code>'
+        });
+        $(element).popover('show');
+    });
+
+
+    // var raster = new PIE.ol.layer.Tile({
+    //     source: new PIE.ol.source.OSM()
+    // });
+
+    // var vectorSource = new PIE.ol.source.Vector();
+    // var vecLayer = new PIE.ol.layer.Vector({
+    //     source: vectorSource,
+    //     style: function (feature, resolution) {
+    //         return new PIE.ol.style.Style({
+    //             stroke: new PIE.ol.style.Stroke({
+    //                 color: 'blue',
+    //                 width: 5
+    //             })
+    //         });
+    //     }
+    // });
+
+    // var selectInteraction = new PIE.ol.interaction.Select({
+    //     wrapX: false,
+    //     style: new PIE.ol.style.Style({
+    //         stroke: new PIE.ol.style.Stroke({
+    //             color: 'red',
+    //             width: 4
+    //         })
+    //     }),
+    //     hitTolerance: 10
+    // });
+    // var map = new PIE.ol.Map({
+    //     interactions: PIE.ol.interaction.defaults().extend([selectInteraction]),
+    //     layers: [raster, vecLayer],
+    //     target: 'map',
+    //     view: new PIE.ol.View({
+    //         center: [110, 35],
+    //         projection: 'EPSG:4326',
+    //         zoom: 5
+    //     })
+    // });
+
+    // var popup = new PIE.ol.Overlay({
+    //     element: document.getElementById('popup')
+    // });
+    // map.addOverlay(popup);
+
+    // selectInteraction.on("select", function (evt) {
+    //     var element = popup.getElement();   // 获取充当弹窗的DOM元素
+    //     var coordinate = evt.mapBrowserEvent.coordinate;    // 获取鼠标点击处的坐标
+    //     // 将地理坐标格式化为半球、度、分和秒的形式
+    //     var hdms = PIE.ol.coordinate.toStringHDMS(PIE.ol.proj.toLonLat(coordinate));
+    //     var keys = evt.selected[0].getKeys().toString();
+    //     var pros = evt.selected[0].getProperties();
+    //     $(element).popover('destroy');
+    //     popup.setPosition(coordinate);  // 将弹窗位置设置为鼠标点击处
+
+    //     $(element).popover({
+    //         placement: 'top',
+    //         animation: false,
+    //         html: true,
+    //         content: '<a>经纬度：</a><code>' + coordinate + '</code>' +
+    //             '<br><a>地物名称：</a><code>' + pros.NAME + '</code>' +
+    //             '<br><a>详细字段名：</a><code>' + keys + '</code>'
+    //     });
+    //     $(element).popover('show');
+    // });
+
+    // var featureRequest = new PIE.ol.format.WFS().writeGetFeature({
+    //     srsName: 'EPSG:4326',//坐标系
+    //     featureTypes: ['GlobalLakesRegion-WGS1984'],//所要访问的图层
+    //     maxFeatures: 5000,
+    //     outputFormat: 'application/json',
+    //     filter: PIE.ol.format.filter.like('NAME', 'Koko Nor')
+    // });
+
+    // // 发送请求
+    // //sfetch('http://211.154.196.250:8081/geoserver/wfs', {
+    // fetch( path.PIEVector.wfs , {
+    //     method: 'POST',
+    //     body: new XMLSerializer().serializeToString(featureRequest)
+    // }).then(function (response) {
+    //     return response.json();
+    // }).then(function (json) {
+    //     var features = new PIE.ol.format.GeoJSON().readFeatures(json);
+    //     vectorSource.addFeatures(features);
+    // });
+</script>
+</body>
+</html>

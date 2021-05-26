@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>矩形框选</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        .mapboxgl-popup {
+            max-width: 400px;
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        }
+        .marker {
+            display: block;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/DrawRect.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    //初始化底图
+    var map = new PIE.Map({
+        baseMap:""
+    });
+    //设置地图样式
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:1,
+        center:[110,0],
+    });
+    var typhoon;
+   
+    var DrawRect;
+
+    //底图加载成功后对底图编辑
+    map.on("load",function () {
+         var testFillLayer = new PIE.GridTileLayer({
+        //url: 'http://service.piesat.cn:10000/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}'
+            //url: path.PIEservice.GFImage,
+            //url :"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+            url: path.PIEGrid.GlobalDarkMap,
+            id:"darkmap"
+        });
+        map.add(testFillLayer);
+        DrawRect = new DrawRect(map,getLnes);
+        DrawRect.startDraw();
+    });
+
+    var linedom ;
+    function getLnes(line) {
+        if(linedom!==undefined){
+            document.body.removeChild(linedom);
+        }
+        console.log();
+        linedom = document.createElement("div");
+        linedom.style.left = "10px";
+        linedom.style.bottom = "10px";
+        linedom.style.position = "absolute";
+        linedom.style.width = "600px";
+        linedom.style.zIndex = 99999;
+
+        var Upperleftcoordinate = document.createElement("div");
+        Upperleftcoordinate.id = "Upperleftcoordinate";
+        Upperleftcoordinate.style.height = "20px";
+        Upperleftcoordinate.innerHTML = ("   左上坐标：" + "("+line[0][0].toFixed(2)+","+line[0][1].toFixed(2)+")");
+        linedom.appendChild(Upperleftcoordinate);
+
+        var Lowerleftcoordinate = document.createElement("div");
+        Lowerleftcoordinate.id = "Lowerleftcoordinate";
+        Lowerleftcoordinate.style.height = "20px";
+        Lowerleftcoordinate.innerHTML = ("   左下坐标：" + "("+line[1][0].toFixed(2)+","+line[1][1].toFixed(2)+")");
+        linedom.appendChild(Lowerleftcoordinate);
+
+        var Upperrightcoordinate = document.createElement("div");
+        Upperrightcoordinate.id = "Upperrightcoordinate";
+        Upperrightcoordinate.style.height = "20px";
+        Upperrightcoordinate.innerHTML = ("   右上坐标：" + "("+line[3][0].toFixed(2)+","+line[3][1].toFixed(2)+")");
+        linedom.appendChild(Upperrightcoordinate);
+
+        var Rightlowercoordinate = document.createElement("div");
+        Rightlowercoordinate.id = "Rightlowercoordinate";
+        Rightlowercoordinate.style.height = "20px";
+        Rightlowercoordinate.innerHTML = ("   右下坐标：" + "("+line[2][0].toFixed(2)+","+line[2][1].toFixed(2)+")");
+        linedom.appendChild(Rightlowercoordinate);
+        document.body.appendChild(linedom);
+    }
+
+</script>
+</body>
+</html>

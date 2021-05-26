@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BingMap服务</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <script src="js/lib/PieVectorProvider.js"></script>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script>
+    //初始化底图
+    var map = new PIE.Map(
+        {
+            type: 2
+        }
+    );
+    //设置视图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 4,
+        center: [110, 35]
+    });
+
+    var BingLayer = new PIE.BingLayer();
+    map.on("load", function () {
+        map.add(BingLayer);
+    });
+</script>
+</body>
+</html>

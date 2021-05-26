@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="utf-8">
+    <title>Echart微博签到数据</title>
+</head>
+<body style="height: 100%; margin: 0">
+     <div id="map" style="height: 100%"></div>
+    <script src="../build/PIE.js"></script>
+    <link href="js/PIE.css" rel="stylesheet" />
+    <script type="text/javascript" src="./js/lib/echarts-all-3.js"></script>
+    <script type="text/javascript" src="./js/lib/EchartsLayer.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script src="./js/show/path.js"></script>
+    <script type="text/javascript">
+        $.get('./data/weibo.json', function (weiboData) {
+            weiboData = weiboData.map(function (serieData, idx) {
+                var px = serieData[0] / 1000;
+                var py = serieData[1] / 1000;
+                var res = [
+                    [px, py]
+                ];
+
+                for (var i = 2; i < serieData.length; i += 2) {
+                    var dx = serieData[i] / 1000;
+                    var dy = serieData[i + 1] / 1000;
+                    var x = px + dx;
+                    var y = py + dy;
+                    res.push([x.toFixed(2), y.toFixed(2), 1]);
+
+                    px = x;
+                    py = y;
+                }
+                return res;
+            });
+
+            var map = new PIE.Map({
+                baseMap:""
+            });
+            //设置地图样式
+            var view = new PIE.MapView({
+                map:map,
+                container:"map",
+                zoom:1,
+                center:[110,0],
+                sprite:"http://127.0.0.1:8081/examples/sprite/Weather"
+            });
+          
+            map.on('load', function () {
+                var grid = new PIE.GridTileLayer({
+                    //url: "http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+                    url: path.PIEGrid.GlobalDarkMap,
+                    id:"drakmap"
+                });
+                map.add(grid); //增加瓦片底图
+                var echartslayer=new EchartsLayer(map.map);
+                echartslayer.chart.setOption(option = {
+
+                    GLMap: {
+                        roam: true
+                    },
+                    coordinateSystem: 'GLMap',
+                    title: {
+                        text: '微博签到数据点亮中国',
+                        // subtext: 'From ThinkGIS',
+                        // sublink: 'http://www.thinkgis.cn/public/sina',
+                        left: 'center',
+                        top: 'top',
+                        textStyle: {
+                            color: '#fff'
+                        }
+                    },
+                    tooltip: {},
+                    legend: {
+                        left: 'left',
+                        data: ['强', '中', '弱'],
+                        textStyle: {
+                            color: '#ccc'
+                        }
+                    },
+                    geo: {
+                        name: '强',
+                        type: 'scatter',
+                        map: 'GLMap',
+                        label: {
+                            emphasis: {
+                                show: false
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                areaColor: '#323c48',
+                                borderColor: '#111'
+                            },
+                            emphasis: {
+                                areaColor: '#2a333d'
+                            }
+                        }
+                    },
+                    series: [{
+                        name: '弱',
+                        type: 'scatter',
+                        coordinateSystem: 'GLMap',
+                        symbolSize: 1,
+                        large: true,
+                        itemStyle: {
+                            normal: {
+                                shadowBlur: 2,
+                                shadowColor: 'rgba(37, 140, 249, 0.8)',
+                                color: 'rgba(37, 140, 249, 0.8)'
+                            }
+                        },
+                        data: weiboData[0]
+                    }, {
+                        name: '中',
+                        type: 'scatter',
+                        coordinateSystem: 'GLMap',
+                        symbolSize: 1,
+                        large: true,
+                        itemStyle: {
+                            normal: {
+                                shadowBlur: 2,
+                                shadowColor: 'rgba(14, 241, 242, 0.8)',
+                                color: 'rgba(14, 241, 242, 0.8)'
+                            }
+                        },
+                        data: weiboData[1]
+                    }, {
+                        name: '强',
+                        type: 'scatter',
+                        coordinateSystem: 'GLMap',
+                        symbolSize: 1,
+                        large: true,
+                        itemStyle: {
+                            normal: {
+                                shadowBlur: 2,
+                                shadowColor: 'rgba(255, 255, 255, 0.8)',
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            }
+                        },
+                        data: weiboData[2]
+                    }]
+                });
+            })
+        });
+    </script>
+</body>
+</html>

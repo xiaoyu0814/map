@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>坐标查询</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .inputBox{
+            position: relative;
+            top: 0;
+            left: 0;
+        }
+
+        .mapboxgl-canvas-container.mapboxgl-interactive, .mapboxgl-ctrl-nav-compass {
+            cursor: -webkit-crosshair !important;
+            cursor: -moz-crosshair !important;
+            cursor: crosshair !important;
+        }
+/* 
+        .mapboxgl-canvas-container.mapboxgl-interactive:active, .mapboxgl-ctrl-nav-compass:active {
+            cursor: -webkit-crosshair !important;
+            cursor: -moz-crosshair !important;
+            cursor: crosshair !important;
+        } */
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div class="inputBox" id="inputBox">
+        <input type="text" id="Coordinates"><button onclick="search()">定位</button> 
+        当前坐标：<input type="text" id="currentCoordinates">
+    </div>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <link href="js/PIE.css" rel="stylesheet" />
+    <script>
+        //初始化底图
+        var map = new PIE.Map();
+        //设置视图
+        var view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 0,
+            center: [110, 0]
+        });
+        //底图加载成功后对底图编辑
+        map.on("load", function () {
+            //定义一个fill图层
+            var testFillLayer = new PIE.MetoStyle.FillLayer({
+                data: "data/worldPolyGon.geojson",
+                color: "rgba(243, 236, 236, 1)",
+                id: "measure-points",
+                opacity: 1,
+                visible: true
+            });
+            //将图层添加到底图里
+            map.add(testFillLayer);
+            testFillLayer.addEventListener("load", function () {
+                var testLineLayer = new PIE.MetoStyle.LineLayer({
+                    data: "data/countries-110m.geojson",
+                    color: "rgba(0, 0, 0, 1)",
+                    id: "measure-Line",
+                    opacity: 1,
+                    visible: true
+                });
+                map.add(testLineLayer);
+                map.on("click",function(e){
+                    console.log(e)
+                    newPoint = e.coordinate;
+                    newPoint[0] = newPoint[0].toFixed(6)
+                    newPoint[1] = newPoint[1].toFixed(6)
+                    document.getElementById("currentCoordinates").value = newPoint
+                })
+            })
+        });
+        var index = 0;
+        var pointGrap;
+        var iconGrap;
+        function search(){
+            var box = document.getElementById("inputBox")
+            var err = document.createElement("P")
+            if(index !== 0){
+                
+            }
+            var Coordinates = document.getElementById("Coordinates").value;
+            if(Coordinates.indexOf(",")<0){
+                err.innerHTML = "请输入正确的坐标信息,格式：lon,lat";
+                err.style.color = "red";
+                box.appendChild(err);
+                setTimeout(function(){
+                    box.removeChild(err)
+                },3000)
+            }else{
+                var lon = Number(Coordinates.split(",")[0]);
+                var lat = Number(Coordinates.split(",")[1]);
+                if(lon>180 || lon<-180){
+                    err.innerHTML = "经度坐标设置在-180至180之间"
+                    err.style.color = "red"
+                    box.appendChild(err)
+                    setTimeout(function(){
+                        box.removeChild(err)
+                    },3000)
+                    return
+                }
+                if(lat>85 || lat<-85){
+                    err.innerHTML = "纬度坐标设置在-85至85之间"
+                    err.style.color = "red"
+                    box.appendChild(err)
+                    setTimeout(function(){
+                        box.removeChild(err)
+                    },3000)
+                    return
+                }
+                var point = new PIE.Point(lon,lat);
+                // var id = "point_"+index
+                if(pointGrap){
+                    map.remove(pointGrap);
+                };
+                if(iconGrap){
+                    map.remove(iconGrap);
+                };
+                pointGrap = new PIE.Graphics({
+                    geometry:point,// 绘制类型
+                    symbol:new PIE.MarketSymbol({color:"#000",size:5,})// 设置样式
+                });
+                map.add(pointGrap);// 将定义的图层添加到底图上
+                iconGrap = new PIE.MetoStyle.IconLayer({
+                    loadImageUrl:"./image/position.png",
+                    data: {
+                        "type": "FeatureCollection",
+                        "features": [pointGrap.geometry.toJSON()]
+                    },
+                    anchor:"bottom",
+                    size:0.15
+                })
+                map.add(iconGrap);
+                index++
+            }
+        }
+    </script>
+</body>
+
+</html>

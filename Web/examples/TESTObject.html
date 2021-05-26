@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>绘制图形</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #PIEmap {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 80%;
+        }
+        
+        #code {
+            position: absolute;
+            top: 0;
+            right: 0px;
+            bottom: 0;
+            width: 20%;
+        }
+        .mapboxgl-ctrl-top-right {
+            top: 0;
+            right: 20%;
+        }
+    </style>
+</head>
+<body>
+<div id="PIEmap"></div>
+<div id='code'></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet"/>
+<link href="./css/mapbox-gl-draw.css" rel="stylesheet"/>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<script src='./js/mapbox-gl-draw.js'></script>
+<script src="./js/lib/ace/ace.js"></script>
+<script src="./js/lib/ace/ace_tools.js"></script>
+<script src="./js/lib/ace/EditAce.js"></script>
+<script>
+    function Car(options) {
+        var obj = {
+            name:"na",
+            age:14,
+            address:"bj"
+        };
+        obj = Object.assign(obj,options);
+        return obj;
+
+    }
+    Car.prototype.showColor = function() {
+        alert(this.name);
+    };
+
+    var oCar1 = new Car({name:"vv"});
+    console.log(oCar1)
+</script>
+</body>
+</html>

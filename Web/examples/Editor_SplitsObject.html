@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>栅格图层</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+        #map2 {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="toolbar"></div>
+    <script src="../build/PIE.js"></script>
+    <link href="js/PIE.css" rel="stylesheet" />
+    <script src="js/lib/jquery-2.1.0.js"></script>
+    <script src="js/lib/drag.js"></script>
+    <script src="js/WMTSImageryProvider.js"></script>
+    <script src="js/compare-js.js"></script>
+    <script src="./js/show/path.js"></script>
+    <link href="js/compare-css.css" rel="stylesheet" />
+    <script>
+        var map = new PIE.Map({
+            type: 2
+        });
+
+        var view = new PIE.MapView({
+            map: map,
+            container: "map",
+            zoom: 12,
+            center: [112.5533854700625, 35.607724613234694],
+            //projection: 'EPSG:4326'
+        });
+        var BaiduLayer = new PIE.BaiduLayer();
+        var grid,fill1,fill2;
+        map.on("load", function () {
+            map.add(BaiduLayer);
+            addPolygon()
+            var appD = new app.Drag();
+            //将交互添加到map中
+            map.map.addInteraction(appD);
+            getToolButton();
+            var split = new PIE.SplitLayer(map)
+            //裁切
+            document.getElementById('split').addEventListener('click',function () {//增加标注的事件监听函数
+                $('body').addClass('measureCur');
+                split.startDraw();
+            },false);
+          
+             //复位
+             document.getElementById('clear').addEventListener('click',function(){
+                $('body').addClass('measureCur');
+                split.endDraw();
+                let layers = map.getLayers();
+                let _length = layers.length;
+                for(let i=_length-1;i>=0;i--){
+                    if(layers[i].type == "BaiduLayer")continue;
+                    map.remove(layers[i]);
+                }
+                addPolygon()
+            },false);
+           
+           // 
+        });
+        function addPolygon(){
+            var poly1 = turf.polygon([[
+                [112.574787, 35.594087],
+                [112.574787, 35.615581],
+                [112.605261, 35.615581],
+                [112.605261, 35.594087],
+                [112.574787, 35.594087]
+            ]], {"valueColor": "#0f0"});
+            var poly1_features = turf.featureCollection([poly1]);
+            fill1 = new PIE.MetoStyle.FillLayer({
+                data:poly1_features,
+                id:"fill1",
+                opacity:0.6,
+                color:"#0f0",
+            })
+           
+            var poly2 = turf.polygon([[
+                [112.560024, 35.585153],
+                [112.560024, 35.602602],
+                [112.60964, 35.602602],
+                [112.60964, 35.585153],
+                [112.560024, 35.585153]
+            ]], {"valueColor": "#00f"});
+            var poly2_features = turf.featureCollection([poly2]);
+            fill2 = new PIE.MetoStyle.FillLayer({
+                data:poly2_features,
+                id:"fill2",
+                opacity:0.6,
+                color:'#00f'
+            })
+            if(map.getLayer('fill1')){
+                map.remove(fill1);       
+            }
+            if(map.getLayer('fill2')){
+                map.remove(fill2);  
+            }
+            map.add(fill1);
+            map.add(fill2);
+        }
+        function getToolButton() {
+            var toolbar= document.getElementById('toolbar');
+            toolbar.innerHTML =    
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="split">裁切</button>'+
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="clear">复位</button>';
+            toolbar.setAttribute('style', 'background: rgba(42,42,42,0.9); border-radius: 5px;');
+        }
+
+  
+    </script>
+
+</body>
+
+</html>

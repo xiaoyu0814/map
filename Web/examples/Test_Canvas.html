@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>layer_geoJsonTextLayer</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .unselectable {
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
+        }
+        #image-canvas {
+            visibility: hidden;
+            display :none;
+            background:rgba(255,255,255,0);
+        }
+
+        #mapcanvas {
+            z-index:100;
+        }
+
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #map-data { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="map-data" style = "display:none;"  class="unselectable"></div>
+
+<script src="../build/PIE.js"></script>
+<script src="js/lib/status.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js" type="application/javascript"></script>
+<script src="data/test1.js"></script>
+<script src="js/lib/wind-map.js" type="application/javascript"></script>
+<script src="js/lib/gethtml.js"></script>
+<script>
+    var loading = true;
+    //初始化底图
+    var map1 = new PIE.Map();
+    //设置视图
+    var view = new PIE.MapView({
+        map:map1,
+        container:"map",
+        zoom:1,
+        center:[110,0]
+    });
+
+    //底图加载成功后对底图编辑
+    map1.on("load",function () {
+        //定义一个线图层
+        var testLineLayer3 = new PIE.MetoStyle.LineLayer({data:'data/worldPolyGon.geojson',width:2,color:"#444"});
+        //将线图层添加到底图里
+        map1.add(testLineLayer3);
+        var state = new Status(map1);
+        document.body.appendChild(state.dom);
+        addWindLiu();
+    });
+
+    function addWindLiu() {
+        var latlon = map1.getBounds();
+        console.log(latlon)
+        wind(map1);
+        map1.map.addSource('mapdata', {
+            type: 'canvas',
+            canvas: 'mapcanvas',
+            animate: true,
+            coordinates: [
+                [latlon._sw.lng, latlon._ne.lat],
+                [latlon._ne.lng, latlon._ne.lat],
+                [latlon._ne.lng,latlon._sw.lat],
+                [latlon._sw.lng, latlon._sw.lat]
+            ]
+        });
+        map1.map.addLayer({
+            "id": "mapdata",
+            "type": "raster",
+            "source": "mapdata"
+
+        });
+    }
+</script>
+</body>
+</html>

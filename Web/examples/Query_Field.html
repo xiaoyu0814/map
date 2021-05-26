@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>字段查询</title>
+    <script src="./js/show/jquery.min.3.2.1.js"></script>
+    <script src="../build/PIE.js"></script>
+    <script src="./js/show/path.js"></script>
+    <style>
+        @import url(./css/show/widgets.css);
+
+        html,
+        body,
+        #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 90%;
+        }
+
+        #tableshow {
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+<div id="map" class="map"></div>
+<div style="width: 100%; position: absolute; bottom: 10px;left: 0px;z-index: 3;">
+    <div >图层名称：<a id="layername"></a></div>
+    <div id="tableshow">
+        
+    </div>
+</div>
+
+<script>
+     
+     var map = new PIE.Map({
+        type: 2
+    });
+
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 4,
+        center: [110, 35]
+    });
+
+    //底图部分
+    var GridLayer = new PIE.GridTileLayer({
+        url: PIE.path.GoogleURL.satelliteTag,
+    });
+
+    var WFSFilterLayer = new PIE.WFSFilterLayer({
+        id:"WFSFilterLayer",
+        queryType:3,
+    });
+
+    map.on("load", function () {
+        map.add(GridLayer);
+        map.add(WFSFilterLayer);
+    });
+
+    var layername='CityPoint-WGS84';
+    var keys = []; //字段名称
+    var pros;//要素信息
+
+    $("#layername").html(layername);
+
+    var selectInteraction = new PIE.ol.interaction.Select({
+        wrapX: false,
+        style: new PIE.ol.style.Style({
+            stroke: new PIE.ol.style.Stroke({
+                color: 'red',
+                width: 3
+            }),
+            fill: new PIE.ol.style.Fill({ //矢量图层填充颜色，以及透明度
+                color: 'rgba(255,113,252,0.6)'
+            }),
+
+            text: new PIE.ol.style.Text({ //文本样式
+                font: '12px Calibri,sans-serif',
+                fill: new PIE.ol.style.Fill({
+                    color: '#000'
+                }),
+                stroke: new PIE.ol.style.Stroke({
+                    color: '#fff',
+                    width: 3
+                })
+            }),
+
+            image: new PIE.ol.style.Circle({//点的半径及颜色
+                radius:5,
+                fill: new PIE.ol.style.Fill({
+                    color: '#ff3412'
+                })
+            }),
+        }),
+        hitTolerance: 10
+    });
+    map.map.addInteraction(selectInteraction);
+
+    selectInteraction.on("select", function (evt) {
+        if (evt.selected.length > 0) {
+            var features = evt.selected[0].getKeys();
+            keys = []
+            for (key in features) {
+                if (features[key] != "geometry") {
+                    keys.push(features[key]);
+                }
+            }
+            pros = evt.selected[0].getProperties();
+            $("#layername").empty();
+            // $("#layername").html(evt.selected[0].c);
+            $("#layername").html(layername);
+            $("#tableshow").html("");
+            var col = init();
+            inittable(col);
+        }
+    });
+
+    //创建各种标签
+    function init() {
+        // $("table").empty();
+        //创建第二个div标签row
+        var row = document.createElement("div");
+        //设置row的属性
+        row.setAttribute("class", "row");
+        //将row加入到container中去
+        $("#tableshow").empty().append(row);
+        //创建第三个div标签col
+        var col = document.createElement("div");
+        //设置col的属性
+        col.setAttribute("class", "col-md-12");
+        //将col加入到row中去
+        row.append(col);
+        //最终返回col
+        return col;
+    }
+
+    //创建表格
+    function inittable(col) {
+        var table = document.createElement("table");
+        //将table加到col中去
+        col.append(table);
+        //设置table的属性
+        table.setAttribute("class", "table table-bordered table-striped table-hover");
+        table.setAttribute("border", 2);
+        table.setAttribute("width", "100%");
+        //创建第一个tr标签存储第一行的数据
+        var tr_head = document.createElement("tr");
+        //将第一个tr加入到table中去
+        table.append(tr_head);
+        //使用for循环将表头数据tr_head加到第一个tr中去,第一行中有四个数据
+        //***循环表头数据keys***
+        for (var i = 0; i < keys.length; i++) {
+            //创建td存储数据
+            var th = document.createElement("th");
+            //设置th的属性
+            th.setAttribute("class", "text-center");
+            //将数据加进th
+            th.innerHTML = keys[i];
+            //将th加入到tr中去
+            tr_head.append(th);
+        }
+
+        var tr = document.createElement("tr");
+        //将tr加入到table中去
+        table.append(tr);
+        //使用for循环将学生信息加入到tr中去
+        for (let key  in pros) {
+            if (key != 'geometry') {
+                //生成td用于存储数据
+                var td = document.createElement("td");
+                //设置td的属性
+                td.setAttribute("class", "text-center");
+                //插入数据
+                td.innerHTML = pros[key];
+                tr.appendChild(td);
+            }
+        }
+    }
+
+
+
+    // var layername='CityPoint-WGS84';
+    // var raster = new PIE.ol.layer.Tile({
+    //     source: new PIE.ol.source.OSM()
+    // });
+    // var keys = []; //字段名称
+    // var pros;//要素信息
+    // $("#layername").html(layername);
+    // var vectorSource = new  PIE.ol.source.Vector();
+    // var vecLayer = new PIE.ol.layer.Vector({
+    //     source: vectorSource,
+    //     style: function (feature, resolution) {
+    //         return new  PIE.ol.style.Style({
+    //             stroke: new  PIE.ol.style.Stroke({
+    //                 color: 'red',
+    //                 width: 3
+    //             }),
+    //             fill: new  PIE.ol.style.Fill({ //矢量图层填充颜色，以及透明度
+    //                 color: 'rgba(255,113,252,0.6)'
+    //             }),
+
+    //             text: new  PIE.ol.style.Text({ //文本样式
+    //                 font: '12px Calibri,sans-serif',
+    //                 fill: new  PIE.ol.style.Fill({
+    //                     color: '#000'
+    //                 }),
+    //                 stroke: new  PIE.ol.style.Stroke({
+    //                     color: '#fff',
+    //                     width: 3
+    //                 })
+    //             }),
+
+    //             image: new  PIE.ol.style.Circle({//点的半径及颜色
+    //                 radius:5,
+    //                 fill: new  PIE.ol.style.Fill({
+    //                     color: '#e054ff'
+    //                 })
+    //             }),
+    //         });
+    //     }
+    // });
+    // var selectInteraction = new PIE.ol.interaction.Select({
+    //     wrapX: false,
+    //     style: new PIE.ol.style.Style({
+    //         stroke: new PIE.ol.style.Stroke({
+    //             color: 'red',
+    //             width: 3
+    //         }),
+    //         fill: new PIE.ol.style.Fill({ //矢量图层填充颜色，以及透明度
+    //             color: 'rgba(255,113,252,0.6)'
+    //         }),
+
+    //         text: new PIE.ol.style.Text({ //文本样式
+    //             font: '12px Calibri,sans-serif',
+    //             fill: new PIE.ol.style.Fill({
+    //                 color: '#000'
+    //             }),
+    //             stroke: new PIE.ol.style.Stroke({
+    //                 color: '#fff',
+    //                 width: 3
+    //             })
+    //         }),
+
+    //         image: new PIE.ol.style.Circle({//点的半径及颜色
+    //             radius:5,
+    //             fill: new PIE.ol.style.Fill({
+    //                 color: '#ff3412'
+    //             })
+    //         }),
+    //     }),
+    //     hitTolerance: 10
+    // });
+
+    // var pointLayerSource = new PIE.ol.source.Vector({
+    //     format: new PIE.ol.format.GeoJSON(),
+    //     url: function(extent) {
+    //         //return 'http://211.154.196.250:8081/geoserver/zhaojiawei/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=zhaojiawei:CityPoint-WGS84&maxFeatures=50&outputFormat=application%2Fjson';
+    //         return path.PIEVector.CityPoint;
+    //     },
+    //     strategy: PIE.ol.loadingstrategy.bbox
+    // });
+
+    // var vecPointLayer = new PIE.ol.layer.Vector({
+    //     source: pointLayerSource,
+    //     style: function (feature, resolution) {
+    //         return new PIE.ol.style.Style({
+    //             stroke: new PIE.ol.style.Stroke({
+    //                 color: 'red',
+    //                 width: 3
+    //             }),
+    //             fill: new PIE.ol.style.Fill({ //矢量图层填充颜色，以及透明度
+    //                 color: 'rgba(255,113,252,0.6)'
+    //             }),
+
+    //             text: new PIE.ol.style.Text({ //文本样式
+    //                 font: '12px Calibri,sans-serif',
+    //                 fill: new PIE.ol.style.Fill({
+    //                     color: '#000'
+    //                 }),
+    //                 stroke: new PIE.ol.style.Stroke({
+    //                     color: '#fff',
+    //                     width: 3
+    //                 })
+    //             }),
+
+    //             image: new PIE.ol.style.Circle({//点的半径及颜色
+    //                 radius:5,
+    //                 fill: new PIE.ol.style.Fill({
+    //                     color: '#2f21ff'
+    //                 })
+    //             }),
+    //         });
+    //     }
+    // });
+
+    // var map = new PIE.ol.Map({
+    //     interactions: PIE.ol.interaction.defaults().extend([selectInteraction]),
+    //     layers: [raster,vecPointLayer, vecLayer],
+    //     target: 'map',
+    //     view: new PIE.ol.View({
+    //         center: [110, 30],
+    //         projection: 'EPSG:4326',
+    //         zoom: 5
+    //     })
+    // });
+    // selectInteraction.on("select", function (evt) {
+    //     if (evt.selected.length > 0) {
+    //         var features = evt.selected[0].getKeys();
+    //         keys = []
+    //         for (key in features) {
+    //             if (features[key] != "geometry") {
+    //                 keys.push(features[key]);
+    //             }
+    //         }
+    //         pros = evt.selected[0].getProperties();
+    //         $("#layername").empty();
+    //         // $("#layername").html(evt.selected[0].c);
+    //         $("#layername").html(layername);
+    //         $("#tableshow").html("");
+    //         var col = init();
+    //         inittable(col);
+    //     }
+    // });
+
+    // // var featureRequest = new ol.format.WFS().writeGetFeature({
+    // //     srsName: 'EPSG:4326',//坐标系
+    // //     featureTypes: ['CityPoint-WGS84'],//所要访问的图层
+    // //     maxFeatures: 5000,
+    // //     outputFormat: 'application/json',
+    // //     filter: ol.format.filter.like('NAME', '东莞市')
+    // // });
+    // //
+    // // // 发送请求
+    // // fetch('http://211.154.196.250:8081/geoserver/wfs', {
+    // // fetch( path.PIEVector.wfs , {
+    // //     method: 'POST',
+    // //     body: new XMLSerializer().serializeToString(featureRequest)
+    // // }).then(function (response) {
+    // //     return response.json();
+    // // }).then(function (json) {
+    // //     var features = new ol.format.GeoJSON().readFeatures(json);
+    // //     vectorSource.addFeatures(features);
+    // // });
+
+    // //创建各种标签
+    // function init() {
+    //     // $("table").empty();
+    //     //创建第二个div标签row
+    //     var row = document.createElement("div");
+    //     //设置row的属性
+    //     row.setAttribute("class", "row");
+    //     //将row加入到container中去
+    //     $("#tableshow").empty().append(row);
+    //     //创建第三个div标签col
+    //     var col = document.createElement("div");
+    //     //设置col的属性
+    //     col.setAttribute("class", "col-md-12");
+    //     //将col加入到row中去
+    //     row.append(col);
+    //     //最终返回col
+    //     return col;
+    // }
+
+    // //创建表格
+    // function inittable(col) {
+    //     var table = document.createElement("table");
+    //     //将table加到col中去
+    //     col.append(table);
+    //     //设置table的属性
+    //     table.setAttribute("class", "table table-bordered table-striped table-hover");
+    //     table.setAttribute("border", 2);
+    //     table.setAttribute("width", "100%");
+    //     //创建第一个tr标签存储第一行的数据
+    //     var tr_head = document.createElement("tr");
+    //     //将第一个tr加入到table中去
+    //     table.append(tr_head);
+    //     //使用for循环将表头数据tr_head加到第一个tr中去,第一行中有四个数据
+    //     //***循环表头数据keys***
+    //     for (var i = 0; i < keys.length; i++) {
+    //         //创建td存储数据
+    //         var th = document.createElement("th");
+    //         //设置th的属性
+    //         th.setAttribute("class", "text-center");
+    //         //将数据加进th
+    //         th.innerHTML = keys[i];
+    //         //将th加入到tr中去
+    //         tr_head.append(th);
+    //     }
+
+    //     var tr = document.createElement("tr");
+    //     //将tr加入到table中去
+    //     table.append(tr);
+    //     //使用for循环将学生信息加入到tr中去
+    //     for (let key  in pros) {
+    //         if (key != 'geometry') {
+    //             //生成td用于存储数据
+    //             var td = document.createElement("td");
+    //             //设置td的属性
+    //             td.setAttribute("class", "text-center");
+    //             //插入数据
+    //             td.innerHTML = pros[key];
+    //             tr.appendChild(td);
+    //         }
+    //     }
+    // }
+</script>
+</body>
+</html>

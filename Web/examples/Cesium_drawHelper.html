@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>line</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+        .measureCur
+        {
+            cursor: url(./image/measure.cur), auto;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/DrawHelper.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({
+            type:3
+        }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map"
+    });
+    var grid = new PIE.GridTileLayer({
+        //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+        url:path.PIEGrid.GFTile,
+        id: 'tilelayer1'
+    });
+    map.add(grid);
+
+    map.on("load",function () {
+        //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+        map.map._cesiumViewer.terrainProvider=Cesium.createWorldTerrain();
+        map.map._cesiumViewer.scene.globe.depthTestAgainstTerrain = false;
+
+        getToolButton();
+        //初始化绘制类
+        var drawTool= new drawHelper.init({viewer:map.map._cesiumViewer});
+        //标注
+        document.getElementById('marker').addEventListener('click',function () {//增加标注的事件监听函数
+            $('body').addClass('measureCur');
+            var options={//默认设置
+                iconUrl: "./image/glyphicons_242_google_maps.png"
+            };
+            drawHelper.createMarker(options);
+        },false);
+        //多边形
+        document.getElementById('polygon').addEventListener('click',function () {//增加标注的事件监听函数
+            $('body').addClass('measureCur');
+            var options={//默认设置
+            };
+            drawHelper.createPolygon(options);
+        },false);
+        //圆
+        document.getElementById('circle').addEventListener('click',function () {//增加标注的事件监听函数
+            $('body').addClass('measureCur');
+            var options={//默认设置
+            };
+            drawHelper.createCircle(options);
+        },false);
+        //框选
+        document.getElementById('rectangle').addEventListener('click',function () {//增加标注的事件监听函数
+            $('body').addClass('measureCur');
+            var options={//默认设置
+            };
+            drawHelper.createRectangle(options);
+        },false);
+        //清除所有的图元及事件操作
+        document.getElementById('clearall').addEventListener('click',function(){
+            drawHelper.clearAll();
+        },false);
+
+    });
+
+    function getToolButton() {
+        var toolbar= document.getElementById('toolbar');
+        toolbar.innerHTML =
+            '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="marker">标注</button>' +
+            '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="polygon">多边形</button>'+
+            '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="circle">圆选</button>' +
+            '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="rectangle">框选</button>' +
+            '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="clearall">清除</button>';
+        toolbar.setAttribute('style', 'background: rgba(42,42,42,0.9); border-radius: 5px;');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>云图</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <script src="../build/PIE.js"></script>
+    <script src="js/lib/status.js"></script>
+    <script src="./js/show/path.js"></script>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .infobox {
+            z-index: 11;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #5A83BC;
+            opacity: 0.8;
+            border: solid 1px white;
+            border-radius:8px;
+            padding: 5px;
+        }
+        p {
+            color: white;
+        }
+        .infobt{
+            z-index: 8001;
+            position: relative;
+            float: left;
+            margin-left: 30px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div class="infobox">
+    <p id="timetxt"></p>
+    <p id="typetxt"></p>
+    <p id="areatxt"></p>
+    <p id="aisletxt"></p>
+    <button onclick="show()" class="infobt">图层显示/隐藏
+    </button>
+</div>
+<script>
+    //初始化底图
+    var map = new PIE.Map(
+        {
+            type: 1,
+            projection:"EPSG:3857"
+        }
+    );
+    //设置视图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 2,
+        center: [110, 0]
+    });
+    var imagelayer = new PIE.ImageLayer({
+        url: "image/201901160729_FY2E_COLOR.png",
+        projection:"EPSG:4326",
+        isLngLat:true,
+        region: [60, -10, 150, 60],
+    });
+    var visible = true;
+    map.on("load", function () {
+        var grid = new PIE.GridTileLayer({
+            //url: "http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+            url: path.PIEGrid.GlobalDarkMap,
+            id:"drakmap"
+        });
+        var state = new Status(map);
+        document.body.appendChild(state.dom);
+        map.add(grid);
+        map.add(imagelayer);
+        layerinfo(imagelayer.url);
+        
+    });
+
+    function show() {
+        self = this;
+        if (imagelayer) {
+            if (self.visible == false) {
+                imagelayer.setVisible(true);
+                self.visible = true
+            } else {
+                imagelayer.setVisible(false);
+                self.visible = false
+            }
+        }
+    }
+
+    function layerinfo(_url) {
+        // debugger;
+        let info = _url.substr(_url.indexOf("/") + 1, _url.indexOf(".") - _url.indexOf("/") - 1)
+        let timeinfo = info.substr(0, info.indexOf("_"));
+        let _info = info.substr(info.indexOf("_") + 1);
+        let typeinfo = _info.substr(0, _info.indexOf("_"));
+        let _infoa = _info.substr(_info.indexOf("_") + 1);
+        let areainfo = _infoa.substr(0, _infoa.indexOf("_"));
+        let aisleinfo = _infoa.substr(_infoa.indexOf("_") + 1);
+        document.getElementById("timetxt").innerText = "云图时间:" + timeinfo;
+        document.getElementById("typetxt").innerText = "卫星类型:" + typeinfo;
+        // document.getElementById("areatxt").innerText = "区域选择:" + areainfo;
+        // document.getElementById("aisletxt").innerText = "卫星通道:" + aisleinfo;
+    }
+</script>
+
+</body>
+</html>

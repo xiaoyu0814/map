@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>layer_geoJsonFillLayer</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        .btnstyle {
+            position: absolute;
+            left: 0;
+            margin: 15px 30px;
+            background: #000;
+            border-radius: 4px;
+            padding: 12px 15px;
+            cursor: pointer;
+            outline: none;
+            border: 1px solid;
+            box-shadow: 3px 3px 10px #000;
+            color: white;
+            z-index: 100;
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<!-- <button class="btnstyle" style="top:10px;background: #007dff" onclick="change(this,'FillLayer')">FillLayer</button> -->
+<button class="btnstyle" style="top:10px" onclick="change(this,'Stationlayer')">StationLayer</button>
+<button class="btnstyle" style="top:70px" onclick="change(this,'GridValueLayer')">GridValueLayer</button>
+<button class="btnstyle" style="top:130px" onclick="change(this,'splashMapLayer')">SplashMapLayer</button>
+<button class="btnstyle" style="top:190px" onclick="change(this,'IsolineLayer')">IsolineLayer</button>
+<button class="btnstyle" style="top:250px" onclick="change(this,'BigWindLayer')">BigWindLayer</button>
+<link href="js/PIE.css" rel="stylesheet"/>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/status.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var _num = window.location.href.indexOf("//");
+    var _numb = window.location.href.indexOf("/", _num + 2);
+    var _url = window.location.href.substr(0, _numb);
+    var testFillLayer;
+    var testStationLayer;
+    var testGridValueLayer;
+    var textSplashMapLayer;
+    var testIsolineLayer;
+    var testTextLayer;
+    var testBigWindLineLayer;
+    var testBigWindTextLayer;
+    //var IP = "http://1.119.5.10:18060";
+    var IP = IP3;
+    // 初始化底图
+    var map = new PIE.Map({
+        type : 1
+    });
+    // 设置视图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 1,
+        center: [110, 0],
+        sprite: _url + "/examples/sprite/Weather",
+    });
+    // 底图加载成功后对底图编辑
+    var state = new Status(map);
+    document.body.appendChild(state.dom);
+    map.on("load", function () {
+        // 定义一个fill图层
+        testFillLayer = new PIE.GridTileLayer({
+        //url: 'http://service.piesat.cn:10000/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}'
+            //url: path.PIEservice.GFImage,
+            url :"http://cloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+            id:"darkmap"
+         });
+        //获取数据
+        function getData(url,callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+                    if (xhr.response) {
+                        var result = JSON.parse(xhr.response)
+                        if (result.length === 0) {
+                            var temp = null;
+                            callback(temp);
+                            return false;
+                        }
+                        callback(result)
+                    } else {
+                        callback(result);
+                    }
+                } else {
+                    callback(xhr.statusText);
+                }
+            };
+            xhr.onerror = function () {
+                callback(xhr.statusText);
+            };
+            xhr.send(null);
+        }
+        // 将fill图层添加到底图里
+        map.add(testFillLayer);
+      //  testFillLayer.addEventListener("load", function () {
+            var stationUrl = IP+"/VIS-Web/groundLive/getGroundLiveData?date=20181203&span=0800&type=liveInfo_Gts&level=0&zoom=3&proType=mercator&bound=44.62,-0.56,213.37,64.61&w=1920&h=978";
+            var gridValueUrl = IP+"/VIS-Web/groundLive/getGroundLiveData24hP?params=date:20181203,type:liveInfo_Gts,span:1700,level:0,element:P24&zoom=1";
+            var splashMapUrl = IP+"/VIS-Web/groundLive/showStationColorTilePng/{z}/{x}/{y}.png?params=date:20181203,type:liveInfo_Gts,span:0800,level:0,element:T24";
+            var isolineUrl = IP+"/VIS-Web/groundLive/getGroundLiveDataCoutour?params=date:20181203,type:liveInfo_Gts,span:0800,level:0,element:SLP";
+            var bigWindUrl = IP+"/VIS-Web/groundLive/getWindDataContour?params=date:20181203,type:liveInfo_Gts,span:0800,level:0,element:WS,WI:11";
+            function stationThen(data){
+                if (data.result) {
+                    console.log("stationThen",data)
+                    testStationLayer = new PIE.MetoStyle.StationLayer({
+                        data: data.value,
+                        id: "measure-station"
+                    });
+                };
+            };
+            function gridValueThen(data) {
+                if (data.result) {
+                    console.log("gridValueThen",data)
+                    testGridValueLayer = new PIE.MetoStyle.TextLayer({
+                        data: data.value,
+                        text: "value",
+                        id: "measure-gridValue",
+                        overlap: true,
+                    });
+
+                };
+            };
+            textSplashMapLayer = new PIE.GridTileLayer({
+                url: splashMapUrl,
+                id:"measure-splashMap"
+            });
+            function lineThen(data) {
+                if (data.result) {
+                    console.log("lineThen",data)
+                    testIsolineLayer = new PIE.MetoStyle.LineLayer({
+                        data: data.value,
+                        id: "measure-Line",
+                        filter: ["==", "$type", "LineString"]
+                    });
+                    testTextLayer = new PIE.MetoStyle.TextLayer({
+                        data: data.value,
+                        text: "value",
+                        id: "measure-Point",
+                        overlap: true,
+                        filter: ["==", "$type", "Point"]
+                    });
+                };
+            };
+            function bigWindThen(data) {
+                if (data.result) {
+                    console.log("bigWindThen",data)
+                    var bigWind = new PIE.MetoStyle.IsoLineLayer({
+                        data :data.value,
+                        id :"r"
+                    })
+                    map.add(bigWind);
+                };
+            }  
+            getData(stationUrl,stationThen);
+            getData(gridValueUrl,gridValueThen);
+            // getData(splashMapUrl,splashMapThen);
+            getData(isolineUrl,lineThen);
+            getData(bigWindUrl,bigWindThen);
+       // })
+    });
+
+    function change(item,layer) {
+        switch (layer) {//testGridValueLayer
+            case "FillLayer":
+                if (map.getLayer("measure-Fill")) {
+                    $(item).css("background", "black")
+                    map.remove(testFillLayer)
+                } else {
+                    $(item).css("background", "#007dff")
+                    map.add(testFillLayer)
+                }
+                break;
+            case "Stationlayer":
+                if (map.getLayer("measure-station")) {
+                    $(item).css("background", "black")
+                    map.remove(testStationLayer)
+                } else {
+                    console.log(testStationLayer)
+                    $(item).css("background", "#007dff")
+                    map.add(testStationLayer)
+                }
+                break;
+            case "GridValueLayer":
+                if (map.getLayer("measure-gridValue")) {
+                    $(item).css("background", "black")
+                    map.remove(testGridValueLayer)
+                } else {
+                    console.log(testGridValueLayer)
+                    $(item).css("background", "#007dff")
+                    map.add(testGridValueLayer)
+                }
+                break;
+            case "splashMapLayer":
+                if (map.getLayer("measure-splashMap")) {
+                    $(item).css("background", "black")
+                    map.remove(textSplashMapLayer)
+                } else {
+                    $(item).css("background", "#007dff")
+                    map.add(textSplashMapLayer)
+                }
+                break;
+            case "IsolineLayer":
+                if (map.getLayer("measure-Line")) {
+                    $(item).css("background", "black")
+                    map.remove(testIsolineLayer)
+                    map.remove(testTextLayer)
+                } else {
+                    $(item).css("background", "#007dff")
+                    map.add(testIsolineLayer)
+                    map.add(testTextLayer)
+                }
+                break;
+            case "BigWindLayer":
+                if (map.getLayer("measure-windLine")) {
+                    $(item).css("background", "black")
+                    map.remove(testBigWindTextLayer)
+                    map.remove(testBigWindLineLayer)
+                } else {
+                    $(item).css("background", "#007dff")
+                    map.add(testBigWindTextLayer)
+                    map.add(testBigWindLineLayer)
+                }
+                break;
+            default:
+                break;
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图层设置</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+             padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #tool {
+            position: absolute;
+            z-index: 99999;
+        }
+    </style>
+</head>
+<body>
+<div id="tool">
+    <div>随机生成<input id="layerCount">图层
+        <button onclick="randomCreateLayer()">确定</button>
+    </div>
+    <div>设置ID为<select id="layerSetID"></select>图层的显示隐藏
+        <button onclick="setOneLayerVisibleByID()">确定</button>
+    </div>
+    <div>移除指定ID为<select id="layerRemoveID"></select>图层
+        <button onclick="removeOneLayerByID()">确定</button>
+    </div>
+    <div>
+        将ID为<select id="layerUpID"></select>图层上移到<select id="layerDownID"></select>图层之上
+        <button onclick="setOneLayerUpByID()">确定</button>
+    </div>
+    <!--<div>-->
+        <!--将ID为<select id="layerDownID"></select>图层下移-->
+        <!--<button onclick="setOneLayerDownByID()">确定</button>-->
+    <!--</div>-->
+</div>
+<div id="map">
+
+</div>
+<script src="../build/PIE.js"></script>
+<script src="js/mapbox-gl-dev.js"></script>
+<link href="js/mapbox-gl.css" rel="stylesheet"/>
+<script src="js/style/meto-style/LineLayer.js"></script>
+<script src="js/style/meto-style/PointLayer.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    //初始化底图
+    var layersnum;
+    var map = new PIE.Map({
+        baseMap: ""
+    });
+    //设置视图样式
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 1,
+        center: [110, 0],
+    });
+    //设置底图图层
+    map.on("load", function () {
+        var testFillLayer = new PIE.GridTileLayer({
+            //url: 'http://service.piesat.cn:10000/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}'
+            //url: path.PIEservice.GFImage,
+            url :"http://cloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+            id:"darkmap"
+        });
+        // 将图层添加到底图里
+        map.add(testFillLayer);
+    });
+
+    //初始化底图配置
+    function init() {
+        for (i = 0; i < layersnum; i++) {
+            if(map.getLayer(""+i) !=undefined){
+                map.remove(map.getLayer(""+i));
+                getremoveNum()
+            }
+        }
+    }
+
+    //随机生成图层
+    //取值范围上下正负90，左右180：Math.floor(Math.random()*(max-min+1)+min)
+    function randomCreateLayer() {
+        var value = document.getElementById("layerSetID").value;
+        if (value != "") {
+            init()
+        }
+        // console.log(Math.ceil(Math.random() * 3));
+        // return;
+        var num = document.getElementById("layerCount").value;
+        layersnum = num;
+        getlayerNum(num);//动态获取下拉列表
+        for (var i = 0; i < num; i++) {
+            console.log("随机生成图层！");
+            // console.log(i);
+
+            var a = Math.ceil(Math.random() * 3);
+            if (a == 1) {
+                var linedata = [[Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))], [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))]];
+                var line = new PIE.Line(linedata);
+                // 定义一个线图层
+                var linelayer = new PIE.Graphics({
+                    id: "" + i,
+                    geometry: line,
+                    symbol: new PIE.LineSymbol({color: "#090", width: 3}),
+                });
+                //添加线图层到底图
+                map.add(linelayer);
+            } else if (a == 2) {
+                var point = new PIE.Point(Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90)));
+                var pointGrap = new PIE.Graphics({
+                    id: "" + i,
+                    geometry: point,// 绘制类型
+                    symbol: new PIE.MarketSymbol({color: "#000000", size: 4})// 设置样式
+                });
+
+                map.add(pointGrap);// 将定义的图层添加到底图上
+            } else {
+                var polygonData = [
+                    [
+                        [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))],
+                        [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))],
+                        [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))],
+                    ]
+                ]
+                var Polygon = new PIE.Polygon(polygonData);
+                var PolygonGrap = new PIE.Graphics({
+                    id: "" + i,
+                    geometry: Polygon,// 绘制类型
+                    symbol: new PIE.FillSymbol({color: "#2285f2"})// 设置样式
+                });
+                map.add(PolygonGrap);// 将定义的图层添加到底图上
+            }
+        }
+    }
+
+    //动态获取生成的下拉菜单option
+    function getlayerNum(num) {
+        for (var i = 1; i <= num; i++) {
+            var option = document.createElement("option");
+            option.setAttribute("id", "option" + i);
+            option.innerHTML = i;
+            document.getElementById("layerSetID").appendChild(option);
+            var option1 = document.createElement("option");
+            option1.innerHTML = i;
+            option1.setAttribute("id", "option1" + i);
+            document.getElementById("layerRemoveID").appendChild(option1);
+            var option2 = document.createElement("option");
+            option2.innerHTML = i;
+            option2.setAttribute("id", "option2" + i);
+            document.getElementById("layerUpID").appendChild(option2);
+            var option3 = document.createElement("option");
+            option3.innerHTML = i;
+            option3.setAttribute("id", "option3" + i);
+            document.getElementById("layerDownID").appendChild(option3);
+        }
+    }
+
+    //获取移除后的下拉菜单option
+    function getremoveNum() {
+        var a = document.getElementById("layerSetID");
+        var b = document.getElementById("layerRemoveID");
+        var c = document.getElementById("layerUpID");
+        var d = document.getElementById("layerDownID");
+        a.remove(b.selectedIndex);
+        c.remove(b.selectedIndex);
+        d.remove(b.selectedIndex);
+        b.remove(b.selectedIndex);
+    }
+
+    //设置执行图层内容
+    function setOneLayerVisibleByID() {
+        console.log("设置执行图层内容");
+        var num = document.getElementById("layerSetID").value - 1;
+        map.getLayer(num).setVisible(!map.getLayer(num).visible);
+    }
+
+    //移除指定ID图层
+    function removeOneLayerByID() {
+        console.log("移除指定ID");
+        var num = document.getElementById("layerRemoveID").value - 1;
+        // console.log(map.getLayer(num))
+        if (map.getLayer(num) != undefined) {
+            map.remove(map.getLayer(num));
+        }
+        getremoveNum();//动态移除下拉option
+    }
+
+    function setOneLayerUpByID() {
+        console.log("移上指定ID");
+        map.moveLayer(map.getLayer(layerDownID.value -1),map.getLayer(layerUpID.value-1))
+    }
+</script>
+</body>
+</html>

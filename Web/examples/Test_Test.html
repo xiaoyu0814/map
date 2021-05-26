@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Station</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="groudLive_viewMenu4Div_tab_list"></div>
+<div id="groudLive_viewMenu4Div_list" class="brand_list brand_col"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/config.js"></script>
+<script>
+    //初始化底图
+    var map = new PIE.Map({
+        baseMap:""
+    });
+    //设置地图样式
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:1,
+        center:[110,0],
+        sprite:"http://127.0.0.1:8081/examples/sprite/Weather",
+    });
+    var test;
+    //底图加载成功后对底图编辑
+    map.on("load",function () {
+
+        //var url ="http://127.0.0.1:8060/PIE-Web/groundLive/getGroundLiveDataWind6Contour?params=date:2018-01-02,type:liveInfo_ground,span:5.0,level:500,element:WS,WI:11";
+        //var url1 ="http://127.0.0.1:8060/PIE-Web/groundLive/getGroundLiveDataCoutour?params=date:2018-01-02,type:liveInfo_ground,span:5.0,level:999,element:SLP";
+       // var url = "http://127.0.0.1:8060/PIE-Web/groundLive/getGroundLiveData?date=20140308&span=0500&type=liveInfo_ground&level=land&zoom=2&bound=20.82,-33.55,270.34,65.22&w=1536&h=754"
+        var url = "http://127.0.0.1:8060/PIE-Web/upperLive/getUpperLiveData?date=20180308&span=0800&type=upperInfo_upper&level=850&zoom=2&bound=23.41,-15.21,233.28,65.55&w=1536&h=754"
+        getDataValue(url).then(addStation1);
+    });
+    function addStation1(data) {
+        var testdata = {
+            "type": "FeatureCollection",
+            "features": data
+        }
+        test = new PIE.MetoStyle.UpperStationLayer({
+            data:testdata,
+            id:"test",
+        })
+        map.add(test);
+
+       //map.addSource("test",testdata);
+
+       // map.remove(test);
+    }
+    function getDataValue(url) {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+        //xhr.open("GET","http://"+url, true);
+        xhr.open("Post", url, true);
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                if (xhr.response) {
+                    var result = JSON.parse(xhr.response)
+                    if (result.length === 0) {
+                        console.log('数据读取失败');
+                        reject('数据读取失败');
+                        return false;
+                    }
+                    resolve(result);
+                }
+            } else {
+                reject(xhr.statusText);
+            }
+
+        };
+        xhr.onerror = function () {
+            reject(xhr.statusText);
+        };
+        xhr.send(null);
+    })
+    }
+    function getData(url) {
+
+        return new Promise( (resolve,reject) =>{
+            const xhr = new XMLHttpRequest();
+        //xhr.open("GET","http://"+url, true);
+        xhr.open("GET",url, true);
+        xhr.onload = function () {
+            if (xhr.status == 200 ) {
+                var result = JSON.parse(xhr.response)
+                if (result.length === 0) {
+                    console.log('数据读取失败');
+                    reject('数据读取失败');
+                    return false;
+                }
+                resolve(result);
+            } else {
+                reject(xhr.statusText);
+            }
+
+        };
+        xhr.onerror = function () {
+            reject(xhr.statusText);
+        };
+        xhr.send(null);
+    })
+    }
+
+function addStation(rs) {
+    console.log(rs);
+    var dsp =  map.map;
+    // 获取数据类型
+    var groundLive_liveInfoId = "ces";
+    // 刷新数据源
+
+    if (rs ) {
+        dsp.addSource("ce",{
+            type:"geojson",
+            data:rs
+        });
+        dsp.addLayer({
+            "id":"ceLine",
+            "source":"ce",
+            "type":"line",
+            "paint":{
+                "line-color":"#f00"
+            },
+            "layout": {
+                "line-join": "round",
+                "line-cap": "round"
+            },
+            "filter": ["==", "$type", "LineString"]
+
+        })
+
+        dsp.addLayer({
+            "id":"cePoint",
+            "source":"ce",
+            "type":"symbol",
+            "paint":{
+                "text-color": {
+                    "property": "isHigh",
+                    "type":"categorical",
+                    "stops": [
+                        [true, "#00f"],
+                        [false, "#f00"]
+                    ]
+                }
+            },
+            "layout":{
+                "text-field": {
+                    "property": "isHigh",
+                    "type":"categorical",
+                    "stops": [
+                        [true, "H"],
+                        [ false, "L"]
+                    ]
+                },
+                "text-font":["Open Sans Bold"],
+            },
+            "filter": ["==", "$type", "Point"]
+
+        })
+    }
+}
+
+    function craetMenu4Child() {
+        // 左侧菜单
+        var $groudLive_viewMenu4Div_tab_list = $("#groudLive_viewMenu4Div_tab_list");
+
+        // 右侧列表
+        var $groudLive_viewMenu4Div_list = $("#groudLive_viewMenu4Div_list");
+        var viewMenu1Id = "groundLive",viewMenu2Id="groundLive_liveInfo",viewMenu3Id="groundLive_liveInfo_ground";
+        if (viewMenu1Id && viewMenu2Id && viewMenu3Id) {
+            var menu3ConfigObjData = menuConfigObj[viewMenu1Id]["childNodes"][viewMenu2Id]["childNodes"][viewMenu3Id];
+            var menu4ConfigObjData = menu3ConfigObjData["childNodes"];
+
+            // 判断是否触发
+            var i = 0;
+            if (!menu4ConfigObjData || !menu3ConfigObjData) {
+                return;
+            }
+            for ( var key in menu4ConfigObjData) {
+                i++;
+            }
+            if (i <= 0) {
+                return;
+            }
+            // 变量声明
+            var isCheck = menu3ConfigObjData["isCheck"];
+            var menu3ConfigObjDataId = menu3ConfigObjData["mark"];
+            var menu3ConfigObjDataTitle = menu3ConfigObjData["title"];
+            var menu3ConfigObjDataImg = menu3ConfigObjData["imgurl"];
+
+            // 声明组件
+            var menu4ItemAId = menu3ConfigObjDataId + "_a";
+            var $menu4ItemA = $('<a href="javascript:void(0)" id="' + menu4ItemAId
+                + '"></a>');
+            var $menu4ItemUL = $('<ul class="list_cont  menu4ItemULClass  '
+                + menu4ItemAId + '" >');
+            var $menu4ItemULTitle = $('<li class="name"><span>'
+                + menu3ConfigObjDataTitle + '填图</span></li>');
+
+            // 面板显示
+            $('#viewLiveRightDive').css('display','block');
+            $('.mapboxgl-ctrl-top-right .mapboxgl-ctrl').animate({right:'240px'});
+
+
+            // 如果菜单3不可以多选
+            if (!isCheck) {
+                // 清空
+                $groudLive_viewMenu4Div_tab_list.html("");
+                $groudLive_viewMenu4Div_list.html("");
+            }
+            // 判断是否已经添加过了
+            if ($("#" + menu4ItemAId).parent($groudLive_viewMenu4Div_tab_list).length > 0) {
+                var $self = $("#" + menu4ItemAId);
+                $(".menu4ItemULClass").hide();
+                $("." + menu4ItemAId).show();
+                $self.addClass('active').siblings().removeClass('active');// 点击改变样式
+                // 四级菜单处理事情 左侧导航点击切换
+                callbakMenu4LeftAEvents(this);
+                return;
+            }
+            // 安装组件
+            $groudLive_viewMenu4Div_tab_list.append($menu4ItemA);
+            $groudLive_viewMenu4Div_list.append($menu4ItemUL);
+            $menu4ItemUL.append($menu4ItemULTitle);
+            // 右侧增加所有的Li
+            for ( var key in menu4ConfigObjData) {
+                var menuItemObj = menu4ConfigObjData[key];
+                // 是否显示菜单
+                if (menuItemObj["visible"]) {
+                    // 声明 设置属性
+                    var $li_menuItem = $('<li id="' + menuItemObj["mark"]
+                        + '"></li>');
+                    var $li_menuItemInput = $('<input  name="'
+                        + menu3ConfigObjDataId + '" type="checkbox" value=""/>'
+                        +'<span>'+ menuItemObj["title"] + ' </span>');
+                    $li_menuItemInput.val(menuItemObj["mark"]);
+                    $li_menuItemInput.prop("checked", menuItemObj["checked"]);
+
+                    //图片
+                   /* var $a_img = $('<img src="../images/map/icon/open.png"/>');
+                    // 组装
+                    $li_menuItem.append($a_img);*/
+                    $li_menuItem.append($li_menuItemInput);
+                    $menu4ItemUL.append($li_menuItem);
+                }
+
+            }
+            // 设置显示隐藏 选中样式等
+            $(".menu4ItemULClass").hide();
+            $menu4ItemUL.show();
+            $menu4ItemA.addClass('active').siblings().removeClass('active');// 点击改变样式
+        } else {
+            console.log("viewMenu1Id viewMenu2Id :为空！");
+        }
+    }
+    //设置填图
+    function addGroundLiveTiantu(id) {
+       // dsp.hideAllLayer();
+
+        var $ULInputS = $('input[name="' + id + '"]');
+        $ULInputS.each(function(idx, eleobj) {
+            hideOrShowGroundLiveLayer($(eleobj));
+        });
+    }
+
+    //选中或者取消事件
+    function checkedGroundLiveShowLayer(itemLi) {
+        var $inputItem = $(itemLi).find('input');
+        hideOrShowGroundLiveLayer($inputItem);
+    }
+
+    //显示隐藏图层
+    function hideOrShowGroundLiveLayer($inputItem){
+        var layerId = $inputItem.val();
+        if (!$inputItem.prop('checked')) {
+            // 隐藏当前图层
+            dsp.hideLayer(layerId);
+        } else {
+            // 显示当前图层
+            dsp.showLayer(layerId);
+        }
+
+    }
+</script>
+<script src="js/lib/gethtml.js"></script>
+</body>
+</html>

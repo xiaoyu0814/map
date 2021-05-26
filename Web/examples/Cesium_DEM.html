@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DEM数据加载显示</title>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+
+        }
+        html, body,#map {
+            width: 100%;
+            height:100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+</body>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/dat.gui.min.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map;
+    var view;
+    var controls = new function () {
+        this.height = 0;
+        this.x = 104.310200343;
+        this.y = 36.876251815;
+        this.rotation = 0;
+    };
+    init();
+
+    function addinTile(viewer,lon,lat){
+       
+       var terrainProvider = new Cesium.CesiumTerrainProvider({
+        //url:"http://piecloud.piesat.cn/tilesets/test/",
+        url:path.PIEterrain.test,
+        requestWaterMask: true,
+        requestVertexNormals: true,
+        maximumLevel:0
+        })
+        
+       viewer.terrainProvider = terrainProvider
+    }
+
+    //初始化底图
+    function init() {
+        map =new PIE.Map({
+            type:3
+        });//初始化底图
+        //设置视图
+        view = new PIE.MapView({
+            map:map,
+            container:"map",
+            zoom: 4,
+            center: [110, 35]
+        });
+        var grid = new PIE.GridTileLayer({
+            //url:'https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}',
+            url:path.GoogleURL.satellite,
+            id: 'tilelayer1'
+        });
+        map.add(grid);
+        addinTile( map.map._cesiumViewer,104.310200343,36.876251815)
+
+        // var testWindLayer = new PIE.MetoStyle.TextLayer({
+        //     url:'./data/heatmap/test.json',
+        //     text:"name",
+        //     id: "measure-Icon",
+        //     color:"#f00",
+        //     opacity:1,
+        // });
+        // map.add(testWindLayer);
+    }
+
+    function init2(){
+        function createGoogleImageryProvider(){
+            imageryProvider = new Cesium.UrlTemplateImageryProvider({
+                //url:'http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GoogleImage&x={x}&y={y}&z={z}',
+                url:path.PIEGrid.GoogleTile,
+                maximumLevel:12
+            })
+            return imageryProvider;
+        }
+
+        function createGoogleTerrainProvider(){
+            terrainProvider = new Cesium.CesiumTerrainProvider({
+                //url:'http://piecloud.piesat.cn/tilesets/tiles/',
+                url:path.PIEterrain.Tiles,
+                requestWaterMask: true,
+                requestVertexNormals: true,
+                maximumLevel:0
+            })
+            return terrainProvider;
+        }
+
+        function createWorldTerrain()
+        {
+            var worldTerrain = Cesium.createWorldTerrain({
+                requestWaterMask: true,
+                requestVertexNormals: true
+            });
+            return worldTerrain;
+        }
+
+
+        var viewer = new Cesium.Viewer('map',{
+            //需要进行可视化的数据源的集合
+            animation: false, //是否显示动画控件
+            shouldAnimate : true,
+            homeButton: false, //是否显示Home按钮
+            fullscreenButton: false, //是否显示全屏按钮
+            baseLayerPicker: true, //是否显示图层选择控件
+            geocoder: true, //是否显示地名查找控件
+            timeline: false, //是否显示时间线控件
+            sceneModePicker: false, //是否显示投影方式控件
+            navigationHelpButton: false, //是否显示帮助信息控件
+            infoBox: false, //是否显示点击要素之后显示的信息
+            requestRenderMode: true, //启用请求渲染模式
+            scene3DOnly: false, //每个几何实例将只能以3D渲染以节省GPU内存
+            sceneMode: 3, //初始场景模式 1 2D模式 2 2D循环模式 3 3D模式  Cesium.SceneMode
+            fullscreenElement: document.body, //全屏时渲染的HTML元素 暂时没发现用处
+            imageryProvider:createGoogleImageryProvider(),
+            terrainProvider: createGoogleTerrainProvider(),
+        });
+    }
+</script>
+</html>

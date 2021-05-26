@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>line</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({
+       type:3
+    }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map"
+    });
+    var grid = new PIE.GridTileLayer({
+        //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+        url:path.PIEGrid.GFTile,
+        id: 'tilelayer1'
+    });
+    map.add(grid);
+
+    var PageInfo = {
+        defaultZoomAmount:100000,//相机放大、缩小的默认值
+        flyObj:null,//实例化漫游对象
+        getToolButton: function () {//增加测试按钮
+            var toolbar = document.getElementById('toolbar');
+            toolbar.innerHTML =
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="zoomInto">放大</button>' +
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="zoomOut">缩小</button>' +
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="initialView">初始视图</button>';
+            toolbar.setAttribute('style', 'background: rgba(42,42,42,0.9); border-radius: 5px;');
+        },
+        zoomIntoMap:function(option)//放大地图
+        {
+            if(option!=null && option.zoomAmount!=null)
+            {
+                PageInfo.defaultZoomAmount=option.zoomAmount;
+            }
+            map.map._cesiumViewer.camera.zoomIn(PageInfo.defaultZoomAmount);
+        },
+        zoomOutMap:function(option)//缩小地图
+        {
+            if(option!=null && option.zoomAmount!=null)
+            {
+                PageInfo.defaultZoomAmount=option.zoomAmount;
+            }
+            map.map._cesiumViewer.camera.zoomOut(PageInfo.defaultZoomAmount);
+        },
+        initialView:function(option)//初始视图
+        {
+            var duration=0;
+            if(option!=null && option.duration!=null)
+            {
+                duration=option.duration;
+            }
+            map.map._cesiumViewer.camera.flyHome(option.duration);
+        }
+    }
+
+    map.on("load",function () {
+        //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+        map.map._cesiumViewer.terrainpnProvider=Cesium.createWorldTerrain();
+
+        PageInfo.getToolButton();//初始化按钮
+        //放大缩小操作
+        document.getElementById('zoomInto').addEventListener('click',function () {
+            PageInfo.zoomIntoMap({zoomAmount:1000000});
+        }, false);
+        document.getElementById('zoomOut').addEventListener('click',function () {
+            PageInfo.zoomOutMap({zoomAmount:1000000});
+        }, false);
+        document.getElementById('initialView').addEventListener('click', function () {
+            PageInfo.initialView({duration:5});
+        }, false);
+
+    });
+</script>
+</body>
+</html>

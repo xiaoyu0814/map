@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>line</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/roamHelper.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({
+       type:3
+    }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map"
+    });
+    var grid = new PIE.GridTileLayer({
+        //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+        url:path.PIEGrid.GFTile,
+        id: 'tilelayer1'
+    });
+    map.add(grid);
+
+    var PageInfo = {
+        defaultZoomAmount:100000,//相机放大、缩小的默认值
+        flyObj:null,//实例化漫游对象
+        getToolButton: function () {//增加测试按钮
+            var toolbar = document.getElementById('toolbar');
+            toolbar.innerHTML =
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="roam">开始</button>'+
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="roamPause">暂停</button>'+
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="roamContinue">继续</button>'+
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="roamStop">退出</button>'+
+                '<button style="float: left;line-height: normal" type="button" class="cesium-button" id="initialView">初始视图</button>';
+            toolbar.setAttribute('style', 'background: rgba(42,42,42,0.9); border-radius: 5px;');
+        },
+        zoomIntoMap:function(option)//放大地图
+        {
+            if(option!=null && option.zoomAmount!=null)
+            {
+                PageInfo.defaultZoomAmount=option.zoomAmount;
+            }
+            map.map._cesiumViewer.camera.zoomIn(PageInfo.defaultZoomAmount);
+        },
+        zoomOutMap:function(option)//缩小地图
+        {
+            if(option!=null && option.zoomAmount!=null)
+            {
+                PageInfo.defaultZoomAmount=option.zoomAmount;
+            }
+            map.map._cesiumViewer.camera.zoomOut(PageInfo.defaultZoomAmount);
+        },
+        initialView:function(option)//初始视图
+        {
+            var duration=0;
+            if(option!=null && option.duration!=null)
+            {
+                duration=option.duration;
+            }
+            map.map._cesiumViewer.camera.flyHome(option.duration);
+        }
+    }
+
+    map.on("load",function () {
+        //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+        map.map._cesiumViewer.terrainpnProvider=Cesium.createWorldTerrain();
+
+        PageInfo.getToolButton();//初始化按钮
+
+        //初始化漫游对象
+        PageInfo.flyObj= new flyRouter(map.map._cesiumViewer);
+        document.getElementById('roam').addEventListener('click',function () {//漫游开始
+            //路径数组
+            var  positions = [{ x: 113.106100, y: 33.498900 }, { x: 111.100000, y: 34.320000 }, { x: 109.050000, y: 35.150000 }, { x: 107.010000, y: 35.9140000 }, { x: 104.900000, y: 36.7140000 }, { x: 102.800000, y: 37.600000 }, { x: 100.690800, y: 38.422000 }, { x: 98.570700, y: 39.241700 }, { x: 96.396500, y: 40.066100 }];
+            var model={
+                uri: './data/CesiumCar/xfc.gltf',
+                minimumPixelSize: 64,
+                id: "myCar"
+            };//模型
+            var cartesian=new Cesium.Cartesian3(800,3000.0,600.0);//视角
+            //参数 Array positions点数组，Object Model 模型对象,Number time飞行时间 以秒为单位
+            PageInfo.flyObj.flyRouterByPositions(positions,model,cartesian,60);
+        }, false);
+        document.getElementById('roamPause').addEventListener('click',function () {//漫游暂停
+            PageInfo.flyObj.pause();
+        },false);
+        document.getElementById('roamContinue').addEventListener('click',function () {//漫游继续
+            PageInfo.flyObj.forward();
+        },false);
+        document.getElementById('roamStop').addEventListener('click',function () {//漫游退出
+            PageInfo.flyObj.stopFly();
+        },false);
+
+        document.getElementById('initialView').addEventListener('click', function () {
+            PageInfo.initialView({duration:5});
+        }, false);
+
+    });
+</script>
+</body>
+</html>

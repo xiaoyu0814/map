@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>等值线分析图</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src ="js/lib/status.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var num =  window.location.href.lastIndexOf('/');
+    var url =  window.location.href.substr(0, num)
+  
+    var map = new PIE.Map({//新建一个map对象
+        baseMap:"",
+        type:1
+    });
+    var view = new PIE.MapView({//新建视图
+        map:map,
+        container:"map",
+        zoom:3,
+        center:[110,30],
+        sprite:url + "/sprite/Weather"
+    });
+       function getData(url,fn){
+        var xhr = new XMLHttpRequest();         
+        xhr.open("GET",url, true);
+        xhr.onload = function () {
+            if (xhr.status == 200 ) {
+                var result = JSON.parse(xhr.response)
+                if (result.length === 0) {
+                    console.log('数据读取失败');
+                    return false;
+                }
+                fn(result);
+            
+            } else {
+                // reject(xhr.statusText);
+            }
+        };
+        xhr.onerror = function () {
+            // reject(xhr.statusText);
+        };
+        xhr.send(null);
+    }
+    map.on("load",function () {//添加监听事件，在加载的时候添加图层
+        var state = new Status(map);
+        document.body.appendChild(state.dom);
+        //定义一个栅格瓦片图层
+        var grid = new PIE.GridTileLayer({
+            //url:'http://cloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}',
+            //url:"https://tiles.windy.com/tiles/v9.0/darkmap/{z}/{x}/{y}.png",
+            url: path.windy.darkmap,
+            id:"rr"
+        });
+        map.add(grid);
+        var isoLineLayer = new PIE.MetoStyle.IsoLineLayer({
+                data :'./data/IsoLineData.json',
+                id :"isoline",
+                opacity:1.0
+            })
+        isoLineLayer.addEventListener("load", function () {
+            map.add(isoLineLayer)
+        })
+    })
+</script>
+<script src ="js/lib/MapTool.js"></script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>绘制图形</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet"/>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var selectObject = false;// 初始为false
+    var index = 0;// 图层索引
+    var linePath = [[]];// 每个新图层添加
+    var PointID = "point_test" + index;
+    var LineID = "line_test" + index;
+    var FillID = "fill_test" + index;
+    var click = 0;
+    var map = new PIE.Map({
+        baseMap: ""
+    });
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 1,
+        center: [110, 0],
+    });
+    map.doubleClickZoomDisable();
+
+
+    function getPointData(linePath) {
+
+        var data = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+
+        for (var i = 0; i < linePath.length; i++) {
+            var dataset = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [linePath[i][0], linePath[i][1]]
+                },
+                "properties": {
+                    "index": i
+                }
+            };
+            data.features.push(dataset);
+        };
+        return data;
+    }
+
+
+    function getLineData(linePath) {
+
+        var dataLine = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        var dataLineset = {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": linePath
+            }
+        };
+        dataLine.features.push(dataLineset);
+        return dataLine;
+    }
+
+    function getFillData(linePath) {
+
+        var dataLine = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        var dataLineset = {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [linePath]
+            }
+        };
+        dataLine.features.push(dataLineset);
+        return dataLine;
+    }
+
+    var points = [];
+    var lines = [];
+    var fills = [];
+
+    function draw(oldIndex) {// 绘制图层
+        let newIndex = ""
+        if (oldIndex != undefined) {
+            newIndex = oldIndex;
+        } else {
+            newIndex = index;
+        }
+        if (linePath[newIndex].length > 0) {// 判断linePath[newIndex]长度大于0时生成点图层
+            if (map.getLayer("point_test" + newIndex)) {// 如果图层存在，给图层新数据源生成新形状，否则添加新图层
+                map.getLayer("point_test" + newIndex).setSource(getPointData(linePath[newIndex]))
+            } else {
+                let _Points = new PIE.MetoStyle.PointLayer({data: getPointData(linePath[newIndex]), id: PointID})
+                points.push(_Points);
+                map.add(points[newIndex]);
+            }
+        }
+        if (linePath[newIndex].length > 1) {// 判断linePath[newIndex]长度大于1时生成线图层
+            if (map.getLayer("line_test" + newIndex)) {// 如果图层存在，给图层新数据源生成新形状，否则添加新图层
+                map.getLayer("line_test" + newIndex).setSource(getLineData(linePath[newIndex]))
+            } else {
+                let _Lines = new PIE.MetoStyle.LineLayer({
+                    data: getLineData(linePath[newIndex]),
+                    id: LineID,
+                    color: "#ff0000",
+                    width: 2
+                });
+                lines.push(_Lines);
+                map.add(lines[newIndex]);
+            }
+        }
+        if (linePath[newIndex].length > 2) {// 判断linePath[newIndex]长度大于2时生成面图层
+            if (map.getLayer("fill_test" + newIndex)) {// 如果图层存在，给图层新数据源生成新形状，否则添加新图层
+                map.getLayer("fill_test" + newIndex).setSource(getFillData(linePath[newIndex]))
+            } else {
+                let _Fills = new PIE.MetoStyle.FillLayer({
+                    data: getFillData(linePath[newIndex]),
+                    id: FillID,
+                    color: "#00ff00",
+                    opacity: 0.5
+                });
+                fills.push(_Fills);
+                map.add(fills[newIndex]);
+            }
+        }
+    }
+
+    map.on("load", function () {
+        var testFillLayer = new PIE.GridTileLayer({
+        //url: 'http://service.piesat.cn:10000/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}'
+            //url: path.PIEservice.GFImage,
+            //url :"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+            url: path.PIEGrid.GlobalDarkMap,
+            id:"darkmap"
+         });
+        // 将图层添加到底图里
+        map.add(testFillLayer);
+    });
+
+    function addEvent() {
+        map.on("mousedown", PointID, function (e) {// 鼠标点下时获取当前选择的图层并付给全局变量selectObject，关闭地图移动事件
+            console.log("mousedown",e)
+            console.log("PointID",PointID)
+            if (event.button == 0) {
+                console.log(linePath);
+                console.log("6767"+e.features[0].layer.id.substr(10))
+                let _index = e.features[0].layer.id.substr(10)
+                var features = map.queryRenderedFeatures(e.point, points[_index]);
+                if (features && features.length > 0) {
+                    map.mapMoveDisable();
+                    selectObject = features;
+                };
+            }else if(event.button == 2){
+                if (selectObject) {
+                    let _index = selectObject[0].properties.index;
+                    let _sourceIdNum = Number(selectObject[0].layer.id.substr(10));
+                    console.log("索引",_index)
+                    linePath[_sourceIdNum].splice(_index,1)
+                    console.log("最后",linePath[_sourceIdNum].length)
+                    console.log(linePath[_sourceIdNum])
+                    if(_index == linePath[_sourceIdNum].length){ 
+                        linePath[_sourceIdNum].splice(0,1,(linePath[_sourceIdNum][linePath[_sourceIdNum].length-1]))
+                    }
+                    
+                    // selectObject[0].geometry.coordinates = linePath[selectObject[0].properties.index];
+                    draw(_sourceIdNum);
+                    selectObject = false;
+                }
+            };
+        });
+    }
+
+    map.on("mouseup", function (e) {// 鼠标按键抬起时当前鼠标的坐标赋给所点击图层的点，并重绘，清除选择的对象
+        map.mapMoveEnable(); // 恢复地图移动状态事件
+        if (selectObject) {
+            let _index = selectObject[0].properties.index;
+            let _sourceIdNum = Number(selectObject[0].layer.id.substr(10));
+            linePath[_sourceIdNum][_index][0] = e.lngLat.lng;
+            linePath[_sourceIdNum][_index][1] = e.lngLat.lat;
+            // selectObject[0].geometry.coordinates = linePath[selectObject[0].properties.index];
+            draw(_sourceIdNum);
+            selectObject = false;
+        }
+    });
+
+    map.on("mousemove", function (e) {// 获取当前鼠标的坐标赋给所点击图层的点，并重绘
+        if (selectObject) {
+            let _sourceIdNum = Number(selectObject[0].layer.id.substr(10));
+            let _index = selectObject[0].properties.index;
+            linePath[_sourceIdNum][_index][0] = e.lngLat.lng;
+            linePath[_sourceIdNum][_index][1] = e.lngLat.lat;
+            draw(_sourceIdNum);
+        }
+    });
+
+    map.on("click", function (e) {// 鼠标点击生成一个点，如果linePath[index]的长度等于2时把linePath[index]的最后一个点坐标添加到linePath[index]的最前面形成一个回路。当linePath[index]的长度大于2时，每次新的坐标点添加到linePath[index]的索引1的位置，并重绘
+        click = 0;
+        newPoint = e.coordinate;
+        if (linePath[index].length == 2) {
+            linePath[index].unshift(linePath[index][linePath[index].length - 1]);
+        }
+        if (linePath[index].length > 2) {
+            linePath[index].splice(1, 0, newPoint);
+        } else {
+            linePath[index].unshift(newPoint);
+        }
+        draw();
+    });
+
+    map.on("mousedown", function (e) {// 鼠标点下事件，先判断是否右击过，click变量大于0时不可再次进入此方法。主要用途结束一个图层的绘制
+        if (click > 0) {
+            addEvent();
+        } else {
+            if (event.button == 2) {
+                click += 1;
+                index += 1;
+                linePath[index] = [];
+                addEvent();
+                PointID = "point_test" + index;
+                LineID = "line_test" + index;
+                FillID = "fill_test" + index;
+            };
+        };
+    });
+</script>
+</body>
+</html>

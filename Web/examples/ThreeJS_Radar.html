@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>threeJS</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+
+<script src="js/three.js"></script>
+<script src="js/GLTFLoader.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({
+        type:1
+    });
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:18,
+        center:[115.98190,39.39847]
+    });
+    var grid ;
+    map.on("load",function () {
+        grid = new PIE.GridTileLayer({
+            //url:'https://tiles.windy.com/tiles/v9.0/darkmap/{z}/{x}/{y}.png',
+            //url: path.windy.darkmap,
+            url :"http://cloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+            id:"rr"
+        });
+        map.add(grid);
+        // map.gridLatLon();
+        tt();
+       // setTimeout( tt,1000)
+    });
+
+    function tt() {
+        // parameters to ensure the model is georeferenced correctly on the map
+        var modelOrigin = [115.98190, 39.39847];
+        var modelAltitude = 0;
+        var modelRotate = [Math.PI / 2, 0, 0];
+        var modelScale = 5.41843220338983e-8;
+        //var modelScale = 10;
+        // var modelScale = 0.00001;
+         
+        // transformation parameters to position, rotate and scale the 3D model onto the map
+        var modelTransform = {
+            translateX: mapboxgl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude).x,
+            translateY: mapboxgl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude).y,
+            translateZ: mapboxgl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude).z,
+            rotateX: modelRotate[0],
+            rotateY: modelRotate[1],
+            rotateZ: modelRotate[2],
+            scale: modelScale
+        };
+         
+        var THREE = window.THREE;
+         
+        // configuration of the custom layer for a 3D model per the CustomLayerInterface
+        var customLayer = {
+            id: '3d-model',
+            type: 'custom',
+            renderingMode: '3d',
+            onAdd: function(map, gl) {
+            this.camera = new THREE.Camera();
+            this.scene = new THREE.Scene();
+             
+            // create two three.js lights to illuminate the model
+            var directionalLight = new THREE.DirectionalLight(0xffffff);
+            directionalLight.position.set(0, -70, 100).normalize();
+            this.scene.add(directionalLight);
+             
+            var directionalLight2 = new THREE.DirectionalLight(0xffffff);
+            directionalLight2.position.set(0, 70, 100).normalize();
+            this.scene.add(directionalLight2);
+             
+            // use the three.js GLTF loader to add the 3D model to the three.js scene
+            var loader = new THREE.GLTFLoader();
+            loader.load('./data/gltf/34M_17.gltf', (function (gltf) {
+                this.scene.add(gltf.scene);
+            }).bind(this));
+            this.map = map;
+             
+            // use the Mapbox GL JS map canvas for three.js
+            this.renderer = new THREE.WebGLRenderer({
+                canvas: map.getCanvas(),
+                context: gl
+            });
+             
+            this.renderer.autoClear = false;
+            },
+            render: function(gl, matrix) {
+                var rotationX = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), modelTransform.rotateX);
+                var rotationY = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), modelTransform.rotateY);
+                var rotationZ = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, 1), modelTransform.rotateZ);
+                 
+                var m = new THREE.Matrix4().fromArray(matrix);
+                var l = new THREE.Matrix4().makeTranslation(modelTransform.translateX, modelTransform.translateY, modelTransform.translateZ)
+                .scale(new THREE.Vector3(modelTransform.scale, -modelTransform.scale, modelTransform.scale))
+                .multiply(rotationX)
+                .multiply(rotationY)
+                .multiply(rotationZ);
+                 
+                this.camera.projectionMatrix.elements = matrix;
+                this.camera.projectionMatrix = m.multiply(l);
+                this.renderer.state.reset();
+                this.renderer.render(this.scene, this.camera);
+                this.map.triggerRepaint();
+            }
+        };
+        map.map.addLayer(customLayer);
+    }
+</script>
+</body>
+</html>

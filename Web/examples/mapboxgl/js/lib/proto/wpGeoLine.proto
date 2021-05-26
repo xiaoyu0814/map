@@ -1,0 +1,14 @@
+syntax = "proto3";
+package pbufWeather; 
+message wpGeoLine 
+{ 
+   int32 PtCount = 1;
+   double Value = 2;
+   repeated double xArray = 3;
+   repeated double yArray = 4;
+   repeated double zArray = 5;
+   int32  ValueColor = 6;
+   double Angle = 7;
+   bytes  ValueString = 8;
+   bytes LingTypeString = 9;
+}

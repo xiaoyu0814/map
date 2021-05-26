@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Use correct character set. -->
+    <meta charset="utf-8">
+    <!-- Tell IE to use the latest, best version. -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>模型通视分析</title>
+    <script src="../build/PIE.js"></script>
+    <script src="./js/modules/cesium-plugins/VisiableAnalysis/ModelVisiable.js"></script>
+    <script src="./js/show/jquery.min.3.2.1.js"></script>
+    <script src="./js/lib/echarts-all-3.js"></script>
+    <script src="./js/show/path.js"></script>
+    <style>
+        @import url(./css/show/widgets.css);
+
+        html,
+        body,
+        #cesiumContainer {
+            width:100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+
+        .sectionChars {
+            top: 600px;
+            width: 100%;
+            height: 200px;
+
+            left: 5%;
+
+
+            display: none;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sectionChars" class="infoview sectionChars">
+        <div id="echartsView1" style="width:100%;height:100% ;"></div>
+    </div>
+    <div id="cesiumContainer"></div>
+    <div id="credit"></div>
+    <div style="position: absolute; top: 5%; left: 10px;">
+
+        <div style="margin-bottom: 6px;">
+            <span style="color: cyan;">模型通视分析</span>
+            <button onclick="modelAnalyist()">模型通视分析</button>
+            <button onclick="cleanModel()">清除模型分析结果</button>
+        </div>
+    </div>
+    <script>
+        //Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5ZjkxMTcwNi05ZjI4LTQ0MDAtYTA2OS05NWY1ZTlhYzg5YmIiLCJpZCI6MjM2NjcsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1ODM4MTM4NTR9.F0WbCArpRjS5hUYped0Eutfn3hKPdC7-YGlCBOW7lvY';
+        // eslint-disable-next-line no-undef
+
+        var map = new PIE.Map({
+            type:3
+            }
+        );//初始化底图
+        var view = new PIE.MapView({
+            map: map,
+            container: "cesiumContainer"
+        });
+        var grid = new PIE.GridTileLayer({
+            //url:"https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}",
+            url:path.GoogleURL.satellite,
+            id: 'tilelayer1'
+        });
+        map.add(grid);
+        var viewer = map.map._cesiumViewer;
+        viewer.scene.skyBox.show = false;
+     
+        viewer.scene.sun.show = false;
+        viewer.scene.moon.show = false;
+
+        // viewer.scene.skyBox.show = false;
+        // viewer.scene.backgroundColor = new Cesium.Color(0.0, 0.0, 0.0, 0.0);
+        viewer.useDefaultRenderLoop = true;
+        viewer.scene.globe.depthTestAgainstTerrain = true;
+        viewer.scene.pickTranslucentDepth = true;
+
+        // 模型通视分析
+        var model = new ModelVisiableTool({ viewer: viewer });
+        function modelAnalyist() {
+            model.setEnable(true);
+        }
+        function cleanModel() {
+            model.setEnable(false)
+        }
+
+        var beijingTileset;
+        var beijingPrimitive;
+
+        addBeijing();
+        function addBeijing(){
+            beijingTileset = new Cesium.Cesium3DTileset({
+                url: './data/SampleData/data/beijingbuildings3Dtiles1/tileset.json'
+            });
+            beijingPrimitive = viewer.scene.primitives.add(beijingTileset);
+            beijingTileset.readyPromise.then(function (tileset) {
+                tileset._modelMatrix = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, 0));
+                tileset.show = true;
+            }).otherwise(function (error) {
+                console.log(error);
+            });
+        }
+        viewer.zoomTo(beijingPrimitive);
+
+    </script>
+</body>
+
+</html>

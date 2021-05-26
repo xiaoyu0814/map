@@ -1,0 +1,16 @@
+syntax = "proto3";
+package streamline;
+
+message GeoPoint {
+    double x = 1;
+    double y = 2;
+}
+
+message GeoLine {
+    double value = 1;
+    repeated GeoPoint points = 2;
+}
+
+message GeoStreamline {
+    repeated GeoLine geoLines = 1;
+}

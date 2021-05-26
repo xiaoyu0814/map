@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>影像WMS服务</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #map2 { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<link href="js/PIE.css" rel="stylesheet" />
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+
+    var map = new PIE.Map({
+        type:1
+    });
+    var view = new PIE.MapView({
+        map:map,
+        container:"map",
+        zoom:2,
+        projection: 'EPSG:4326',
+        center:[107.971532,23.382439],
+       
+    });
+    var grid ;
+    map.on("load",function () {
+        var arcgis = new PIE.WMSLayer({
+            //url:'http://211.154.196.250:8081/geoserver/wms',
+            url:path.PIEVector.geoserver,
+            version:"1.1.0",
+            layers:"WGS84Geoserver",
+            tileWidth:256,
+            tileHeight:256,
+            format:"image/png",
+            id:"wms-layer",
+            style:"",
+            projection:"EPSG:3857",
+
+        })
+       map.add(arcgis);
+    });
+
+  
+
+
+</script>
+<script src ="js/lib/MapTool.js"></script>
+</body>
+</html>

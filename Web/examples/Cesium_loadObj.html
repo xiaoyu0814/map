@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OBJ对象</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+      </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<div id="toolTip" style="z-index: 9999; position: absolute; top: 250px; left: 20px; width:45px"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/Cesium_modelLoadHandler.js"></script>
+<script src="js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({
+            type:3
+        }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map"
+    });
+    var grid = new PIE.GridTileLayer({
+        url:path.GoogleURL.s,
+        id: 'tilelayer1'
+    });
+    map.add(grid);
+    map.on("load",function () {
+       
+        //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+        // //map.map._cesiumViewer.terrainProvider=Cesium.createWorldTerrain();
+
+        let handler=new ModeLoadHandler({viewer:map.map._cesiumViewer});
+        var url = "./data/tingzi/tileset.json";
+        var tileset=handler.load3DTiles(url);
+        //定位
+        var heading=Cesium.Math.toRadians(0);
+        map.map._cesiumViewer.zoomTo(tileset, new Cesium.HeadingPitchRange(heading, -0.10, 20));
+
+       //   var ModelLayer = new PIE.MetoStyle.ModelLayer({
+       //      id: "test_ModelLayer",
+       //      url: "./data/boomBox/boomBox.gltf",
+       //      height: 10.0,
+       //      lat: 116.59781455993652,
+       //      lon: 40.06388417471974,
+       //      scale : 200,                     // double size
+       //      minimumPixelSize : 128,          // never smaller than 128 pixels
+       //      maximumScale: 20000,             // never larger than 20000 * model size (overrides minimumPixelSize)
+       //      allowPicking : false,            // not pickable
+       //      debugShowBoundingVolume : false, // default
+       //      debugWireframe : false
+       //  })
+       // map.add(ModelLayer);
+       // var destination=Cesium.Cartesian3.fromDegrees(116.59781455993652,40.06388417471974 , 5000.0);
+       //  var  heading=Cesium.Math.toRadians(0.0);
+       //  var  pitch=Cesium.Math.toRadians(-90);
+       //  var  roll=Cesium.Math.toRadians(0);
+       //  var  duration=3;
+       //
+       //  map.map._cesiumViewer.camera.flyTo({
+       //      destination: destination, // Cartesian3 | Rectangle
+       //      orientation: {
+       //          heading: heading,
+       //          pitch: pitch,
+       //          roll: roll
+       //      },
+       //      duration: duration,
+       //      complete: function () {
+       //
+       //      }
+       //
+       //  })
+
+    });
+</script>
+</body>
+</html>

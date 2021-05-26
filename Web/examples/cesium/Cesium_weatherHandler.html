@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>line</title>
+
+    <link href="../../build/Cesium/Widgets/widgets.css" rel="stylesheet"/>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .measureCur {
+            cursor: url(./image/measure.cur), auto;
+        }
+    </style>
+    <script src="./js/lib/measureHelper.js"></script>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<div id="toolTip" style="z-index: 9999; position: absolute; top: 250px; left: 20px; width:45px"></div>
+<script src="../../build/Cesium/Cesium.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/weatherHelper.js"></script>
+<script>
+     Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        
+        var viewer = new Cesium.Viewer("map", {
+            maximumLevel: 18,
+            imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                url: "https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}"
+            }),
+            animation: false,
+            baseLayerPicker: false,
+            fullscreenButton: false,
+            geocoder: false,
+            homeButton: false,
+            infoBox: false,
+            selectionIndicator: false,
+            timeline: false,
+            sceneModePicker: false,
+            shouldAnimate : true,
+            navigationHelpButton: false,
+            contextOptions: {
+                //allowTextureFilterAnisotropic : true,
+                webgl: {
+                    alpha: false,
+                }
+            }
+        });
+
+    var PageInfo = {
+        snowImg: '../image/snowflake_particle.png',
+        rainImg: '../image/circular_particle.png',
+        snowSize: 1,//0:小雨；1：中雨；2：大雨；3：暴雨；4：大暴雨；5：特大暴雨
+        boundRectangle: null,//获得给定行政区域的边界
+        weatherHelper: null,
+        getToolButton: function () {//增加测试按钮
+            var toolbar = document.getElementById('toolbar');
+            toolbar.innerHTML = '<div id="hud" style="color: white"></div>' +
+                '<select id="weatherType" style="float: left" class="cesium-button" onchange="PageInfo.getChange()">' +
+                '<option value="雪">雪</option>' +
+                '<option value="雨">雨</option>' +
+                '<option value="雨加雪">雨加雪</option></select></br></br>' +
+                '<input type="radio" value="0" name="snow" onclick="PageInfo.getRadioValue(this.value)" /><label id="lblSmall" style="color: #fff;">小</label>' +
+                '<input type="radio" value="1" name="snow" onclick="PageInfo.getRadioValue(this.value)" checked/><label id="lblMiddle"  style="color: #fff;">中</label>' +
+                '<input type="radio" value="2" name="snow" onclick="PageInfo.getRadioValue(this.value)" /><label id="lblBig" style="color: #fff;">大</label>'+
+                '<input type="radio" value="3" name="snow" onclick="PageInfo.getRadioValue(this.value)" /><label id="lblStrom" style="color: #fff;">暴雪</label>' +
+                '<input type="radio" value="4" name="snow" onclick="PageInfo.getRadioValue(this.value)" /><label id="lblBigStrom" style="color: #fff;">大暴雪</label>' +
+                '<input type="radio" value="5" name="snow" onclick="PageInfo.getRadioValue(this.value)" /><label id="lblHeavyStom" style="color: #fff;">特大暴雪</label></br></br>' +
+                '<button  style="float: left;margin-top:-10px;line-height: normal" type="button" class="cesium-button" id="shandong">山东</button>' +
+                '<button  style="float: left;margin-top:-10px;line-height: normal" type="button" class="cesium-button" id="guangdong">广东</button>' +
+                '<button  style="float: left;margin-top:-10px;line-height: normal" type="button" class="cesium-button" id="system1">系统传值</button>';
+
+            toolbar.setAttribute('style', 'background: rgba(42,42,42,0.9); border-radius: 5px;');
+
+            var hud = document.getElementById('hud');
+            var cartographic = new Cesium.Cartographic();
+            viewer.clock.onTick.addEventListener(function (clock) {
+                viewer.scene.mapProjection.ellipsoid.cartesianToCartographic(viewer.scene.camera.positionWC, cartographic);
+                hud.innerHTML =
+                    'Lon: ' + Cesium.Math.toDegrees(cartographic.longitude).toFixed(3) + ' 度<br/>' +
+                    'Lat: ' + Cesium.Math.toDegrees(cartographic.latitude).toFixed(3) + ' 度<br/>' +
+                    'Alt: ' + (cartographic.height * 0.001).toFixed(1) + ' km';
+            });
+        },
+        getChange: function () {//判断是否下雪/雨
+            var wType = document.getElementById("weatherType").value;
+            PageInfo.changeTxt(wType);//更换字体
+
+            if (PageInfo.boundRectangle == null) {
+                alert("请先选择下雨/雪的区域");
+                return;
+            }
+
+            if(PageInfo.weatherHelper._rainSystem!=null){
+                viewer.scene.primitives.remove(PageInfo.weatherHelper._rainSystem);
+                PageInfo.weatherHelper._rainSystem=null;
+            }
+            if(PageInfo.weatherHelper._snowSystem!=null){
+                viewer.scene.primitives.remove(PageInfo.weatherHelper._snowSystem);
+                PageInfo.weatherHelper._snowSystem=null;
+            }
+
+            if (wType == "雪") {
+                PageInfo.weatherHelper.getSnow();
+            } else if (wType == "雨") {
+                PageInfo.weatherHelper.getRain();
+            } else {
+                PageInfo.weatherHelper.getSnow();
+                PageInfo.weatherHelper.getRain();
+            }
+        },
+        changeTxt:function(value){
+         var t1=document.getElementById("lblStrom");
+         t1.innerText="暴"+value;
+
+        var t2=document.getElementById("lblBigStrom");
+        t2.innerText="大暴"+value;
+
+        var t3=document.getElementById("lblHeavyStom");
+        t3.innerText="特大暴"+value;
+        },
+        getRadioValue: function (value) {
+            if (PageInfo.boundRectangle == null) {
+                PageInfo.snowSize = value;
+                alert("请先选择下雨/雪的区域");
+                return;
+            }
+
+            PageInfo.snowSize=value;
+            PageInfo.weatherHelper._options.snowSize = value;
+            PageInfo.getChange();
+        },
+        convertDegreeArrayToCartographicArray: function (degreeArray) {//把经纬度坐标的数组转制图坐标的数组
+            var cartographics = [];
+            for (var i = 0; i < degreeArray.length; i++) {
+                var cartographic = Cesium.Cartographic.fromDegrees(degreeArray[i][0], degreeArray[i][1]);
+                cartographics.push(cartographic);
+            }
+            return cartographics;
+        }
+
+    }
+
+    //map.on("load", function () {
+        // Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg"; //old
+        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5ZjkxMTcwNi05ZjI4LTQ0MDAtYTA2OS05NWY1ZTlhYzg5YmIiLCJpZCI6MjM2NjcsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1ODM4MTM4NTR9.F0WbCArpRjS5hUYped0Eutfn3hKPdC7-YGlCBOW7lvY';
+        viewer.terrainProvider = Cesium.createWorldTerrain();
+        var handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+        //获得面板框
+        PageInfo.getToolButton();
+
+        //初始化雨雪类
+        PageInfo.weatherHelper= new rainSnowFall({
+            viewer: viewer,
+            snowSize: PageInfo.snowSize,
+            snowImg: PageInfo.snowImg,
+            rainImg: PageInfo.rainImg
+        });
+
+        //相机移动位置的监听事
+        viewer.scene.camera.moveEnd.addEventListener(function () {
+           if (PageInfo.boundRectangle!= null) {
+               PageInfo.getChange();
+           }
+        });
+
+        document.getElementById('shandong').addEventListener('click', function () {
+            //山东省行政边界
+            PageInfo.boundRectangle = new Cesium.Rectangle(Cesium.Math.toRadians(114.3327), Cesium.Math.toRadians(34.3827), Cesium.Math.toRadians(122.7203), Cesium.Math.toRadians(38.3869));
+                var heading = Cesium.Math.toRadians(0.0);
+                var pitch = Cesium.Math.toRadians(-80);
+                var roll = Cesium.Math.toRadians(0);
+                var duration =3;
+                var fn = function () {
+                PageInfo.getChange();
+            };
+            PageInfo.weatherHelper.flyTo(PageInfo.boundRectangle, heading, pitch, roll, duration);
+        }, false);
+
+        document.getElementById('guangdong').addEventListener('click', function () {
+            //广东省边界
+            PageInfo.boundRectangle = new Cesium.Rectangle(Cesium.Math.toRadians(109.75), Cesium.Math.toRadians(20.2), Cesium.Math.toRadians(117.334), Cesium.Math.toRadians(25.51))
+            var heading = Cesium.Math.toRadians(0.0);
+            var pitch = Cesium.Math.toRadians(-80);
+            var roll = Cesium.Math.toRadians(0);
+            var duration =3;
+            var fn = function () {
+                PageInfo.getChange();
+            };
+            PageInfo.weatherHelper.flyTo(PageInfo.boundRectangle, heading, pitch, roll, duration);
+
+        }, false);
+
+        document.getElementById('system1').addEventListener('click', function () {
+            var testArray1 = [
+                [103.62, 28.11],
+                [103.57, 28.16],
+                [103.51, 28.21],
+                [103.45, 28.27],
+                [103.39, 28.32],
+                [103.32, 28.38],
+                [103.25, 28.44],
+                [103.17, 28.49],
+                [103.09, 28.55],
+                [103.01, 28.60],
+                [102.93, 28.65],
+                [102.84, 28.70],
+                [102.75, 28.75],
+                [102.66, 28.80],
+                [102.57, 28.85],
+                [102.47, 28.89],
+                [102.38, 28.92],
+                [102.28, 28.96],
+                [102.19, 28.99],
+                [102.09, 29.02],
+                [101.99, 29.04],
+                [101.89, 29.06],
+                [101.79, 29.07],
+                [101.69, 29.08],
+                [101.60, 29.08],
+                [101.50, 29.08],
+                [101.40, 29.08],
+                [101.30, 29.07],
+                [101.21, 29.06],
+                [101.11, 29.05],
+                [101.01, 29.03],
+                [100.92, 29.01],
+                [100.82, 28.99],
+                [100.73, 28.97],
+                [100.64, 28.94],
+                [100.55, 28.91],
+                [100.46, 28.88],
+                [100.37, 28.85],
+                [100.28, 28.82],
+                [100.20, 28.79],
+                [100.11, 28.75],
+                [100.03, 28.72],
+                [99.95, 28.69],
+                [99.87, 28.65],
+                [99.80, 28.61],
+                [99.72, 28.58],
+                [99.65, 28.54],
+                [99.58, 28.50],
+                [99.51, 28.47],
+                [99.44, 28.43],
+                [99.37, 28.39],
+                [99.31, 28.35],
+                [99.24, 28.31],
+                [99.18, 28.27],
+                [99.12, 28.23],
+                [99.06, 28.19],
+                [99.01, 28.15],
+                [98.95, 28.11],
+                [98.90, 28.07],
+                [98.84, 28.03],
+                [98.79, 27.99],
+                [98.74, 27.95],
+                [98.70, 27.91],
+                [98.65, 27.87],
+                [98.60, 27.83],
+                [98.56, 27.79],
+                [98.52, 27.75],
+                [98.48, 27.70],
+                [98.44, 27.66],
+                [98.40, 27.62],
+                [98.37, 27.58],
+                [98.33, 27.53],
+                [98.30, 27.49],
+                [98.26, 27.45],
+                [98.23, 27.40],
+                [98.20, 27.36],
+                [98.17, 27.32],
+                [98.15, 27.27],
+                [98.12, 27.23],
+                [98.09, 27.18],
+                [98.07, 27.14],
+                [98.04, 27.09],
+                [98.02, 27.04],
+                [98.00, 27.00],
+                [97.98, 26.95],
+                [97.96, 26.90],
+                [97.94, 26.85],
+                [97.92, 26.81],
+                [97.91, 26.76],
+                [97.89, 26.71],
+                [97.88, 26.66],
+                [97.87, 26.61],
+                [97.85, 26.57],
+                [97.84, 26.52],
+                [97.84, 26.47],
+                [97.83, 26.42],
+                [97.82, 26.37],
+                [97.82, 26.33],
+                [97.81, 26.28],
+                [97.81, 26.23],
+                [97.81, 26.18],
+                [97.81, 26.14],
+                [97.81, 26.09],
+                [97.82, 26.04],
+                [97.82, 26.00],
+                [97.83, 25.95],
+                [97.84, 25.90],
+                [97.85, 25.86],
+                [97.87, 25.81],
+                [97.89, 25.77],
+                [97.91, 25.72],
+                [97.93, 25.67],
+                [97.95, 25.63],
+                [97.98, 25.58],
+                [98.02, 25.54],
+                [98.05, 25.49],
+                [98.09, 25.45],
+                [98.13, 25.40],
+                [98.18, 25.35],
+                [98.23, 25.31],
+                [98.29, 25.26],
+                [98.35, 25.21],
+                [98.41, 25.17],
+                [98.48, 25.12],
+                [98.55, 25.08],
+                [98.62, 25.03],
+                [98.70, 24.98],
+                [98.78, 24.94],
+                [98.86, 24.89],
+                [98.95, 24.85],
+                [99.04, 24.81],
+                [99.13, 24.76],
+                [99.22, 24.72],
+                [99.31, 24.68],
+                [99.41, 24.64],
+                [99.50, 24.61],
+                [99.60, 24.57],
+                [99.70, 24.54],
+                [99.80, 24.51],
+                [99.90, 24.48],
+                [100.00, 24.45],
+                [100.10, 24.42],
+                [100.20, 24.40],
+                [100.30, 24.38],
+                [100.40, 24.36],
+                [100.50, 24.34],
+                [100.60, 24.33],
+                [100.70, 24.32],
+                [100.80, 24.31],
+                [100.90, 24.31],
+                [101.00, 24.30],
+                [101.10, 24.31],
+                [101.20, 24.31],
+                [101.30, 24.32],
+                [101.40, 24.33],
+                [101.50, 24.35],
+                [101.60, 24.37],
+                [101.70, 24.39],
+                [101.80, 24.42],
+                [101.90, 24.45],
+                [102.00, 24.48],
+                [102.10, 24.52],
+                [102.20, 24.56],
+                [102.30, 24.61],
+                [102.40, 24.66],
+                [102.50, 24.71],
+                [102.59, 24.77],
+                [102.69, 24.83],
+                [102.78, 24.89],
+                [102.87, 24.95],
+                [102.96, 25.01],
+                [103.05, 25.07],
+                [103.14, 25.13],
+                [103.22, 25.19],
+                [103.30, 25.25],
+                [103.37, 25.31],
+                [103.45, 25.36],
+                [103.52, 25.42],
+                [103.58, 25.47],
+                [103.64, 25.52],
+                [103.70, 25.57],
+                [103.75, 25.61],
+                [103.80, 25.65],
+                [103.85, 25.69],
+                [103.89, 25.72],
+                [103.92, 25.76],
+                [103.96, 25.79],
+                [103.99, 25.81],
+                [104.01, 25.84],
+                [104.04, 25.87],
+                [104.06, 25.89],
+                [104.07, 25.92],
+                [104.09, 25.94],
+                [104.10, 25.97],
+                [104.11, 26.00],
+                [104.12, 26.02],
+                [104.13, 26.05],
+                [104.13, 26.08],
+                [104.13, 26.11],
+                [104.14, 26.14],
+                [104.14, 26.18],
+                [104.14, 26.22],
+                [104.13, 26.26],
+                [104.13, 26.30],
+                [104.13, 26.35],
+                [104.13, 26.39],
+                [104.12, 26.44],
+                [104.12, 26.49],
+                [104.11, 26.54],
+                [104.10, 26.59],
+                [104.10, 26.65],
+                [104.09, 26.70],
+                [104.08, 26.76],
+                [104.08, 26.81],
+                [104.07, 26.87],
+                [104.06, 26.92],
+                [104.05, 26.97],
+                [104.04, 27.03],
+                [104.04, 27.08],
+                [104.03, 27.13],
+                [104.02, 27.18],
+                [104.02, 27.23],
+                [104.01, 27.28],
+                [104.00, 27.33],
+                [104.00, 27.37],
+                [103.99, 27.42],
+                [103.98, 27.46],
+                [103.97, 27.51],
+                [103.96, 27.55],
+                [103.95, 27.60],
+                [103.93, 27.64],
+                [103.91, 27.68],
+                [103.90, 27.73],
+                [103.87, 27.77],
+                [103.85, 27.82],
+                [103.82, 27.86],
+                [103.79, 27.91],
+                [103.75, 27.96],
+                [103.71, 28.00],
+                [103.67, 28.05],
+                [103.62, 28.11],
+                [103.62, 28.11]
+            ];
+            //根据传过来的位置数组，计算其对应的最小边界矩形
+            var cartographicArrays = PageInfo.convertDegreeArrayToCartographicArray(testArray1);
+            //根据制图位置数组，计算对应的最小边界矩形
+            PageInfo.boundRectangle = Cesium.Rectangle.fromCartographicArray(cartographicArrays);
+            var heading = Cesium.Math.toRadians(0.0);
+            var pitch = Cesium.Math.toRadians(-80);
+            var roll = Cesium.Math.toRadians(0);
+            var duration = 3;
+            var fn = function () {
+                PageInfo.getChange();
+            };
+            PageInfo.weatherHelper.flyTo(PageInfo.boundRectangle, heading, pitch, roll, duration);
+        }, false);
+    //});
+</script>
+</body>
+</html>

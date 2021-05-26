@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图层数量设置</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #tool {
+            position: absolute;
+            z-index: 99999;
+        }
+    </style>
+</head>
+<body>
+<div id="tool">
+    <div>随机生成<input id="layerCount">图层
+        <button onclick="randomCreateLayer()">OK</button>
+    </div>
+    <div>设置ID为<select id="layerSetID"></select>图层的显示隐藏
+        <button onclick="setOneLayerVisibleByID()">OK</button>
+    </div>
+    <div>移除指定ID为<select id="layerRemoveID"></select>图层
+        <button onclick="removeOneLayerByID()">OK</button>
+    </div>
+    <div>
+        将ID为<select id="layerUpID"></select>图层上移到<select id="layerDownID"></select>图层之上
+        <button onclick="setOneLayerUpByID()">OK</button>
+    </div>
+
+</div>
+<div id="map">
+
+</div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script>
+
+    var map;
+    var view;
+    var layersnum;
+    init();
+
+
+    //初始化底图
+    function init() {
+        map = new PIE.Map({
+            type: 2
+        });
+
+        view = new PIE.MapView({
+            map: map,
+            container: 'map',
+            center: [110, 40],
+            zoom: 5
+        });
+        showBaseMap();
+    }
+
+    function showBaseMap() {
+        var testFillLayer = new PIE.MetoStyle.FillLayer({
+            data: "data/worldPolyGon.geojson",
+            color: "rgba(243, 236, 236, 1)",
+            id: "geojson1",
+            opacity: 1,
+            visible: true
+        });
+        //将图层添加到底图里
+        map.add(testFillLayer);
+    }
+
+    //随机生成n图层
+    function randomCreateLayer() {
+        //判断是否需要清除option列表
+        var value = document.getElementById("layerSetID").value;
+        if (value != "") {
+            initlayer()
+        }
+        //循环随机生成图层
+        var num = document.getElementById("layerCount").value;
+        layersnum = num;
+        for(i=1;i<=num;i++){
+            var a = Math.ceil(Math.random() * 3);
+            if(a==1){
+                var linedata = [[Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))], [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))]];
+                var line = new PIE.Line(linedata);
+                // 定义一个线图层
+                var linelayer = new PIE.Graphics({
+                    id: "" + i,
+                    geometry: line,
+                    symbol: new PIE.LineSymbol({color: "#090", width: 3}),
+                });
+                //添加线图层到底图
+                map.add(linelayer);
+            }else if (a == 2) {
+                var point = new PIE.Point(Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90)));
+                var pointGrap = new PIE.Graphics({
+                    id: "" + i,
+                    geometry: point,// 绘制类型
+                    symbol: new PIE.MarketSymbol({color: "#000000", size: 4})// 设置样式
+                });
+                map.add(pointGrap);// 将定义的图层添加到底图上
+            }else {
+                // console.log("123")
+                // var polygonData = [
+                //     [
+                //         [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))],
+                //         [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))],
+                //         [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))],
+                //     ]
+                // ]
+                // var Polygon = new PIE.Polygon(polygonData);
+                // var PolygonGrap = new PIE.Graphics({
+                //     id: "" + i,
+                //     geometry: Polygon,// 绘制类型
+                //     symbol: new PIE.FillSymbol({color: "#2285f2"})// 设置样式
+                // });
+
+
+                //定义一组闭合的几何体坐标
+                var polygonPath=[
+                    [
+                        [0,0],
+                        // [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))],
+                        [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))],
+                        [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))],
+                        [Math.ceil(Math.random() * (180 - (-180) + 1) + (-180)), Math.ceil(Math.random() * (90 - (-90) + 1) + (-90))],
+                    ]
+                ];
+                // var polygonPath=[
+                //     [
+                //         [0,10],[100,10],[20,300],[0,10]
+                //         ,[100,20]
+                //         [-180,-90],[0,90],[180,90],[180,0]
+                //         ,[0,30]
+                //         ,[0,10]
+                //     ]
+                //     ,[
+                //         [2,2],[5,5],[2,5],[2,2]
+                //     ]
+                // ];
+                // console.log(polygonPath)
+                //定义一个闭合的几何体对象
+                var polygon = new PIE.Polygon(polygonPath);
+                // console.log(polygon)
+                var polygonGrap = new PIE.Graphics({
+                    id:"" + i,
+                    geometry:polygon,
+                    symbol:new PIE.FillSymbol({color:"#2285f2"})
+                });
+                map.add(polygonGrap);// 将定义的图层添加到底图上
+            }
+        }
+        getlayerNum(num);
+    }
+    //清除option列表
+    function initlayer(){
+        for (i = 1; i <= layersnum; i++) {
+            if(map.getLayer(""+i) !=undefined){
+                map.remove(map.getLayer(""+i));
+                getremoveNum()
+            }
+        }
+    }
+    //动态获取生成的下拉菜单option
+    function getlayerNum(num) {
+        for (var i = 1; i <= num; i++) {
+            var option = document.createElement("option");
+            option.setAttribute("id", "option" + i);
+            option.innerHTML = i;
+            document.getElementById("layerSetID").appendChild(option);
+            var option1 = document.createElement("option");
+            option1.setAttribute("id", "option1" + i);
+            option1.innerHTML = i;
+            document.getElementById("layerRemoveID").appendChild(option1);
+            var option2 = document.createElement("option");
+            option2.innerHTML = i;
+            option2.setAttribute("id", "option2" + i);
+            document.getElementById("layerUpID").appendChild(option2);
+            var option3 = document.createElement("option");
+            option3.innerHTML = i;
+            option3.setAttribute("id", "option3" + i);
+            document.getElementById("layerDownID").appendChild(option3);
+        }
+    }
+    //获取移除后的下拉菜单option
+    function getremoveNum() {
+        var a = document.getElementById("layerSetID");
+        var b = document.getElementById("layerRemoveID");
+        var c = document.getElementById("layerUpID");
+        var d = document.getElementById("layerDownID");
+        a.remove(b.selectedIndex);
+        c.remove(b.selectedIndex);
+        d.remove(b.selectedIndex);
+        b.remove(b.selectedIndex);
+    }
+    //设置执行图层内容
+    function setOneLayerVisibleByID() {
+        console.log("设置执行图层内容");
+        var num = document.getElementById("layerSetID").value;;
+        map.getLayer("" +num).setVisible(!map.getLayer("" +num).state_.visible);
+        //
+    }
+
+    //移除指定id图层
+    function removeOneLayerByID() {
+        console.log("移除指定ID");
+        var num = document.getElementById("layerRemoveID").value;
+        // console.log(map.getLayer(num))
+        if (map.getLayer(num) != undefined) {
+            map.remove(map.getLayer(num));
+        }
+        getremoveNum();//动态移除下拉option
+    }
+    //移动指定id的图层
+    function setOneLayerUpByID() {
+        console.log("移上指定ID");
+        map.moveLayer(map.getLayer(layerDownID.value),map.getLayer(layerUpID.value))
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Use correct character set. -->
+    <meta charset="utf-8">
+    <!-- Tell IE to use the latest, best version. -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>剖面分析</title>
+<!--    <script src="../build/PIE.js"></script>-->
+    <script src="../../build/Cesium/Cesium.js"></script>
+    <script src="./js/modules/cesium-plugins/ProfileAnalyst.js"></script>
+    <script src="./js/show/jquery.min.3.2.1.js"></script>
+    <script src="./js/lib/echarts-all-3.js"></script>
+
+    <style>
+        @import url(./css/show/widgets.css);
+
+        html,
+        body,
+        #cesiumContainer {
+            width:100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .sectionChars {
+            top: 600px;
+            width: 100%;
+            height: 200px;
+            left: 5%;
+            display: none;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sectionChars" class="infoview sectionChars">
+        <div id="echartsView1" style="width:100%;height:100% ;"></div>
+    </div>
+    <div id="cesiumContainer"></div>
+    <div id="credit"></div>
+    <div style="position: absolute; top: 5%; left: 10px;">
+        <div style="margin-bottom: 6px;">
+            <span style="color: cyan;">剖面分析</span>
+            <button onclick="analyst()">剖面分析</button>
+            <button onclick="clearProfile()">清除剖面分析结果</button>
+        </div>
+    </div>
+    <script>
+        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg';
+        // eslint-disable-next-line no-undef
+        var terrainLayer = new Cesium.CesiumTerrainProvider({
+            url: Cesium.IonResource.fromAssetId(3956),
+            requestWaterMask: true,
+        });
+
+        var viewer = new Cesium.Viewer("cesiumContainer", {
+            geocoder: false,
+            homeButton: false,
+            sceneModePicker: true,
+            baseLayerPicker: false,
+            navigationHelpButton: false,
+            animation: false,
+            creditContainer: "credit",
+            timeline: false,
+            fullscreenButton: false,
+            vrButton: false,
+            //terrainProvider: terrainLayer,
+            maximumLevel: 18,
+            imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                url: "https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}"
+            }),
+            orderIndependentTranslucency: false,
+            contextOptions: {
+                webgl: {
+                    alpha: true,
+                }
+            },
+        });
+
+        // viewer.scene.skyBox.show = false;
+        // viewer.scene.backgroundColor = new Cesium.Color(0.0, 0.0, 0.0, 0.0);
+        viewer.useDefaultRenderLoop = true;
+        viewer.scene.globe.depthTestAgainstTerrain = true;
+        viewer.scene.pickTranslucentDepth = true;
+
+        // 剖面分析
+        var sectionChars = $("#sectionChars");
+        var echartsView1 = document.getElementById("echartsView1");
+        var profileAnalyst = new ProfileAnalystTool({
+            viewer: viewer,
+            sectionChars: sectionChars,
+            echartsView1: echartsView1,
+            drawingMode: "line"
+        });
+        function analyst() {
+            profileAnalyst.setEnable(true);
+        }
+        function clearProfile() {
+            profileAnalyst.setEnable(false)
+        }
+
+        flyTerrain();
+        // 飞行到地形
+        function flyTerrain() {
+            viewer.terrainProvider = terrainLayer;
+            viewer.camera.flyTo({
+                destination: Cesium.Cartesian3.fromDegrees(107.16, 32.71, 15000.0)
+            });
+        }
+    </script>
+</body>
+
+</html>

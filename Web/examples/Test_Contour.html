@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contour</title>
+    <link href="js/PIE.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/status.js"></script>
+<script src="js/lib/gethtml.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var map = new PIE.Map();//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 2,
+        center: [110, 0]
+    });
+    map.on("load", function () {
+        //定义一个fill图层
+        var testFillLayer = new PIE.MetoStyle.FillLayer({
+            data: "data/worldPolyGon.geojson",
+            color: "#fff",
+            id: "measure-points"
+        });
+        //定义一个栅格图层
+        var grid = new PIE.GridTileLayer({
+            //url: 'http://service.piesat.cn:10000/service/v1/tile?map=ChinaVector&x={x}&y={y}&z={z}'
+            url: path.PIEservice.ChinaVector,
+        });
+        //添加栅格图层
+        map.add(grid);
+        //定义一个等值线图层
+        var Contourlayer = new PIE.MetoStyle.LineLayer({data:"http://10.1.6.88:8060/PIE-Web/showPrd/getDigitalData?params=data:2018-12-04,hour:12,fcstHour:24,modelType:ECMWF_HR_C1D,feature:temp,level:500",width:2,color:"#444"});
+        //添加等值线图层
+        map.add(Contourlayer);
+    });
+</script>
+</body>
+</html>

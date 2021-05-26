@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>范围查询</title>
+    <script src="./js/show/jquery.min.3.2.1.js"></script>
+    <script src="../build/PIE.js"></script>
+    <script src="./js/show/path.js"></script>
+</head>
+<style>
+    html,
+    body,
+    #map {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+</style>
+<body>
+<!-- <div style="position: absolute;z-index: 9999">
+    <button onclick="btnClick()">查询</button>
+</div> -->
+<div id="map"></div>
+
+<script>
+
+    var map = new PIE.Map({
+        type: 2
+    });
+
+    var view = new PIE.MapView({
+        map: map,
+        container: "map",
+        zoom: 4,
+        center: [110, 35]
+    });
+    //底图部分
+    var GridLayer = new PIE.GridTileLayer({
+        url: PIE.path.GoogleURL.satelliteTag,
+    });
+
+    var WFSFilterLayer = new PIE.WFSFilterLayer({
+        id:"WFSFilterLayer",
+        queryType:1,
+    });
+
+    map.on("load", function () {
+        map.add(GridLayer);
+        map.add(WFSFilterLayer);
+    }); 
+
+
+//     //底图部分
+//     var raster = new PIE.ol.layer.Tile({
+//         source: new PIE.ol.source.OSM()
+//     });
+
+//     //设置一个空的矢量图层，用于存贮求交之后的数据
+//     var vectorSource = new PIE.ol.source.Vector();
+//     var vecLayer = new PIE.ol.layer.Vector({
+//         source: vectorSource,
+//         style: function (feature, resolution) {
+//             return new PIE.ol.style.Style({
+//                 fill: new PIE.ol.style.Fill({
+//                     color: "rgba(0,0,0,0.5)"
+//                 }),
+//                 stroke: new PIE.ol.style.Stroke({
+//                     color: 'red',
+//                     width: 1
+//                 }),
+
+//                 text: new PIE.ol.style.Text({ //文本样式
+//                     font: '12px Calibri,sans-serif',
+//                     fill: new PIE.ol.style.Fill({
+//                         color: '#000'
+//                     }),
+//                     stroke: new PIE.ol.style.Stroke({
+//                         color: '#fff',
+//                         width: 3
+//                     })
+//                 }),
+
+//                 image: new PIE.ol.style.Circle({//点的半径及颜色
+//                     radius: 5,
+//                     fill: new PIE.ol.style.Fill({
+//                         color: '#60ff24'
+//                     })
+//                 }),
+//             });
+//         }
+//     });
+
+//     var map = new PIE.ol.Map({
+//         layers: [raster, vecLayer],
+//         target: 'map',
+//         view: new PIE.ol.View({
+//             center: [110, 35],
+//             projection: 'EPSG:4326',
+//             zoom: 5
+//         })
+//     });
+
+//     //绘制的范围图形
+//     var polygon = new PIE.ol.geom.Polygon([[[73, 46], [101, 46], [101, 28], [73, 28], [73, 46]]]);
+//     var polygonSource = new PIE.ol.source.Vector({
+//         features: [new PIE.ol.Feature(polygon)],
+//         wrapX: false
+//     });
+//     var vectorLayer = new PIE.ol.layer.Vector({
+//         source: polygonSource,
+//         style: new PIE.ol.style.Style({
+//             stroke: new PIE.ol.style.Stroke({
+//                 color: 'red',
+//                 width: 3
+//             }),
+//             fill: new PIE.ol.style.Fill({
+//                 color: 'rgba(0, 0, 255, 0.1)'
+//             })
+//         })
+//     });
+//     map.addLayer(vectorLayer);
+//     var featureRequest ;
+//     function getFeature(dataSetName, SrsName, filter) {
+//         var featureRequest = new PIE.ol.format.WFS().writeGetFeature({
+//             srsName: 'EPSG:4326',//坐标系
+//             featureTypes: ['GlobalLakesRegion-WGS1984'],//所要访问的图层
+//             maxFeatures: 5000,
+//             outputFormat: 'application/json',
+//             filter: PIE.ol.format.filter.intersects("the_geom", geometry)//前者是属性名，后者是对应值
+//         });
+// // if(filter.name == ""){
+// //     _filter = PIE.ol.format.filter.intersects(filter.key, geometry)
+// // }
+// //         // 发送请求
+//         //fetch('http://211.154.196.250:8081/geoserver/wfs', {
+//         fetch( path.PIEVector.wfs , {
+//             method: 'POST',
+//             body: new XMLSerializer().serializeToString(featureRequest)
+//         }).then(function (response) {
+//             return response.json();
+//         }).then(function (json) {
+//             var features = new PIE.ol.format.GeoJSON().readFeatures(json);
+//             vectorSource.addFeatures(features);
+//             map.getView().fit(vectorSource.getExtent());//缩放到查询出的feature
+//         });
+//     }
+
+//     //绘制图形
+//     var draw, geometry;
+//     function btnClick() {
+//         var geometry = polygonSource.getFeatures()[0].getGeometry();
+//         var url='http://211.154.196.250:8081/geoserver/wfs';
+//            //设置查询参数与条件
+//         var params = {
+//             srsName: 'EPSG:4326',//坐标系
+//             datasetNames: ['GlobalLakesRegion-WGS1984'],//所要访问的图层
+//             geometry:geometry         
+//         };
+//         var featureRequest = new PIE.ol.format.WFS().writeGetFeature({
+//             srsName: 'EPSG:4326',//坐标系
+//             featureTypes: ['GlobalLakesRegion-WGS1984'],//所要访问的图层
+//             maxFeatures: 5000,
+//             outputFormat: 'application/json',
+//             filter: PIE.ol.format.filter.intersects("the_geom", geometry)//前者是属性名，后者是对应值
+//         });
+//         console.log(featureRequest)
+//         // 发送请求
+
+//         //fetch('http://211.154.196.250:8081/geoserver/wfs', {
+//         fetch( path.PIEVector.wfs , {
+//             method: 'POST',
+//             body: new XMLSerializer().serializeToString(featureRequest)
+//         }).then(function (response) {
+//             return response.json();
+//         }).then(function (json) {
+//             var features = new PIE.ol.format.GeoJSON().readFeatures(json);
+//             vectorSource.addFeatures(features);
+//             map.getView().fit(vectorSource.getExtent());//缩放到查询出的feature
+//         });
+//     }
+</script>
+</body>
+</html>

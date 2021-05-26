@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Use correct character set. -->
+    <meta charset="utf-8">
+    <!-- Tell IE to use the latest, best version. -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>坡度坡向分析</title>
+    <script src="../build/PIE.js"></script>
+    <script src="./js/modules/Cesium-plugins/SlopeDirectionAnalysis/SlopeAspectAnalysis.js"></script>
+    <script src="./js/show/jquery.min.3.2.1.js"></script>
+    <script src="./js/lib/echarts-all-3.js"></script>
+    <script src="./js/show/path.js"></script>
+
+
+    <style>
+       @import url(./css/show/widgets.css);
+
+        html,
+        body,
+        #CesiumContainer {
+            width:100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="sectionChars" class="infoview sectionChars">
+        <div id="echartsView1" style="width:100%;height:100% ;"></div>
+    </div>
+    <div id="map"></div>
+    <div id="credit"></div>
+    <div style="position: absolute; top: 5%; left: 10px;">
+        <span style="color: cyan;">坡度坡向分析</span>
+        <div style="background: rgba(42,42,42,0.9); border-radius: 5px;height:36px">
+            <button onclick="visualAnalyist()" class="cesium-button">坡度坡向分析</button>
+            <button onclick="cleanVisual()" class="cesium-button">清除</button>
+        </div>
+    </div>
+    <script>
+
+        var map = new PIE.Map({
+            type:3
+            }
+        );//初始化底图
+        var view = new PIE.MapView({
+            map: map,
+            container: "map"
+        });
+        var grid = new PIE.GridTileLayer({
+            //url:"https://mt1.google.cn/vt/lyrs=s&x={x}&y={y}&z={z}",
+            url:path.GoogleURL.satellite,
+            id: 'tilelayer1'
+        });
+        map.add(grid);
+        var viewer = map.map._cesiumViewer;
+        viewer.terrainProvider = new Cesium.CesiumTerrainProvider({
+            url:path.PIEterrain.test,
+            requestWaterMask: true,
+        });
+        viewer.useDefaultRenderLoop = true;
+        viewer.scene.globe.depthTestAgainstTerrain = true;
+        viewer.scene.pickTranslucentDepth = true;
+        viewer.camera.flyTo({
+            destination:Cesium.Rectangle.fromDegrees(118.42037712999183,29.844291959512913,118.42937712999183,29.859921830807358)
+        });
+
+        // 可视域分析
+        var viewsheld = new SlopeAspectTool(viewer, viewer.terrainProvider);
+        function visualAnalyist() {
+            viewsheld.setEnable(true);
+        }
+        function cleanVisual() {
+            viewsheld.setEnable(false);
+        }
+
+
+
+    </script>
+</body>
+
+</html>

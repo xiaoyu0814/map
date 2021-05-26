@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>经纬网</title>
+    <!--<link rel="stylesheet" href="../lib/Cesium-1.51/Build/Cesium/Widgets/widgets.css">-->
+    <!--<script src="../lib/Cesium-1.51/Build/Cesium/Cesium.js"></script>-->
+    <script src="../build/PIE.js"></script>
+    <script src="./js/modules/Cesium-plugins/ViewsheldAnalysis/ViewsheldAnalysis.js"></script>
+    <script src="./js/modules/Cesium-plugins/VisiableAnalysis/VisiableAnalysis.js"></script>
+    <script src="./js/modules/Cesium-plugins/VisiableAnalysis/turf.min.js"></script>
+    <script src="./js/modules/Cesium-plugins/VisiableAnalysis/ModelVisiable.js"></script>
+    <script src="./js/modules/Cesium-plugins/LatitudeLongitudeGrid/GridTool.js"></script>
+    <script src="./js/show/jquery.min.3.2.1.js"></script>
+    <script src="./js/lib/echarts-all-3.js"></script>
+    <script src="./js/show/path.js"></script>
+ <style>
+        @import url(../Build/Cesium/Widgets/widgets.css);
+
+        html,
+        body,
+        #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="cesiumContainer">
+    </div>
+    <div id="switchButton" style="position: absolute; top: 2%; left: 10px;">
+        <button onclick="flyModel()">定位到模型</button>
+        <button onclick="showGrid()">显示经纬网</button>
+        <button onclick="disableGrid()">隐藏经纬网</button>
+
+    </div>
+    <script>
+        //Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwMDVjODczYy1kMzkxLTQ1OGUtYjAwOS01MDRlN2QzOTExYTgiLCJpZCI6NTM3Mywic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0MzE5NzM1NH0.RqX0BJWiIngpnINQpX5S7-4Gb16v85X2PPl6DfnGvCw';
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+        // 初始化容器
+        var viewer = new Cesium.Viewer('cesiumContainer', {
+            baseLayerPicker: false,
+            geocoder: false,
+            navigationHelpButton: false,
+            imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                //url: 'http://www.google.cn/maps/vt?lyrs=s@716&x={x}&y={y}&z={z}'
+                url: path.GoogleURL.s
+            })
+        });
+
+        viewer._cesiumWidget._creditContainer.style.display = "none";
+        // var imageryLayers = viewer.imageryLayers;
+        // var imageryProvider=  new Cesium.GridImageryProvider({
+        //     cells:4,
+
+        // })
+        // imageryLayers.addImageryProvider(imageryProvider);
+
+        viewer.scene.camera.moveEnd.addEventListener(function () {
+            // var currentMagnitude = viewer.camera.getMagnitude();
+            var direction = viewer.camera._direction;
+            var x = Cesium.Math.toDegrees(direction.x);
+            var y = Cesium.Math.toDegrees(direction.y);
+            var z = Cesium.Math.toDegrees(direction.z);
+
+            console.log('currentMagnitude - ' + x+"ff"+y+"ff"+z);
+
+            if (height > 100000) {
+
+            } else {
+
+            }
+        })
+        var sichuanTileset = new Cesium.Cesium3DTileset({
+            url: './data/SampleData/Data/Production_OSGB15/tileset.json',
+            maximumScreenSpaceError: 2,
+            maximumNumberOfLoadedTiles: 1000,
+        });
+        sichuanPrimitive = viewer.scene.primitives.add(sichuanTileset);
+        // 经纬度等
+        var longitude = 121.3605;
+        var latitude = 29.10902;
+        var height = 0
+        // var heading = 0 // 方位角
+        // 模型加载完毕后的回调
+        sichuanTileset.readyPromise.then(function (tileset) {
+
+           // viewer.flyTo(sichuanTileset)
+        })
+
+
+        function flyModel() {
+            viewer.flyTo(sichuanTileset)
+        }
+        var gridTool = new GridTool(viewer);
+        function showGrid() {
+            gridTool.setEnable(true)
+        }
+        function disableGrid() {
+            gridTool.setEnable(false)
+        }
+
+        // for (let i = 0; i <= 90; i += 9) {
+        //     viewer.entities.add({
+        //         name: "文献"+i,
+        //         polyline: {
+        //             positions: Cesium.Cartesian3.fromDegreesArray([
+        //                 -180,
+        //                 i,
+        //                 -90,
+        //                 i,
+        //                 0,
+        //                 i,
+        //                 90,
+        //                 i,
+        //                 180,
+        //                 i,
+
+
+        //             ]),
+        //             width: 2,
+        //             arcType: Cesium.ArcType.RHUMB,
+        //             material: Cesium.Color.AQUA,
+        //             // granularity: granularity,
+        //         },
+        //     });
+
+        // }
+        // for (let i = -90; i < 0; i += 9) {
+        //     var j=i;
+        //     viewer.entities.add({
+        //         name: "文献"+i,
+        //         polyline: {
+        //             positions: Cesium.Cartesian3.fromDegreesArray([
+        //                 -180,
+        //                 i,
+        //                 -90,
+        //                 i,
+        //                 0,
+        //                 i,
+        //                 90,
+        //                 i,
+        //                 180,
+        //                 i,
+
+
+        //             ]),
+        //             width: 2,
+        //             arcType: Cesium.ArcType.RHUMB,
+        //             material: Cesium.Color.AQUA,
+        //             // granularity: granularity,
+        //         },
+        //     });
+
+        // }
+        // for (let i = -180; i <= 180; i += 3) {
+        //     viewer.entities.add({
+        //         name: name,
+        //         polyline: {
+        //             positions: Cesium.Cartesian3.fromDegreesArray([
+        //                 i,
+        //                 90,
+        //                 i,
+        //                 0,
+        //                 i,
+        //                 -90,
+        //             ]),
+        //             width: 2,
+        //             arcType: Cesium.ArcType.RHUMB,
+        //             material: Cesium.Color.AQUA,
+        //             // granularity: granularity,
+        //         },
+        //     });
+        // }
+
+
+        var toDegrees = Cesium.Math.toDegrees;
+        // viewer.entities.add({
+        //     name: name,
+        //     polyline: {
+        //         positions: Cesium.Cartesian3.fromDegreesArray([
+        //             -180,
+        //             15,
+        //             -90,
+        //             15,
+        //             0,
+        //             15,
+        //             90,
+        //             15,
+        //             180,
+        //             15,
+        //         ]),
+        //         width: 2,
+        //         arcType: Cesium.ArcType.RHUMB,
+        //         material: Cesium.Color.AQUA,
+        //         // granularity: granularity,
+        //     },
+        //     label: {
+        //         text: data.name,
+        //         font: '14pt monospace',
+        //         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        //         outlineWidth: 2,
+        //         verticalOrigin: Cesium.VerticalOrigin.TOP,
+        //         pixelOffset: new Cesium.Cartesian2(0, 0)//此属性为设置偏移量
+        //     },
+
+        // });
+        // var entity = viewer.entities.add({
+
+        //     //参数顺序：经度、纬度
+        //     position: Cesium.Cartesian3.fromDegrees(-180, 30),
+
+        //     label: {
+        //         text: "纬度" + 30,
+        //         font: '14pt monospace',
+        //         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        //         outlineWidth: 2,
+        //         verticalOrigin: Cesium.VerticalOrigin.TOP,
+        //         pixelOffset: new Cesium.Cartesian2(0, 0)//此属性为设置偏移量
+        //     },
+        //     type: 'text'//自定义属性
+        // });
+
+
+        // function parallel(latitude, color, granularity) {
+        //     var name = "Parallel " + latitude;
+        //     if (latitude >= 0) {
+        //         var northLat = viewer.entities.add({
+
+        //             //参数顺序：经度、纬度
+        //             position: Cesium.Cartesian3.fromDegrees(-180, latitude),
+
+        //             label: {
+        //                 text: latitude + "N",
+        //                 font: '14pt monospace',
+        //                 style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        //                 outlineWidth: 2,
+        //                 verticalOrigin: Cesium.VerticalOrigin.TOP,
+        //                 pixelOffset: new Cesium.Cartesian2(0, 0)//此属性为设置偏移量
+        //             },
+        //             type: 'text'//自定义属性
+        //         });
+        //     } else {
+        //         var sourthLat = viewer.entities.add({
+
+        //             //参数顺序：经度、纬度
+        //             position: Cesium.Cartesian3.fromDegrees(-180, latitude),
+
+        //             label: {
+        //                 text: Math.abs(latitude) + "S",
+        //                 font: '14pt monospace',
+        //                 style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        //                 outlineWidth: 2,
+        //                 verticalOrigin: Cesium.VerticalOrigin.TOP,
+        //                 pixelOffset: new Cesium.Cartesian2(0, 0)//此属性为设置偏移量
+        //             },
+        //             type: 'text'//自定义属性
+        //         });
+        //     }
+
+        //     return viewer.entities.add({
+        //         name: name,
+        //         polyline: {
+        //             positions: Cesium.Cartesian3.fromDegreesArray([
+        //                 -180,
+        //                 latitude,
+        //                 -90,
+        //                 latitude,
+        //                 0,
+        //                 latitude,
+        //                 90,
+        //                 latitude,
+        //                 180,
+        //                 latitude,
+        //             ]),
+        //             width: 2,
+        //             arcType: Cesium.ArcType.RHUMB,
+        //             material: color,
+        //             granularity: granularity,
+        //         },
+
+        //     });
+
+        // }
+
+        // function meridian(longitude, color, granularity) {
+        //     var name = "Meridian " + longitude;
+        //     if (longitude !== 180) {
+        //         if (longitude >= 0) {
+        //             var eastLong = viewer.entities.add({
+
+        //                 //参数顺序：经度、纬度
+        //                 position: Cesium.Cartesian3.fromDegrees(longitude, 0),
+
+        //                 label: {
+        //                     text: longitude + "E",
+        //                     font: '14pt monospace',
+        //                     style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        //                     outlineWidth: 2,
+        //                     verticalOrigin: Cesium.VerticalOrigin.TOP,
+        //                     pixelOffset: new Cesium.Cartesian2(0, 0)//此属性为设置偏移量
+        //                 },
+        //                 type: 'text'//自定义属性
+        //             });
+        //         } else {
+        //             var westLong = viewer.entities.add({
+
+        //                 //参数顺序：经度、纬度
+        //                 position: Cesium.Cartesian3.fromDegrees(longitude, 0),
+
+        //                 label: {
+        //                     text: Math.abs(longitude) + "W",
+        //                     font: '14pt monospace',
+        //                     style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        //                     outlineWidth: 2,
+        //                     verticalOrigin: Cesium.VerticalOrigin.TOP,
+        //                     pixelOffset: new Cesium.Cartesian2(0, 0)//此属性为设置偏移量
+        //                 },
+        //                 type: 'text'//自定义属性
+        //             });
+        //         }
+
+        //     }
+
+        //     return viewer.entities.add({
+        //         name: name,
+        //         polyline: {
+        //             positions: Cesium.Cartesian3.fromDegreesArray([
+        //                 longitude,
+        //                 90,
+        //                 longitude,
+        //                 0,
+        //                 longitude,
+        //                 -90,
+        //             ]),
+        //             width: 2,
+        //             arcType: Cesium.ArcType.RHUMB,
+        //             material: color,
+        //             granularity: granularity,
+        //         },
+
+        //     });
+
+        // }
+
+        // // function labelCoordinates(cartographic) {
+        // //     var position = Cesium.Cartographic.toCartesian(cartographic);
+        // //     var latitude = toDegrees(cartographic.latitude).toFixed(4);
+        // //     var longitude = toDegrees(cartographic.longitude).toFixed(4);
+        // //     var label = "lat: " + latitude + "°\nlon: " + longitude + "°";
+
+        // //     return viewer.entities.add({
+        // //         position: position,
+        // //         label: {
+        // //             text: label,
+        // //             showBackground: true,
+        // //             font: "14px monospace",
+        // //         },
+        // //     });
+        // // }
+
+        // function makeGrid(numberOfDivisions, color, bolean) {
+        //     // debugger
+        //     var parallels = makeParallelsRecursive(
+        //         -90,
+        //         90,
+        //         numberOfDivisions,
+        //         color
+        //     );
+        //     var meridians = makeMeridiansRecursive(
+        //         -180,
+        //         180,
+        //         numberOfDivisions,
+        //         color
+        //     );
+        //     meridians.push(meridian(180, color));
+
+        //     var allLines = parallels.concat(meridians);
+        //     allLines.forEach(function (line) {
+        //         line.show = bolean;
+        //     });
+
+        //     return allLines;
+        // }
+
+        // function makeParallelsRecursive(
+        //     minLatitude,
+        //     maxLatitude,
+        //     depth,
+        //     color
+        // ) {
+        //     var result = [];
+        //     var midpoint = (minLatitude + maxLatitude) / 2;
+        //     result.push(parallel(midpoint, color));
+
+        //     if (depth > 0) {
+        //         var southernLines = makeParallelsRecursive(
+        //             minLatitude,
+        //             midpoint,
+        //             depth - 1,
+        //             color
+        //         );
+        //         var northernLines = makeParallelsRecursive(
+        //             midpoint,
+        //             maxLatitude,
+        //             depth - 1,
+        //             color
+        //         );
+        //         result = southernLines.concat(result, northernLines);
+        //     }
+
+        //     return result;
+        // }
+
+        // function makeMeridiansRecursive(
+        //     minLongitude,
+        //     maxLongitude,
+        //     depth,
+        //     color
+        // ) {
+        //     var result = [];
+        //     var midpoint = (minLongitude + maxLongitude) / 2;
+        //     result.push(meridian(midpoint, color));
+
+        //     if (depth > 0) {
+        //         var westernLines = makeMeridiansRecursive(
+        //             minLongitude,
+        //             midpoint,
+        //             depth - 1,
+        //             color
+        //         );
+        //         var easternLines = makeMeridiansRecursive(
+        //             midpoint,
+        //             maxLongitude,
+        //             depth - 1,
+        //             color
+        //         );
+        //         result = westernLines.concat(result, easternLines);
+        //     }
+
+        //     return result;
+        // }
+
+        // var showAntipodalPoint = false;
+        // var primitives = {
+        //     equator: parallel(0, Cesium.Color.BLUE),
+        //     primeMeridian: meridian(0, Cesium.Color.BLUE),
+        //     selectedPoint: {
+        //         meridian: undefined,
+        //         parallel: undefined,
+        //         label: undefined,
+        //     },
+        //     antipodalPoint: {
+        //         meridian: undefined,
+        //         parallel: undefined,
+        //         label: undefined,
+        //     },
+        //     // lowResolutionGrid: makeGrid(2, Cesium.Color.PALEGREEN, false),
+        //     higherResolutionGrid: makeGrid(3, Cesium.Color.AQUA, true),
+        // };
+
+
+        // console.log(primitives.higherResolutionGrid)
+
+
+    </script>
+</body>
+
+</html>

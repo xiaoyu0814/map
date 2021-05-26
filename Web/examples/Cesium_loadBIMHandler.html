@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BIM</title>
+    <link href="js/PIE.css" rel="stylesheet"/>
+    <link href="../build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        #toolbar {
+            padding: 2px 5px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+      </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="toolbar"></div>
+<div id="toolTip" style="z-index: 9999; position: absolute; top: 250px; left: 20px; width:45px"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src="js/lib/Cesium_modelLoadHandler.js"></script>
+<script src="js/show/path.js"></script>
+<script>
+    var map = new PIE.Map({
+            type:3
+        }
+    );//初始化底图
+    var view = new PIE.MapView({
+        map: map,
+        container: "map"
+    });
+    var grid = new PIE.GridTileLayer({
+        //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+        //url:path.PIEGrid.Tile,
+        //url:"http://www.google.cn/maps/vt?lyrs=s@800&x={x}&y={y}&z={z}",
+        url:path.GoogleURL.s,
+        id: 'tilelayer1'
+    });
+    map.add(grid);
+    map.on("load",function () {
+        //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2YwN2Q4ZS1iODA0LTRkZDQtYmMxNC0yNDBkNWNkMDc4MDAiLCJpZCI6NjI2NCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NTc5MTY5Nn0.ki6CLrIJtYbR2RpOoV9PDhxHcHXsQhoU69mFi8bY9Mg";
+        Cesium.Ion.defaultAccessToken = path.CesiumURL.Token;
+         map.map._cesiumViewer.terrainProvider = new Cesium.EllipsoidTerrainProvider({});
+
+        let handler=new ModeLoadHandler({viewer:map.map._cesiumViewer});
+        //数据
+        //朝向
+        var heading = Cesium.Math.toRadians(130);
+        //俯仰
+        var pitch = Cesium.Math.toRadians(0);
+        var url = "./data/build_bim2020.glb";
+        var position = Cesium.Cartesian3.fromDegrees(116.391190, 39.907410, 200000);
+         handler.loadGltfMode({url:url,origin:position,heading:heading,pitch:pitch,coefficient:2});
+    });
+</script>
+</body>
+</html>

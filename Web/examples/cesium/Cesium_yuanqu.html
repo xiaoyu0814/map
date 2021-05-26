@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <!-- 如果要用沙盒里的东西的话加上这个 -->
+    <script src="../examples/data/Sandcastle/Sandcastle-header.js"></script>
+    <!-- 一定要加上这个css样式 -->
+    <link rel="stylesheet" href="../examples/data/Sandcastle/templates/bucket.css">
+    <title>白膜数据</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow: hidden;
+
+        }
+
+        html,
+        body,
+        #map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #remove {
+            position: absolute;
+            top: 260px;
+            left: 0;
+            width: 100px;
+            height: 30px;
+            background: #fff;
+            text-align: center;
+            color: black;
+            line-height: 30px;
+        }
+
+        #add {
+            position: absolute;
+            top: 300px;
+            left: 0;
+            width: 100px;
+            height: 30px;
+            background: #fff;
+            text-align: center;
+            color: black;
+            line-height: 30px;
+        }
+
+        #start {
+            position: absolute;
+            top: 340px;
+            left: 0;
+            width: 100px;
+            height: 30px;
+            background: #fff;
+            text-align: center;
+            color: black;
+            line-height: 30px;
+        }
+
+        #end {
+            position: absolute;
+            top: 380px;
+            left: 0;
+            width: 100px;
+            height: 30px;
+            background: #fff;
+            text-align: center;
+            color: black;
+            line-height: 30px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div onclick="model('移除')" id="remove">移除</div>
+<div onclick="model('添加')" id="add">添加</div>
+<div onclick="model('开始')" id="start">开始</div>
+<div onclick="model('停止')" id="end">停止</div>
+<div id="toolbar" style="position: absolute;top: 0;">
+    <!-- 这是Demo需要的侧边栏 -->
+    <table class="infoPanel">
+        <tbody>
+        <tr>
+            <td>点击键盘操作</td>
+        </tr>
+        <tr>
+            <td>上下角度: <span id="heading"></span>°</td>
+        </tr>
+        <tr>
+            <td>← 向左/→ 向右</td>
+        </tr>
+        <tr>
+            <td>左右角度: <span id="pitch"></span>°</td>
+        </tr>
+        <tr>
+            <td>↑ 向上/↓ 向下</td>
+        </tr>
+        <tr>
+            <td>翻转角度: <span id="roll"></span>°</td>
+        </tr>
+        <tr>
+            <td>← + ⇧ 左翻/→ + ⇧ 右翻</td>
+        </tr>
+        <tr>
+            <td>速度: <span id="speed"></span>m/s</td>
+        </tr>
+        <tr>
+            <td>↑ + ⇧ 加速/↓ + ⇧ 减速</td>
+        </tr>
+        <tr>
+            <td>相机跟随
+                <input id="fromBehind" type="checkbox">
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+</body>
+<script src="../../build/PIE.js"></script>
+<script src="js/lib/dat.gui.min.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<!--<script src="js/lib/gethtml.js"></script>-->
+<script>
+    var map;
+    var view;
+    var entity;
+    var modelHave = false;
+    var ModelLayer,ModelLayer1;
+    init();
+
+    //初始化底图
+    function init() {
+        map = new PIE.Map({
+            type: 3
+        }); //初始化底图
+        //设置视图
+        view = new PIE.MapView({
+            map: map,
+            container: "map"
+        });
+        var grid = new PIE.GridTileLayer({
+            url: "http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GFImage&x={x}&y={y}&z={z}",
+            id: 'tilelayer1'
+        });
+        map.add(grid);
+        ModelLayer = new PIE.MetoStyle.ModelLayer({
+            id: "test_ModelLayer",
+            url: 'data/gltf/yuanqu.glb',
+            height: 5000.0,
+            lat: 116.59781455993652,
+            lon: 40.06388417471974,
+        })
+        map.add(ModelLayer)
+    
+    }
+
+  
+</script>
+
+</html>

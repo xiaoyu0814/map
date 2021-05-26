@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>风羽图</title>
+    <style>
+        body {
+            font: 14px Verdana;
+            overflow:hidden;
+            padding: 0px;
+            margin: 0px;
+        }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<script src="../build/PIE.js"></script>
+<script src="js/lib/jquery-2.1.0.js"></script>
+<script src ="js/lib/status.js"></script>
+<script src="./js/show/path.js"></script>
+<script>
+    var num =  window.location.href.lastIndexOf('/');
+    var url =  window.location.href.substr(0, num)
+  
+    var map = new PIE.Map({//新建一个map对象
+        baseMap:""
+    });
+    var view = new PIE.MapView({//新建视图
+        map:map,
+        container:"map",
+        zoom:3,
+        center:[110,30],
+        sprite:url + "/sprite/Weather"
+    });
+ 
+    map.on("load",function () {//添加监听事件，在加载的时候添加图层
+        var state = new Status(map);
+        document.body.appendChild(state.dom);
+        //定义一个栅格瓦片图层
+        var grid = new PIE.GridTileLayer({
+            //url:"http://piecloud.piesat.cn/dataservices/service/v1/tile?map=GlobalDarkMap&x={x}&y={y}&z={z}",
+            url: path.PIEGrid.GlobalDarkMap,
+            id:"darkmap"
+        });
+        map.add(grid);
+        var testWindLayer = new PIE.MetoStyle.IconLayer({
+                url: "sprite/windspeed.json",
+                iconUrl: "WindSpeed",
+                rotate: "WindDirection",
+                imageName: "WIND",
+                id: "measure-Icon",
+               
+                overlap:true,
+                opacity:1,
+                visible:true
+            });
+        map.add(testWindLayer)
+       
+        //对比 offset,anchor修改的定位
+        /*
+        var testpointLayer = new PIE.MetoStyle.PointLayer({
+                url: "sprite/windspeed.json",
+                id:"point"
+            });
+        map.add(testpointLayer)
+        */
+    
+    })
+
+
+</script>
+<script src ="js/lib/MapTool.js"></script>
+</body>
+</html>
